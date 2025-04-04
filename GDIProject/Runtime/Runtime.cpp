@@ -237,12 +237,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		//	m_fcountOneSecond = Time::GetTotalTime();
 		//}
 		
-		
 		// Renderer::BeginDraw
 		Renderer::BeginDraw();
 
-
-		//// Render()
+		//// Render()`
 		Renderer::RenderImage(g_pImageBitmap, 0, 0, 400, 300);
 		//g_pBackBufferGraphics->DrawImage(g_pImageBitmap[g_eCurrentCharacter][m_iplayidx], (int)(g_width / 2 - witdh[m_iplayidx] / 2), (int)(g_height / 2 - height[m_iplayidx] / 2), witdh[m_iplayidx], height[m_iplayidx]);
 		////g_pBackBufferGraphics->DrawImage(g_pImageBitmap, 0, 0, 400, 300);
