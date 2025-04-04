@@ -1,24 +1,13 @@
 ﻿#include <windows.h>
 #include <stdio.h>
-
 #include <gdiplus.h>
-#include "Runtime/Core/Time.h"
-#include "Runtime/Baseh/BaseDefine.h"
 #pragma comment(lib, "gdiplus.lib")
 
-LPCTSTR g_szClassName = TEXT("윈도우 클래스 이름");
-//int g_width = 1024;
-//int g_height = 768;
-//int g_width = 1920;
-//int g_height = 1080;
-int g_width = 1280;
-int g_height = 800;
+#include <Renderer.cpp>
+#include <Time.h>
 
-HWND g_hWnd;
-HDC g_FrontBufferDC;    // 앞면 DC
-HDC g_BackBufferDC;    // 뒷면 DC
-HBITMAP g_BackBufferBitmap;
-enum ECharacterName g_eCurrentCharacter = boy;
+LPCTSTR g_szClassName = TEXT("윈도우 클래스 이름");
+//enum ECharacterName g_eCurrentCharacter = boy;
 
 // 콘솔 초기화
 void InitConsole()
@@ -81,10 +70,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		const int CELL_SIZE = 300;     // 셀 크기
 		const int PADDING = 10;       // 셀 내부 여백
-		int cols = g_width / CELL_SIZE;
-		int rows = g_height / CELL_SIZE;
+		int cols = Renderer::g_width / CELL_SIZE;
+		int rows = Renderer::g_height / CELL_SIZE;
 
-		RECT rect = { 0, 0, g_width, g_height };
+		RECT rect = { 0, 0, Renderer::g_width, Renderer::g_height };
 		for (int y = 0; y < rows; ++y)
 		{
 			for (int x = 0; x < cols; ++x)
@@ -103,20 +92,20 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	break;
 
 	case WM_KEYDOWN:
-		
+
 		printf("WM_KEYDOWN: VK_CODE = %d\n", (int)wParam);
-		if (wParam == VK_1)
-		{
-			g_eCurrentCharacter = run;
-		}
-		if (wParam == VK_2)
-		{
-			g_eCurrentCharacter = attack;
-		}
-		if (wParam == VK_3)
-		{
-			g_eCurrentCharacter = run;
-		}
+		//if (wParam == VK_1)
+		//{
+		//	g_eCurrentCharacter = run;
+		//}
+		//if (wParam == VK_2)
+		//{
+		//	g_eCurrentCharacter = attack;
+		//}
+		//if (wParam == VK_3)
+		//{
+		//	g_eCurrentCharacter = run;
+		//}
 		break;
 
 	case WM_CHAR:
@@ -148,9 +137,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
+// 메인 함수
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
+	Renderer::SetResolution(1280, 800);	// 해상도 조절
 	InitConsole();  // 콘솔 출력 초기화
 
 	char szPath[MAX_PATH] = { 0, };
@@ -167,7 +158,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	RegisterClass(&wc);
 
 	// 원하는 크기가 조정되어 리턴
-	RECT rcClient = { 0, 0, (LONG)g_width, (LONG)g_height };
+	RECT rcClient = { 0, 0, (LONG)Renderer::g_width, (LONG)Renderer::g_height };
 	AdjustWindowRect(&rcClient, WS_OVERLAPPEDWINDOW, FALSE);
 
 	//생성
@@ -183,54 +174,48 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	UpdateWindow(hwnd);
 
 	////////Renderer::Initialize
-	g_FrontBufferDC = GetDC(hwnd); //윈도우 클라이언트 영역의 DeviceContext얻기
-	g_BackBufferDC = CreateCompatibleDC(g_FrontBufferDC); // 호환되는 DeviceContext 생성
-	g_BackBufferBitmap = CreateCompatibleBitmap(g_FrontBufferDC, g_width, g_height); // 메모리 영역생성
-	SelectObject(g_BackBufferDC, g_BackBufferBitmap); // MemDC의 메모리영역 지정
+	Renderer::Initialize(hwnd);
+	//Gdiplus::Bitmap* g_pImageBitmap[MAX_CHARACTER_SIZE][MAX_VIDEO_SIZE];
+	Gdiplus::Bitmap* g_pImageBitmap;
 
-	// GDI+ 초기화
-	ULONG_PTR g_GdiPlusToken;
-	Gdiplus::GdiplusStartupInput gsi;
-	Gdiplus::GdiplusStartup(&g_GdiPlusToken, &gsi, nullptr);
-	Gdiplus::Graphics* g_pBackBufferGraphics = Gdiplus::Graphics::FromHDC(g_BackBufferDC);
-	Gdiplus::Bitmap* g_pImageBitmap[MAX_CHARACTER_SIZE][MAX_VIDEO_SIZE];
-	UINT witdh[MAX_VIDEO_SIZE] = { 0, };
-	UINT height[MAX_VIDEO_SIZE] = { 0, };
-	int m_iplayidx = 0;
-	int m_iplayMax = 0;
-	
+	//UINT witdh[MAX_VIDEO_SIZE] = { 0, };
+	//UINT height[MAX_VIDEO_SIZE] = { 0, };
+	//int m_iplayidx = 0;
+	//int m_iplayMax = 0;
+	//
+	//for (int j = 0; j < MAX_CHARACTER_SIZE; j++)
+	//{
+	//	for (int i = 0; i < MAX_VIDEO_SIZE; i++)
+	//	{
+	//		wchar_t wcsbuf[200];
+	//		int     num;
+	//		//num = swprintf(wcsbuf, sizeof(wcsbuf), L"../Resource/frames/frame_%04d.png", i + 1);
+	//		num = swprintf(wcsbuf, sizeof(wcsbuf), L"../Resource/캐릭터%d/pc_%s_0_spr_0.png", j + 1, i + 1);
+	//
+	//		//g_pImageBitmap[i] = new Gdiplus::Bitmap((WCHAR*)filename);
+	//		g_pImageBitmap[j][i] = new Gdiplus::Bitmap(wcsbuf);
+	//		witdh[i] = g_pImageBitmap[j][i]->GetWidth();
+	//		height[i] = g_pImageBitmap[j][i]->GetHeight();
+	//		if (g_pImageBitmap[j][i]->GetLastStatus() != Gdiplus::Ok)
+	//		{
+	//			m_iplayMax = i;
+	//			break;
+	//			MessageBox(hwnd, L"PNG 파일 로드 실패", L"오류", MB_ICONERROR);
+	//			PostQuitMessage(0);
+	//			m_iplayMax = i;
+	//			break;
+	//		}
+	//	}
+	//
+	//}
+	// 
+	///// 시간 관련
+	//Time::Initialize();
+	//float m_fFPSTime = 1 / 30;
+	//float m_fcountOneSecond = 0;
+	//m_fcountOneSecond = Time::GetTotalTime();
 
-	for (int j = 0; j < MAX_CHARACTER_SIZE; j++)
-	{
-		for (int i = 0; i < MAX_VIDEO_SIZE; i++)
-		{
-			wchar_t wcsbuf[200];
-			int     num;
-			//num = swprintf(wcsbuf, sizeof(wcsbuf), L"../Resource/frames/frame_%04d.png", i + 1);
-			num = swprintf(wcsbuf, sizeof(wcsbuf), L"../Resource/캐릭터%d/pc_%s_0_spr_0.png", j+1, i + 1);
-
-			//g_pImageBitmap[i] = new Gdiplus::Bitmap((WCHAR*)filename);
-			g_pImageBitmap[j][i] = new Gdiplus::Bitmap(wcsbuf);
-			witdh[i] = g_pImageBitmap[j][i]->GetWidth();
-			height[i] = g_pImageBitmap[j][i]->GetHeight();
-			if (g_pImageBitmap[j][i]->GetLastStatus() != Gdiplus::Ok)
-			{
-				m_iplayMax = i;
-				break;
-				MessageBox(hwnd, L"PNG 파일 로드 실패", L"오류", MB_ICONERROR);
-				PostQuitMessage(0);
-				m_iplayMax = i;
-				break;
-			}
-		}
-
-	}
-
-	/// 시간 관련
-	Time::Initialize();
-	float m_fFPSTime = 1 / 30;
-	float m_fcountOneSecond = 0;
-	m_fcountOneSecond = Time::GetTotalTime();
+	g_pImageBitmap = new Gdiplus::Bitmap(L"../Resource/elf32.png");
 
 	MSG msg;
 	while (true)
@@ -241,41 +226,39 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		{
 			if (msg.message == WM_QUIT)
 				break;
-
+		
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+		//
+		//if (Time::GetTotalTime() - m_fcountOneSecond >= m_fFPSTime)	// 0.5초에 한 번씩
+		//{
+		//	m_iplayidx = (m_iplayidx + 1) % m_iplayMax;
+		//	m_fcountOneSecond = Time::GetTotalTime();
+		//}
+		
+		
+		// Renderer::BeginDraw
+		Renderer::BeginDraw();
 
-		if (Time::GetTotalTime() - m_fcountOneSecond >= m_fFPSTime)	// 0.5초에 한 번씩
-		{
-			m_iplayidx = (m_iplayidx + 1) % m_iplayMax;
-			m_fcountOneSecond = Time::GetTotalTime();
-		}
 
+		//// Render()
+		Renderer::RenderImage(g_pImageBitmap, 0, 0, 400, 300);
+		//g_pBackBufferGraphics->DrawImage(g_pImageBitmap[g_eCurrentCharacter][m_iplayidx], (int)(g_width / 2 - witdh[m_iplayidx] / 2), (int)(g_height / 2 - height[m_iplayidx] / 2), witdh[m_iplayidx], height[m_iplayidx]);
+		////g_pBackBufferGraphics->DrawImage(g_pImageBitmap, 0, 0, 400, 300);
 
-		// Renderer::BeginDraw()
-		PatBlt(g_BackBufferDC, 0, 0, g_width, g_height, BLACKNESS);
-
-		// Render()
-		g_pBackBufferGraphics->DrawImage(g_pImageBitmap[g_eCurrentCharacter][m_iplayidx], (int)(g_width / 2 - witdh[m_iplayidx] / 2), (int)(g_height / 2 - height[m_iplayidx] / 2), witdh[m_iplayidx], height[m_iplayidx]);
-		//g_pBackBufferGraphics->DrawImage(g_pImageBitmap, 0, 0, 400, 300);
-
-		// Renderer::EndDraw()
-		BitBlt(g_FrontBufferDC, 0, 0, g_width, g_height, g_BackBufferDC, 0, 0, SRCCOPY);
+		// Renderer::EndDraw
+		Renderer::EndDraw();
 	}
 
-	// Renderer::Uninitialize
-
+	
 	// GDI+ 해제
-	for(int j = 0 ; j < MAX_CHARACTER_SIZE; j++)
-		for(int i = 0 ; i < m_iplayMax; i++)
-			delete g_pImageBitmap[j][i];
-	delete g_pBackBufferGraphics;
-	Gdiplus::GdiplusShutdown(g_GdiPlusToken);
-
-	DeleteObject(g_BackBufferBitmap);
-	DeleteDC(g_BackBufferDC);
-	ReleaseDC(hwnd, g_FrontBufferDC);
+	//for (int j = 0; j < MAX_CHARACTER_SIZE; j++)
+	//	for (int i = 0; i < m_iplayMax; i++)
+	//		delete g_pImageBitmap[j][i];
+	
+	// Renderer::Release
+	Renderer::Release(hwnd);
 	//////////////////////////////////////////////////////////////////////////
 
 	UninitConsole();  // 콘솔 출력 해제
