@@ -13,6 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="소스 파일\Renderer">
+      <UniqueIdentifier>{8d7a9976-9229-45a6-9c41-1b04aed4a9ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Renderer">
+      <UniqueIdentifier>{d0d1aabc-5f44-426e-84c8-b839cb4fe647}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Classes">
+      <UniqueIdentifier>{c533a857-5727-4fa3-b9ca-285ad586dbb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Classes">
+      <UniqueIdentifier>{8cec235e-2a7a-4ab1-bc10-1c74e751ad36}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -21,14 +33,41 @@
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\AActor.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Classes\Components\SceneComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Components\StaticMeshComponent.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Math.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Input\Input.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Time\Time.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Actor.h">
+      <Filter>헤더 파일\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Character.h">
+      <Filter>헤더 파일\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Pawn.h">
+      <Filter>헤더 파일\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Renderer\Renderer.h">
+      <Filter>헤더 파일\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Animation\AnimationComponent.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Runtime\Core\FIleHelper.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Object.h">
+      <Filter>헤더 파일\Classes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -38,14 +77,38 @@
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\AActor.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Classes\Components\SceneComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Components\StaticMeshComponent.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Input\Input.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Time\Time.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Pawn.cpp">
+      <Filter>소스 파일\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Actor.cpp">
+      <Filter>소스 파일\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Character.cpp">
+      <Filter>소스 파일\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Renderer\Renderer.cpp">
+      <Filter>소스 파일\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Animation\AnimationComponent.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Runtime\Core\FileHelper.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Object.cpp">
+      <Filter>소스 파일\Classes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

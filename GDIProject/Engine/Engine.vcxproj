@@ -139,23 +139,40 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Classes\AActor.h" />
+    <ClInclude Include="Classes\Actor.h" />
+    <ClInclude Include="Classes\Character.h" />
     <ClInclude Include="Classes\Components\SceneComponent.h" />
     <ClInclude Include="Classes\Components\StaticMeshComponent.h" />
+    <ClInclude Include="Classes\Object.h" />
+    <ClInclude Include="Classes\Pawn.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="Input\Input.h" />
+    <ClInclude Include="Math\Math.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Runtime\Animation\AnimationComponent.h" />
+    <ClInclude Include="Runtime\Core\FIleHelper.h" />
+    <ClInclude Include="Runtime\Renderer\Renderer.h" />
+    <ClInclude Include="Time\Time.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Classes\AActor.cpp" />
+    <ClCompile Include="Classes\Actor.cpp" />
+    <ClCompile Include="Classes\Character.cpp" />
     <ClCompile Include="Classes\Components\SceneComponent.cpp" />
     <ClCompile Include="Classes\Components\StaticMeshComponent.cpp" />
+    <ClCompile Include="Classes\Object.cpp" />
+    <ClCompile Include="Classes\Pawn.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Input\Input.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Runtime\Animation\AnimationComponent.cpp" />
+    <ClCompile Include="Runtime\Core\FileHelper.cpp" />
+    <ClCompile Include="Runtime\Renderer\Renderer.cpp" />
+    <ClCompile Include="Time\Time.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
