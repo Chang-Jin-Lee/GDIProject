@@ -115,18 +115,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		if (Input::IsKeyDown(VK_RIGHT))
 		{
+			g_Character->dirState = APlayerCharacter::DirState::Right;
+			g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip = 0;
 			g_Character->SetActorLocation(g_Character->GetActorLocation().x + MoveWeight, g_Character->GetActorLocation().y);
 		}
 		if (Input::IsKeyDown(VK_LEFT))
 		{
+			g_Character->dirState = APlayerCharacter::DirState::Left;
+			g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip = 0;
 			g_Character->SetActorLocation(g_Character->GetActorLocation().x - MoveWeight, g_Character->GetActorLocation().y);
 		}
 		if (Input::IsKeyDown(VK_DOWN))
 		{
+			g_Character->dirState = APlayerCharacter::DirState::Bottom;
+			g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip = 0;
 			g_Character->SetActorLocation(g_Character->GetActorLocation().x, g_Character->GetActorLocation().y + MoveWeight);
 		}
 		if (Input::IsKeyDown(VK_UP))
 		{
+			g_Character->dirState = APlayerCharacter::DirState::Top;
+			g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip = 0;
 			g_Character->SetActorLocation(g_Character->GetActorLocation().x, g_Character->GetActorLocation().y - MoveWeight);
 		}
 		break;
@@ -239,7 +247,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		Renderer::BeginDraw();
 
 		//Renderer::Render;
-		g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip;
 		if (g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_frames)
 		{
 			Renderer::RenderImage(

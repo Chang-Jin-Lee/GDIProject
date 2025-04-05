@@ -23,6 +23,7 @@ UAnimationComponent::~UAnimationComponent()
 
 void UAnimationComponent::Initialize(int rowSize, int colSize)
 {
+	m_ianimationMaxSize = rowSize;
 	m_frames = (FFrame**)malloc(sizeof(FFrame*) * rowSize);
 	for (int i = 0; i < rowSize; i++)
 	{
@@ -51,5 +52,4 @@ void UAnimationComponent::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, 
 			}
 		}
 	}
-	m_ianimationMaxSize = rowSize;
 }

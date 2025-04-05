@@ -33,48 +33,50 @@ APlayerCharacter::~APlayerCharacter()
 void APlayerCharacter::Initialize()
 {
 	const wchar_t delimeter = L',';
-	int** cloneInfo = nullptr;
-	int cloneInfoRowSize = -1;
-	int cloneInfoColsize = -1;
 
-	const wchar_t* baseDir = L"Character1/Unarmed_Idle";
-	const wchar_t* baseSate = L"Unarmed";
-	wchar_t originalImagefileName[MAX_INFOFILE_NAME_SIZE] = { L'\0', };
-	int num = swprintf(originalImagefileName, 50, L"%s_%s.png", baseSate, GetAnimStateName(AnimationState::Idle));
-	
-	wchar_t infoFileName[MAX_INFOFILE_NAME_SIZE] = {L'\0',};
-	num = swprintf(infoFileName, MAX_INFOFILE_NAME_SIZE, L"%s_%s_%s.txt", baseSate, GetAnimStateName(AnimationState::Idle), GetDirStateName(DirState::Bottom));
+	for (int dirState = 0; dirState < static_cast<int>(DirState::Max); dirState++)
+	{
+		int** cloneInfo = nullptr;
+		int cloneInfoRowSize = -1;
+		int cloneInfoColsize = -1;
+		const wchar_t* baseDir = L"Character1/Unarmed_Idle";
+		const wchar_t* baseSate = L"Unarmed";
+		wchar_t originalImagefileName[MAX_INFOFILE_NAME_SIZE] = { L'\0', };
+		int num = swprintf(originalImagefileName, 50, L"%s_%s.png", baseSate, GetAnimStateName(AnimationState::Idle));
 
-	FFileHelper::LoadFileToArrayWithDelimeter<int>(baseDir, infoFileName, delimeter, 100, &cloneInfoRowSize, &cloneInfoColsize, &cloneInfo);
-	AnimationBundle.baseImages[static_cast<int>(AnimationState::Idle)]->LoadData(baseDir, originalImagefileName);
-	AnimationBundle.animationComponent[static_cast<int>(DirState::Bottom)][static_cast<int>(AnimationState::Idle)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
-	AnimationBundle.animationComponent[static_cast<int>(DirState::Bottom)][static_cast<int>(AnimationState::Idle)]->LoadData(AnimationBundle.baseImages[static_cast<int>(AnimationState::Idle)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
+		wchar_t infoFileName[MAX_INFOFILE_NAME_SIZE] = { L'\0', };
+		num = swprintf(infoFileName, MAX_INFOFILE_NAME_SIZE, L"%s_%s_%s.txt", baseSate, GetAnimStateName(AnimationState::Idle), GetDirStateName(static_cast<DirState>(dirState)));
 
-	baseDir = L"Character1/Unarmed_Run";
-	baseSate = L"Unarmed";
-	memset(originalImagefileName, L'\0', MAX_INFOFILE_NAME_SIZE);
-	num = swprintf(originalImagefileName, 50, L"%s_%s.png", baseSate, GetAnimStateName(AnimationState::Run));
+		FFileHelper::LoadFileToArrayWithDelimeter<int>(baseDir, infoFileName, delimeter, 100, &cloneInfoRowSize, &cloneInfoColsize, &cloneInfo);
+		AnimationBundle.baseImages[static_cast<int>(AnimationState::Idle)]->LoadData(baseDir, originalImagefileName);
+		AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(AnimationState::Idle)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
+		AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(AnimationState::Idle)]->LoadData(AnimationBundle.baseImages[static_cast<int>(AnimationState::Idle)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
 
-	memset(infoFileName, L'\0', MAX_INFOFILE_NAME_SIZE);
-	num = swprintf(infoFileName, MAX_INFOFILE_NAME_SIZE, L"%s_%s_%s.txt", baseSate, GetAnimStateName(AnimationState::Run), GetDirStateName(DirState::Bottom));
-	FFileHelper::LoadFileToArrayWithDelimeter<int>(baseDir, infoFileName, delimeter, 100, &cloneInfoRowSize, &cloneInfoColsize, &cloneInfo);
-	AnimationBundle.baseImages[static_cast<int>(AnimationState::Run)]->LoadData(baseDir, originalImagefileName);
-	AnimationBundle.animationComponent[static_cast<int>(DirState::Bottom)][static_cast<int>(AnimationState::Run)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
-	AnimationBundle.animationComponent[static_cast<int>(DirState::Bottom)][static_cast<int>(AnimationState::Run)]->LoadData(AnimationBundle.baseImages[static_cast<int>(AnimationState::Run)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
+		baseDir = L"Character1/Unarmed_Run";
+		baseSate = L"Unarmed";
+		memset(originalImagefileName, L'\0', MAX_INFOFILE_NAME_SIZE);
+		num = swprintf(originalImagefileName, 50, L"%s_%s.png", baseSate, GetAnimStateName(AnimationState::Run));
+
+		memset(infoFileName, L'\0', MAX_INFOFILE_NAME_SIZE);
+		num = swprintf(infoFileName, MAX_INFOFILE_NAME_SIZE, L"%s_%s_%s.txt", baseSate, GetAnimStateName(AnimationState::Run), GetDirStateName(static_cast<DirState>(dirState)));
+		FFileHelper::LoadFileToArrayWithDelimeter<int>(baseDir, infoFileName, delimeter, 100, &cloneInfoRowSize, &cloneInfoColsize, &cloneInfo);
+		AnimationBundle.baseImages[static_cast<int>(AnimationState::Run)]->LoadData(baseDir, originalImagefileName);
+		AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(AnimationState::Run)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
+		AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(AnimationState::Run)]->LoadData(AnimationBundle.baseImages[static_cast<int>(AnimationState::Run)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
 
 
-	baseDir = L"Character1/Sword_Attack";
-	baseSate = L"Sword";
-	memset(originalImagefileName, L'\0', MAX_INFOFILE_NAME_SIZE);
-	num = swprintf(originalImagefileName, 50, L"%s_%s.png", baseSate, GetAnimStateName(AnimationState::Attack));
+		baseDir = L"Character1/Sword_Attack";
+		baseSate = L"Sword";
+		memset(originalImagefileName, L'\0', MAX_INFOFILE_NAME_SIZE);
+		num = swprintf(originalImagefileName, 50, L"%s_%s.png", baseSate, GetAnimStateName(AnimationState::Attack));
 
-	memset(infoFileName, L'\0', MAX_INFOFILE_NAME_SIZE);
-	num = swprintf(infoFileName, MAX_INFOFILE_NAME_SIZE, L"%s_%s_%s.txt", baseSate, GetAnimStateName(AnimationState::Attack), GetDirStateName(DirState::Bottom));
-	FFileHelper::LoadFileToArrayWithDelimeter<int>(baseDir, infoFileName, delimeter, 100, &cloneInfoRowSize, &cloneInfoColsize, &cloneInfo);
-	AnimationBundle.baseImages[static_cast<int>(AnimationState::Attack)]->LoadData(baseDir, originalImagefileName);
-	AnimationBundle.animationComponent[static_cast<int>(DirState::Bottom)][static_cast<int>(AnimationState::Attack)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
-	AnimationBundle.animationComponent[static_cast<int>(DirState::Bottom)][static_cast<int>(AnimationState::Attack)]->LoadData(AnimationBundle.baseImages[static_cast<int>(AnimationState::Attack)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
-
+		memset(infoFileName, L'\0', MAX_INFOFILE_NAME_SIZE);
+		num = swprintf(infoFileName, MAX_INFOFILE_NAME_SIZE, L"%s_%s_%s.txt", baseSate, GetAnimStateName(AnimationState::Attack), GetDirStateName(static_cast<DirState>(dirState)));
+		FFileHelper::LoadFileToArrayWithDelimeter<int>(baseDir, infoFileName, delimeter, 100, &cloneInfoRowSize, &cloneInfoColsize, &cloneInfo);
+		AnimationBundle.baseImages[static_cast<int>(AnimationState::Attack)]->LoadData(baseDir, originalImagefileName);
+		AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(AnimationState::Attack)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
+		AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(AnimationState::Attack)]->LoadData(AnimationBundle.baseImages[static_cast<int>(AnimationState::Attack)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
+	}
 }
 
 void APlayerCharacter::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, DirState dirState, AnimationState animState, int pixelformat)
