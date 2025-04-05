@@ -31,7 +31,8 @@ namespace Renderer
 
 	void RenderImage(Gdiplus::Bitmap* ImageBitmap, const int& x, const int& y, const int& width, const int& height)
 	{
-		g_pBackBufferGraphics->DrawImage(ImageBitmap, x, y, width, height);
+		if(ImageBitmap)
+			g_pBackBufferGraphics->DrawImage(ImageBitmap, x, y, width, height);
 	}
 
 	void EndDraw()

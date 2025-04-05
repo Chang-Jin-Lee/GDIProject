@@ -21,12 +21,19 @@ public:
 	struct FAnimationBundle // 방향, 애니메이션
 	{
 		UAnimationComponent* animationComponent[static_cast<int>(DirState::Max)][static_cast<int>(AnimationState::Max)];
-		UStaticMeshComponent* baseImages[static_cast<int>(DirState::Max)][static_cast<int>(AnimationState::Max)];
+		UStaticMeshComponent* baseImages[static_cast<int>(AnimationState::Max)];
 	};
 
-	AnimationState animationstate = AnimationState::Idle;
-	void Initialize(int rowSize, int colSize);
-	void LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, AnimationState state, int pixelformat);
-
 	FAnimationBundle AnimationBundle;
+
+	AnimationState animstate = AnimationState::Idle;
+	DirState dirState = DirState::Bottom;
+	void Initialize();
+	void LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, DirState dirState, AnimationState animState, int pixelformat);
+
+	void SetAnimMeshScale(float width, float height);
+
+	const wchar_t* GetDirStateName(DirState state);
+	const wchar_t* GetAnimStateName(AnimationState state);
+
 };

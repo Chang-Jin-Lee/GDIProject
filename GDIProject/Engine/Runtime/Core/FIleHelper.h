@@ -14,7 +14,7 @@
 struct FFileHelper
 {
 	template<typename T>
-	static void LoadFileToArrayWithDelimeter(const wchar_t* baseDir, const wchar_t* fileName, const wchar_t delimeter, int size, T*** array)
+	static void LoadFileToArrayWithDelimeter(const wchar_t* baseDir, const wchar_t* fileName, const wchar_t delimeter, int size, int* _rowSize, int* _colSize, T*** array)
 	{
 		wchar_t* wcsbuf = (wchar_t*)malloc(sizeof(wchar_t) * size);
 		if (!wcsbuf)
@@ -23,7 +23,8 @@ struct FFileHelper
 		int num = swprintf(wcsbuf, size, L"../Resource/%s/%s", baseDir, fileName);
 
 		// 파일 열기
-		FILE* fp = _wfopen(wcsbuf, L"rt");
+		FILE* fp = nullptr;
+		_wfopen_s(&fp, wcsbuf, L"rt");
 		if (!fp) {
 			fwprintf(stderr, L"파일 열기 실패: %s\n", wcsbuf);
 			free(wcsbuf);
@@ -33,6 +34,7 @@ struct FFileHelper
 		wchar_t wchSize[MAX_STRING_INPUT_SIZE];
 		fgetws(wchSize, MAX_STRING_INPUT_SIZE, fp);
 		int totalSize = _wtoi(wchSize);
+		*_rowSize = totalSize;
 
 		//int** pArray = dynamic_cast<int**>(array);
 		//if (pArray)
@@ -49,22 +51,28 @@ struct FFileHelper
 			fgetws(wchSize, MAX_STRING_INPUT_SIZE, fp);
 			if (feof(fp)) break;
 
-
 			int colIdx = 0;
 			int colSize = 1;
 			for (int i = 0; i < MAX_STRING_INPUT_SIZE; i++)
 			{
 				if (wchSize[i] == '\0') break;
 				if (wchSize[i] == delimeter)
+				//if (!wcscmp(wchSize[i], delimeter))
 				{
 					colSize++;
 				}
 			}
-			(*array)[colIdx] = (T*)malloc(sizeof(T) * colSize);
+			if(*_colSize == -1)
+				*_colSize = colSize;
+			else if (*_colSize != colSize)
+			{
+				printf("Please Check .txt file structure");
+			}
+			(*array)[rowIdx] = (T*)malloc(sizeof(T) * colSize);
 
 			size_t g_cszBuff_size = wcslen(wchSize);
 			wchar_t* context = NULL;
-			wchar_t* ptr = wcstok_s(g_cszBuff, ",", &context);
+			wchar_t* ptr = wcstok_s(wchSize, &delimeter, &context);
 
 			while (ptr != NULL)
 			{
@@ -72,7 +80,7 @@ struct FFileHelper
 				(*array)[rowIdx][colIdx] = value;
 				
 				colIdx++;
-				ptr = wcstok_s(NULL, ",", &context);
+				ptr = wcstok_s(NULL, &delimeter, &context);
 			}
 			rowIdx++;
 		}

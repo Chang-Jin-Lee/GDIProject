@@ -100,22 +100,18 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		printf("WM_KEYDOWN: VK_CODE = %d\n", (int)wParam);
 
-		//if (Input::IsKeyDown(VK_1))
-		//{
-		//
-		//}
-		//if (wParam == VK_1)
-		//{
-		//	g_eCurrentCharacter = run;
-		//}
-		//if (wParam == VK_2)
-		//{
-		//	g_eCurrentCharacter = attack;
-		//}
-		//if (wParam == VK_3)
-		//{
-		//	g_eCurrentCharacter = run;
-		//}
+		if (wParam == VK_1)
+		{
+			g_Character->animstate = APlayerCharacter::AnimationState::Idle;
+		}
+		if (wParam == VK_2)
+		{
+			g_Character->animstate = APlayerCharacter::AnimationState::Attack;
+		}
+		if (wParam == VK_3)
+		{
+			g_Character->animstate = APlayerCharacter::AnimationState::Run;
+		}
 
 		if (Input::IsKeyDown(VK_RIGHT))
 		{
@@ -149,7 +145,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_NCMOUSEMOVE:
 	case WM_SETCURSOR:
 		break;
-
 
 	case WM_DESTROY:
 		printf("WM_DESTROY: 프로그램 종료\n");
@@ -203,49 +198,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	////////Renderer::Initialize
 	Renderer::Initialize(hwnd);
 	//Gdiplus::Bitmap* g_pImageBitmap[MAX_CHARACTER_SIZE][MAX_VIDEO_SIZE];
-	Gdiplus::Bitmap* g_pImageBitmap;
 	g_Character = new APlayerCharacter();
-	g_Character->LoadStaticMeshData(L"Character/Unarmed_Idle", L"Unarmed_Idle_full.png");
+	g_Character->Initialize();
 	g_Character->SetActorLocation(50, 50);
 
-	//UINT witdh[MAX_VIDEO_SIZE] = { 0, };
-	//UINT height[MAX_VIDEO_SIZE] = { 0, };
-	//int m_iplayidx = 0;
-	//int m_iplayMax = 0;
-	//
-	//for (int j = 0; j < MAX_CHARACTER_SIZE; j++)
-	//{
-	//	for (int i = 0; i < MAX_VIDEO_SIZE; i++)
-	//	{
-	//		wchar_t wcsbuf[200];
-	//		int     num;
-	//		//num = swprintf(wcsbuf, sizeof(wcsbuf), L"../Resource/frames/frame_%04d.png", i + 1);
-	//		num = swprintf(wcsbuf, sizeof(wcsbuf), L"../Resource/캐릭터%d/pc_%s_0_spr_0.png", j + 1, i + 1);
-	//
-	//		//g_pImageBitmap[i] = new Gdiplus::Bitmap((WCHAR*)filename);
-	//		g_pImageBitmap[j][i] = new Gdiplus::Bitmap(wcsbuf);
-	//		witdh[i] = g_pImageBitmap[j][i]->GetWidth();
-	//		height[i] = g_pImageBitmap[j][i]->GetHeight();
-	//		if (g_pImageBitmap[j][i]->GetLastStatus() != Gdiplus::Ok)
-	//		{
-	//			m_iplayMax = i;
-	//			break;
-	//			MessageBox(hwnd, L"PNG 파일 로드 실패", L"오류", MB_ICONERROR);
-	//			PostQuitMessage(0);
-	//			m_iplayMax = i;
-	//			break;
-	//		}
-	//	}
-	//
-	//}
-	// 
-	///// 시간 관련
-	//Time::Initialize();
-	//float m_fFPSTime = 1 / 30;
-	//float m_fcountOneSecond = 0;
-	//m_fcountOneSecond = Time::GetTotalTime();
-
-	g_pImageBitmap = new Gdiplus::Bitmap(L"../Resource/elf32.png");
+	// Time::Initialize
+	Time::Initialize();
+	float m_fFPSTimeAnimationScene = 1.0f / 24.0f;
+	float m_fFPSLastTimeAnimationScene = Time::GetTotalTime();
+	float m_fcountOneSecondAnimationScene = Time::GetTotalTime();
 
 	MSG msg;
 	while (true)
@@ -261,32 +222,50 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		//
-		//if (Time::GetTotalTime() - m_fcountOneSecond >= m_fFPSTime)	// 0.5초에 한 번씩
-		//{
-		//	m_iplayidx = (m_iplayidx + 1) % m_iplayMax;
-		//	m_fcountOneSecond = Time::GetTotalTime();
-		//}
+
+		m_fFPSLastTimeAnimationScene = Time::GetTotalTime() - m_fcountOneSecondAnimationScene;
+		if (m_fFPSLastTimeAnimationScene >= m_fFPSTimeAnimationScene)	// 1/60 초에 한 번씩
+		{
+			if (g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationMaxSize != 0)
+			{
+			g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip =
+				(g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip + 1)
+				% g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationMaxSize;
+			}
+			m_fcountOneSecondAnimationScene = Time::GetTotalTime();
+		}
 
 		// Renderer::BeginDraw
 		Renderer::BeginDraw();
 
-		//// Render()`
-		//Renderer::RenderImage(g_pImageBitmap, 0, 0, 400, 300);
+		//Renderer::Render;
+		g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip;
+		if (g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_frames)
+		{
+			Renderer::RenderImage(
+				g_Character
+				->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]
+				->m_frames[g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip]
+				->m_frame,
+				g_Character->GetActorLocation().x,
+				g_Character->GetActorLocation().y,
+				g_Character
+				->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]
+				->m_frames[g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip]
+				->m_frameScale.x,
+				g_Character
+				->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]
+				->m_frames[g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip]
+				->m_frameScale.y
+			);
 
-		Renderer::RenderImage(g_Character->GetBitmap(), g_Character->GetActorLocation().x, g_Character->GetActorLocation().y, g_Character->GetActorScale().x, g_Character->GetActorScale().y);
-		//g_pBackBufferGraphics->DrawImage(g_pImageBitmap[g_eCurrentCharacter][m_iplayidx], (int)(g_width / 2 - witdh[m_iplayidx] / 2), (int)(g_height / 2 - height[m_iplayidx] / 2), witdh[m_iplayidx], height[m_iplayidx]);
-		////g_pBackBufferGraphics->DrawImage(g_pImageBitmap, 0, 0, 400, 300);
+		}
 
 		// Renderer::EndDraw
 		Renderer::EndDraw();
 	}
 
-
-	// GDI+ 해제
-	//for (int j = 0; j < MAX_CHARACTER_SIZE; j++)
-	//	for (int i = 0; i < m_iplayMax; i++)
-	//		delete g_pImageBitmap[j][i];
+	delete g_Character;
 
 	// Renderer::Release
 	Renderer::Release(hwnd);

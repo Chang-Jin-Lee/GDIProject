@@ -10,6 +10,17 @@ UAnimationComponent::UAnimationComponent(int rowSize, int colSize)
 	}
 }
 
+UAnimationComponent::~UAnimationComponent()
+{
+	for (int i = 0; i < m_irowSize; i++)
+	{
+		for (int j = 0; j < m_icolSize; j++)
+		{
+			delete m_frames[i][j].m_frame;
+		}
+	}
+}
+
 void UAnimationComponent::Initialize(int rowSize, int colSize)
 {
 	m_frames = (FFrame**)malloc(sizeof(FFrame*) * rowSize);
@@ -32,13 +43,13 @@ void UAnimationComponent::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, 
 				int width = right - left;
 				int height = bottom - top;
 
-				m_frames[i]->m_frameScale.x = width;
-				m_frames[i]->m_frameScale.y = height;
+				m_frames[i]->m_frameScale.x = width * 1.5f;
+				m_frames[i]->m_frameScale.y = height * 1.5f;
 
 				//m_frames[i]->m_frame = baseImage->Clone(left, top, width, height, PixelFormat32bppARGB);
 				m_frames[i]->m_frame = baseImage->Clone(left, top, width, height, pixelformat);
 			}
 		}
 	}
-	
+	m_ianimationMaxSize = rowSize;
 }
