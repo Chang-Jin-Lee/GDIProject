@@ -7,8 +7,8 @@
 class UPlayScene : public UScene
 {
 public:
-	UPlayScene() {}
-	~UPlayScene() {}
+	UPlayScene();
+	~UPlayScene();
 
 	virtual void Initialize() override;
 	virtual void Update() override;

@@ -26,6 +26,8 @@ public:
 
 	FAnimationBundle AnimationBundle;
 
+	bool m_bAttackAnimationPlaying = false;
+
 	AnimationState animstate = AnimationState::Idle;
 	DirState dirState = DirState::Bottom;
 	void Initialize();

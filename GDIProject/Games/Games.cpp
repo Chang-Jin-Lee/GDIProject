@@ -16,7 +16,6 @@
 #include "Games.h"
 
 LPCTSTR g_szClassName = TEXT("윈도우 클래스 이름");
-UScene* g_currentScene = new UPlayScene();
 
 // 콘솔 초기화
 void InitConsole()
@@ -163,7 +162,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	//생성
 	HWND hwnd = CreateWindow(
 		g_szClassName,
-		TEXT("윈도우 타이틀바에 표시할 문자열"),
+		TEXT("게임게임!"),
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		rcClient.right - rcClient.left, rcClient.bottom - rcClient.top,
@@ -173,18 +172,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	UpdateWindow(hwnd);
 
 	////////Renderer::Initialize
-	Renderer::Initialize(hwnd);
-	// Time::Initialize
-	Time::Initialize();
-	g_currentScene->Initialize();
-	g_currentScene->LoadData();
+	Game::Initialize(hwnd);
 
 	MSG msg;
 	while (true)
 	{
-		Time::UpdateTime();
-		Input::Update();
-
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
 			if (msg.message == WM_QUIT)
@@ -193,20 +185,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-
-		// Renderer::BeginDraw
-		Renderer::BeginDraw();
-
-		g_currentScene->Update();
-
-		// Renderer::EndDraw
-		Renderer::EndDraw();
+		Game::Update();
 	}
 
-	g_currentScene->Release();
-
-	// Renderer::Release
-	Renderer::Release(hwnd);
+	Game::Release(hwnd);
 	//////////////////////////////////////////////////////////////////////////
 
 	UninitConsole();  // 콘솔 출력 해제
@@ -219,15 +201,67 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 namespace Game
 {
-	void Initialize()
+	UScene* g_currentScene = new UPlayScene();
+	UScene* g_nextScene = g_currentScene;
+
+	void Initialize(HWND hwnd)
 	{
+		Renderer::Initialize(hwnd);
+		Time::Initialize();
+		Game::GetCurrentScene()->Initialize();
+		Game::GetCurrentScene()->LoadData();
 	}
 
 	void LoadData()
 	{
+
 	}
 
 	void Update()
 	{
+		Time::UpdateTime();
+		Input::Update();
+		// Renderer::BeginDraw
+		Renderer::BeginDraw();
+
+		g_currentScene->Update();
+
+		// Renderer::EndDraw
+		Renderer::EndDraw();
+
+		ChangeScene();
+	}
+
+	void Release(HWND hwnd)
+	{
+		Renderer::Release(hwnd);
+		g_currentScene->Release();
+	}
+
+	UScene* GetCurrentScene()
+	{
+		return g_currentScene;
+	}
+
+	UScene** GetCurrentScenePtr()
+	{
+		return &g_currentScene;
+	}
+
+	UScene** GetNextScenePtr()
+	{
+		return &g_nextScene;
+	}
+
+	void ChangeScene()
+	{
+		if (g_currentScene != g_nextScene)
+		{
+			g_currentScene->Release();
+			delete g_currentScene;
+			g_currentScene = g_nextScene;
+			g_currentScene->Initialize();
+			g_currentScene->LoadData();
+		}
 	}
 }

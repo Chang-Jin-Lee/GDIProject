@@ -5,9 +5,15 @@
 
 namespace Game
 {
-	void Initialize();
+	void Initialize(HWND hwnd);
 	void LoadData();
 	void Update();
+	void Release(HWND hwnd);
+	UScene* GetCurrentScene();
+	UScene** GetCurrentScenePtr();
+	UScene** GetNextScenePtr();
+
+	void ChangeScene();
 	//void Render();
 	//void Release();
 	//ESceneState* GetCurrentSceneState();
