@@ -145,6 +145,7 @@
     <ClInclude Include="Classes\Components\StaticMeshComponent.h" />
     <ClInclude Include="Classes\Object.h" />
     <ClInclude Include="Classes\Pawn.h" />
+    <ClInclude Include="Classes\Scene\Scene.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Input\Input.h" />
     <ClInclude Include="Math\Math.h" />
@@ -161,6 +162,7 @@
     <ClCompile Include="Classes\Components\StaticMeshComponent.cpp" />
     <ClCompile Include="Classes\Object.cpp" />
     <ClCompile Include="Classes\Pawn.cpp" />
+    <ClCompile Include="Classes\Scene\Scene.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Input\Input.cpp" />
     <ClCompile Include="pch.cpp">

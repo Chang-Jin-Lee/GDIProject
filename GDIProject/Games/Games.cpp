@@ -1,17 +1,23 @@
-﻿#include <windows.h>
+﻿#ifdef MEMORY_LEAK_CHECK
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#endif
+#include <windows.h>
 #include <stdio.h>
 #include <gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 
-#include <Runtime/Renderer/Renderer.cpp>
 #include <Input/Input.h>
 #include <Time/Time.h>
 #include "PlayerCharacter.h"
+#include <Classes/Scene/Scene.h>
+#include "Scene/MenuScene.h"
+#include "Scene/PlayScene.h"
+#include "Games.h"
 
 LPCTSTR g_szClassName = TEXT("윈도우 클래스 이름");
-//enum ECharacterName g_eCurrentCharacter = boy;
-APlayerCharacter* g_Character = nullptr;
-int MoveWeight = 5;
+//UScene* g_currentScene = new UMenuScene();
+UScene* g_currentScene = new UPlayScene();
 
 // 콘솔 초기화
 void InitConsole()
@@ -75,10 +81,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		const int CELL_SIZE = 300;     // 셀 크기
 		const int PADDING = 10;       // 셀 내부 여백
-		int cols = Renderer::g_width / CELL_SIZE;
-		int rows = Renderer::g_height / CELL_SIZE;
+		int cols = Renderer::GetWidth() / CELL_SIZE;
+		int rows = Renderer::GetHeight() / CELL_SIZE;
 
-		RECT rect = { 0, 0, Renderer::g_width, Renderer::g_height };
+		RECT rect = { 0, 0, Renderer::GetWidth(), Renderer::GetHeight() };
 		for (int y = 0; y < rows; ++y)
 		{
 			for (int x = 0; x < cols; ++x)
@@ -97,46 +103,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	break;
 
 	case WM_KEYDOWN:
-
 		printf("WM_KEYDOWN: VK_CODE = %d\n", (int)wParam);
-
-		if (wParam == VK_1)
-		{
-			g_Character->animstate = APlayerCharacter::AnimationState::Idle;
-		}
-		if (wParam == VK_2)
-		{
-			g_Character->animstate = APlayerCharacter::AnimationState::Attack;
-		}
-		if (wParam == VK_3)
-		{
-			g_Character->animstate = APlayerCharacter::AnimationState::Run;
-		}
-
-		if (Input::IsKeyDown(VK_RIGHT))
-		{
-			g_Character->dirState = APlayerCharacter::DirState::Right;
-			g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip = 0;
-			g_Character->SetActorLocation(g_Character->GetActorLocation().x + MoveWeight, g_Character->GetActorLocation().y);
-		}
-		if (Input::IsKeyDown(VK_LEFT))
-		{
-			g_Character->dirState = APlayerCharacter::DirState::Left;
-			g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip = 0;
-			g_Character->SetActorLocation(g_Character->GetActorLocation().x - MoveWeight, g_Character->GetActorLocation().y);
-		}
-		if (Input::IsKeyDown(VK_DOWN))
-		{
-			g_Character->dirState = APlayerCharacter::DirState::Bottom;
-			g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip = 0;
-			g_Character->SetActorLocation(g_Character->GetActorLocation().x, g_Character->GetActorLocation().y + MoveWeight);
-		}
-		if (Input::IsKeyDown(VK_UP))
-		{
-			g_Character->dirState = APlayerCharacter::DirState::Top;
-			g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip = 0;
-			g_Character->SetActorLocation(g_Character->GetActorLocation().x, g_Character->GetActorLocation().y - MoveWeight);
-		}
 		break;
 
 	case WM_CHAR:
@@ -171,6 +138,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
+#ifdef MEMORY_LEAK_CHECK
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
 	Renderer::SetResolution(1280, 800);	// 해상도 조절
 	InitConsole();  // 콘솔 출력 초기화
 
@@ -188,7 +158,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	RegisterClass(&wc);
 
 	// 원하는 크기가 조정되어 리턴
-	RECT rcClient = { 0, 0, (LONG)Renderer::g_width, (LONG)Renderer::g_height };
+	RECT rcClient = { 0, 0, (LONG)Renderer::GetWidth(), (LONG)Renderer::GetHeight() };
 	AdjustWindowRect(&rcClient, WS_OVERLAPPEDWINDOW, FALSE);
 
 	//생성
@@ -205,16 +175,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	////////Renderer::Initialize
 	Renderer::Initialize(hwnd);
-	//Gdiplus::Bitmap* g_pImageBitmap[MAX_CHARACTER_SIZE][MAX_VIDEO_SIZE];
-	g_Character = new APlayerCharacter();
-	g_Character->Initialize();
-	g_Character->SetActorLocation(50, 50);
-
 	// Time::Initialize
 	Time::Initialize();
-	float m_fFPSTimeAnimationScene = 1.0f / 24.0f;
-	float m_fFPSLastTimeAnimationScene = Time::GetTotalTime();
-	float m_fcountOneSecondAnimationScene = Time::GetTotalTime();
+	g_currentScene->Initialize();
 
 	MSG msg;
 	while (true)
@@ -231,48 +194,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			DispatchMessage(&msg);
 		}
 
-		m_fFPSLastTimeAnimationScene = Time::GetTotalTime() - m_fcountOneSecondAnimationScene;
-		if (m_fFPSLastTimeAnimationScene >= m_fFPSTimeAnimationScene)	// 1/60 초에 한 번씩
-		{
-			if (g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationMaxSize != 0)
-			{
-			g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip =
-				(g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip + 1)
-				% g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationMaxSize;
-			}
-			m_fcountOneSecondAnimationScene = Time::GetTotalTime();
-		}
-
 		// Renderer::BeginDraw
 		Renderer::BeginDraw();
 
-		//Renderer::Render;
-		if (g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_frames)
-		{
-			Renderer::RenderImage(
-				g_Character
-				->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]
-				->m_frames[g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip]
-				->m_frame,
-				g_Character->GetActorLocation().x,
-				g_Character->GetActorLocation().y,
-				g_Character
-				->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]
-				->m_frames[g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip]
-				->m_frameScale.x,
-				g_Character
-				->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]
-				->m_frames[g_Character->AnimationBundle.animationComponent[(int)g_Character->dirState][(int)g_Character->animstate]->m_ianimationClip]
-				->m_frameScale.y
-			);
-
-		}
+		g_currentScene->Update();
 
 		// Renderer::EndDraw
 		Renderer::EndDraw();
 	}
 
-	delete g_Character;
+	g_currentScene->Release();
 
 	// Renderer::Release
 	Renderer::Release(hwnd);
@@ -280,4 +211,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	UninitConsole();  // 콘솔 출력 해제
 	return (int)msg.wParam;
+
+#ifdef MEMORY_LEAK_CHECK
+	_CrtDumpMemoryLeaks();
+#endif
+}
+
+void Game::Initialize()
+{
+}
+
+void Game::LoadData()
+{
+}
+
+void Game::Update()
+{
 }

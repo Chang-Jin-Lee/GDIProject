@@ -5,6 +5,16 @@
 
 namespace Renderer
 {
+	int g_width = 1280;
+	int g_height = 800;
+	HWND g_hWnd;
+	HDC g_FrontBufferDC;    // ¾Õ¸é DC
+	HDC g_BackBufferDC;    // µÞ¸é DC
+	HBITMAP g_BackBufferBitmap;
+
+	ULONG_PTR g_GdiPlusToken;
+	Gdiplus::Graphics* g_pBackBufferGraphics = nullptr;
+
 	void SetResolution(const int& width, const int& height)
 	{
 		g_width = width;
@@ -49,5 +59,21 @@ namespace Renderer
 		if (g_pBackBufferGraphics != nullptr)
 			delete g_pBackBufferGraphics;
 		Gdiplus::GdiplusShutdown(g_GdiPlusToken);
+	}
+	int GetWidth()
+	{
+		return g_width;
+	}
+	void SetWidth(int value)
+	{
+		g_width = value;
+	}
+	int GetHeight()
+	{
+		return g_height;
+	}
+	void SetHeight(int value)
+	{
+		g_height = value;
 	}
 }

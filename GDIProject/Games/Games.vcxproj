@@ -132,11 +132,17 @@
     <ClInclude Include="Games.h" />
     <ClInclude Include="PlayerCharacter.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="Scene\EndScene.h" />
+    <ClInclude Include="Scene\MenuScene.h" />
+    <ClInclude Include="Scene\PlayScene.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Games.cpp" />
     <ClCompile Include="PlayerCharacter.cpp" />
+    <ClCompile Include="Scene\EndScene.cpp" />
+    <ClCompile Include="Scene\MenuScene.cpp" />
+    <ClCompile Include="Scene\PlayScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Games.rc" />
