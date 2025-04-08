@@ -76,6 +76,11 @@ void UPlayScene::Input()
 		m_fPlayerCharacter->animstate = APlayerCharacter::AnimationState::Run;
 	}
 
+	if (Input::IsKeyPressed(VK_5))
+	{
+		//ChangeScene();
+	}
+
 	if (Input::IsKeyDown(VK_RIGHT))
 	{
 		m_fPlayerCharacter->dirState = APlayerCharacter::DirState::Right;
@@ -85,19 +90,16 @@ void UPlayScene::Input()
 	if (Input::IsKeyDown(VK_LEFT))
 	{
 		m_fPlayerCharacter->dirState = APlayerCharacter::DirState::Left;
-		//m_fPlayerCharacter->AnimationBundle.animationComponent[(int)m_fPlayerCharacter->dirState][(int)m_fPlayerCharacter->animstate]->m_ianimationClip = 0;
 		m_fPlayerCharacter->SetActorLocation(m_fPlayerCharacter->GetActorLocation().x - MoveSpeed * Time::GetElapsedTime(), m_fPlayerCharacter->GetActorLocation().y);
 	}
 	if (Input::IsKeyDown(VK_DOWN))
 	{
 		m_fPlayerCharacter->dirState = APlayerCharacter::DirState::Bottom;
-		//m_fPlayerCharacter->AnimationBundle.animationComponent[(int)m_fPlayerCharacter->dirState][(int)m_fPlayerCharacter->animstate]->m_ianimationClip = 0;
 		m_fPlayerCharacter->SetActorLocation(m_fPlayerCharacter->GetActorLocation().x, m_fPlayerCharacter->GetActorLocation().y + MoveSpeed * Time::GetElapsedTime());
 	}
 	if (Input::IsKeyDown(VK_UP))
 	{
 		m_fPlayerCharacter->dirState = APlayerCharacter::DirState::Top;
-		//m_fPlayerCharacter->AnimationBundle.animationComponent[(int)m_fPlayerCharacter->dirState][(int)m_fPlayerCharacter->animstate]->m_ianimationClip = 0;
 		m_fPlayerCharacter->SetActorLocation(m_fPlayerCharacter->GetActorLocation().x, m_fPlayerCharacter->GetActorLocation().y - MoveSpeed * Time::GetElapsedTime());
 	}
 }

@@ -16,7 +16,6 @@
 #include "Games.h"
 
 LPCTSTR g_szClassName = TEXT("윈도우 클래스 이름");
-//UScene* g_currentScene = new UMenuScene();
 UScene* g_currentScene = new UPlayScene();
 
 // 콘솔 초기화
@@ -178,6 +177,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	// Time::Initialize
 	Time::Initialize();
 	g_currentScene->Initialize();
+	g_currentScene->LoadData();
 
 	MSG msg;
 	while (true)
@@ -217,14 +217,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #endif
 }
 
-void Game::Initialize()
+namespace Game
 {
-}
+	void Initialize()
+	{
+	}
 
-void Game::LoadData()
-{
-}
+	void LoadData()
+	{
+	}
 
-void Game::Update()
-{
+	void Update()
+	{
+	}
 }

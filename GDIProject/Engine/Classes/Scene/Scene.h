@@ -12,6 +12,8 @@ public:
 	virtual void LoadData();
 	virtual void Release();
 
+	static void ChangeScene(UScene* curScene, UScene* desScene);
+
 	inline wchar_t* GetSceneName() { return SceneName; }
 	inline void SetSceneName(wchar_t* value) { SceneName = value; }
 	
