@@ -14,8 +14,13 @@
 #include "Scene/MenuScene.h"
 #include "Scene/PlayScene.h"
 #include "Games.h"
+#include <iostream>
 
 LPCTSTR g_szClassName = TEXT("윈도우 클래스 이름");
+
+int m_centerX = 0;
+int m_centerY = 0;
+int m_radius = 20;
 
 // 콘솔 초기화
 void InitConsole()
@@ -74,26 +79,46 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		PAINTSTRUCT ps;
 		HDC hDC = BeginPaint(hwnd, &ps);
-		const char* text = "윈도우 메시지출력 중";
-		TextOutA(hDC, 10, 10, text, (int)strlen(text));
 
-		const int CELL_SIZE = 300;     // 셀 크기
-		const int PADDING = 10;       // 셀 내부 여백
-		int cols = Renderer::GetWidth() / CELL_SIZE;
-		int rows = Renderer::GetHeight() / CELL_SIZE;
+		//const char* text = "윈도우 메시지출력 중";
+		//TextOutA(hDC, 10, 10, text, (int)strlen(text));
+		//
+		//const int CELL_SIZE = 300;     // 셀 크기
+		//const int PADDING = 10;       // 셀 내부 여백
+		//int cols = Renderer::GetWidth() / CELL_SIZE;
+		//int rows = Renderer::GetHeight() / CELL_SIZE;
+		//
+		//RECT rect = { 0, 0, Renderer::GetWidth(), Renderer::GetHeight() };
+		//for (int y = 0; y < rows; ++y)
+		//{
+		//	for (int x = 0; x < cols; ++x)
+		//	{
+		//		int left = x * CELL_SIZE + PADDING;
+		//		int top = y * CELL_SIZE + PADDING;
+		//		int right = (x + 1) * CELL_SIZE - PADDING;
+		//		int bottom = (y + 1) * CELL_SIZE - PADDING;
+		//		Ellipse(hDC, left, top, right, bottom);
+		//	}
+		//}
 
-		RECT rect = { 0, 0, Renderer::GetWidth(), Renderer::GetHeight() };
-		for (int y = 0; y < rows; ++y)
-		{
-			for (int x = 0; x < cols; ++x)
-			{
-				int left = x * CELL_SIZE + PADDING;
-				int top = y * CELL_SIZE + PADDING;
-				int right = (x + 1) * CELL_SIZE - PADDING;
-				int bottom = (y + 1) * CELL_SIZE - PADDING;
-				Ellipse(hDC, left, top, right, bottom);
-			}
-		}
+		RECT clientRect;
+		GetClientRect(hwnd, &clientRect);
+		FillRect(hDC, &clientRect, (HBRUSH)(COLOR_WINDOW + 1));
+
+		COLORREF color = RGB(255, 0, 0);
+		HPEN hPen = CreatePen(PS_SOLID, 2, color);
+		HPEN hOldPen = (HPEN)SelectObject(hDC, hPen);
+		// 브러시는 내부 채우지 않도록 NULL_BRUSH 사용
+		HBRUSH hOldBrush = (HBRUSH)SelectObject(hDC, GetStockObject(NULL_BRUSH));
+
+		Ellipse(hDC,
+			m_centerX - m_radius, m_centerY - m_radius,
+			m_centerX + m_radius, m_centerY + m_radius);
+
+		// 이전 객체 복원 및 펜 삭제
+		SelectObject(hDC, hOldPen);
+		SelectObject(hDC, hOldBrush);
+		DeleteObject(hPen);
 
 		EndPaint(hwnd, &ps);
 		printf("WM_PAINT: 화면 다시 그리기\n");
@@ -110,6 +135,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_LBUTTONDOWN:
 		printf("WM_LBUTTONDOWN: 클릭 위치 x=%d y=%d\n", LOWORD(lParam), HIWORD(lParam));
+		//std::cout << "WM_LBUTTONDBLCLK" << std::endl;
+		// 마우스 왼쪽 버튼 더블 클릭
+		// 좌표를 가져온다.
+		//int x = LOWORD(lparam);
+		//int y = HIWORD(lparam);
+
+		m_centerX = LOWORD(lParam);
+		m_centerY = HIWORD(lParam);
+		//simplegeo::g_GeoShapeManager.AddCircle(x, y, 10, RGB(255, 0, 0));
+		// 펜 생성 및 선택
+
+		::InvalidateRect(hwnd, NULL, TRUE);
+
 		break;
 
 		// 메세지가 너무 자주 나오는것은 출력하지 않음
@@ -201,7 +239,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 namespace Game
 {
-	UScene* g_currentScene = new UPlayScene();
+	UScene* g_currentScene = new UMenuScene();
 	UScene* g_nextScene = g_currentScene;
 
 	void Initialize(HWND hwnd)
@@ -226,6 +264,8 @@ namespace Game
 
 		g_currentScene->Update();
 
+		//printf("%f\n", 1 / Time::GetElapsedTime());
+
 		// Renderer::EndDraw
 		Renderer::EndDraw();
 
@@ -248,10 +288,16 @@ namespace Game
 		return &g_currentScene;
 	}
 
+	UScene* GetNextScene()
+	{
+		return g_nextScene;
+	}
+
 	UScene** GetNextScenePtr()
 	{
 		return &g_nextScene;
 	}
+
 
 	void ChangeScene()
 	{

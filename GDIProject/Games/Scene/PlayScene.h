@@ -17,11 +17,12 @@ public:
 
 	void Input();
 
-	APlayerCharacter* m_fPlayerCharacter;
-
 	const int MoveSpeed = 200;
 
 	float m_fFPSTimeAnimationScene = 1.0f / 24.0f;
 	float m_fFPSLastTimeAnimationScene = Time::GetTotalTime();
 	float m_fcountOneSecondAnimationScene = Time::GetTotalTime();
+
+private:
+	APlayerCharacter* m_fPlayerCharacter;
 };

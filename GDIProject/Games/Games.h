@@ -11,6 +11,7 @@ namespace Game
 	void Release(HWND hwnd);
 	UScene* GetCurrentScene();
 	UScene** GetCurrentScenePtr();
+	UScene* GetNextScene();
 	UScene** GetNextScenePtr();
 
 	void ChangeScene();

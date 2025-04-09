@@ -26,7 +26,6 @@ void UPlayScene::Initialize()
 
 void UPlayScene::Update()
 {
-
 	if (m_fPlayerCharacter->AnimationBundle.animationComponent[(int)m_fPlayerCharacter->dirState][(int)m_fPlayerCharacter->animstate]->m_frames)
 	{
 		Renderer::RenderImage(

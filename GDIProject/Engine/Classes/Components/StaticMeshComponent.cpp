@@ -25,6 +25,7 @@ void UStaticMeshComponent::LoadData(std::wstring baseDir, std::wstring fileName)
 	num = swprintf(wcsbuf, 100, L"../Resource/%s/%s", baseDir.c_str(), fileName.c_str());
 		 
 	mesh = new Gdiplus::Bitmap(wcsbuf);
+	SetMeshSize(mesh->GetWidth(), mesh->GetHeight());
 }
 
 void UStaticMeshComponent::Update()

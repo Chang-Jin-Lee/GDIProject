@@ -21,8 +21,10 @@ public:
 	FVector2 GetActorLocation() const { return SceneComponent->GetSceneComponentLocation(); }
 	void SetActorLocation(float x, float y) { SceneComponent->SetSceneComponentLocation(x, y); }
 
-	FVector2 GetActorScale() { return StaticMeshComponent->GetMeshScale();}
-	void SetActorScale(float x, float y) { StaticMeshComponent->SetMeshScale(x, y); }
+	FVector2 GetActorSize() { return StaticMeshComponent->GetMeshSize();}
+	void SetActorScale(float x, float y) { SceneComponent->SetSceneComponentScale(x, y); }
+	FVector2 GetActorScale() { return SceneComponent->GetSceneComponentScale(); }
+	void SetActorSize(float x, float y) { StaticMeshComponent->SetMeshSize(x, y); }
 	
 private:
 	USceneComponent* SceneComponent;

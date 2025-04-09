@@ -11,7 +11,7 @@ using namespace Gdiplus;
 class UStaticMeshComponent
 {
 public:
-	FVector2 m_fmeshScale;
+	FVector2 m_fmeshSize;
 	Gdiplus::Bitmap* mesh;
 	
 	UStaticMeshComponent();
@@ -21,11 +21,17 @@ public:
 	void LoadData(std::wstring baseDir, std::wstring fileName);
 	void Update();
 
-	void SetMeshScale(float width, float height)
+	void SetMeshSize(float width, float height)
 	{
-		m_fmeshScale.x = width;
-		m_fmeshScale.y = height;
+		m_fmeshSize.x = width;
+		m_fmeshSize.y = height;
 	}
 
-	FVector2 GetMeshScale() { return m_fmeshScale; }
+	void SetMeshScale(float widthRatio, float heightRatio)
+	{
+		m_fmeshSize.x *= widthRatio;
+		m_fmeshSize.y *= heightRatio;
+	}
+
+	FVector2 GetMeshSize() { return m_fmeshSize; }
 };

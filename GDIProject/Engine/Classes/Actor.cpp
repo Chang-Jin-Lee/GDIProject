@@ -8,7 +8,8 @@ AActor::AActor()
 
 AActor::~AActor()
 {
-
+	delete SceneComponent;
+	delete StaticMeshComponent;
 }
 
 void AActor::LoadStaticMeshData(std::wstring baseDir, std::wstring fileName)
