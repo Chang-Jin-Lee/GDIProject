@@ -23,6 +23,8 @@ public:
 	float m_fFPSLastTimeAnimationScene = Time::GetTotalTime();
 	float m_fcountOneSecondAnimationScene = Time::GetTotalTime();
 
+	float m_fcharacterRotationSpeed = 85;
+
 private:
 	APlayerCharacter* m_fPlayerCharacter;
 };

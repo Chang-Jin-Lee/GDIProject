@@ -1,4 +1,5 @@
 #include "StaticMeshComponent.h"
+#include <iostream>
 
 UStaticMeshComponent::UStaticMeshComponent()
 {

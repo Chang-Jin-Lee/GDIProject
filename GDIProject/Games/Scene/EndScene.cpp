@@ -26,7 +26,7 @@ void UEndScene::Update()
 		UScene::ChangeScene<UMenuScene>(Game::GetNextScenePtr());
 	}
 
-	Renderer::RenderImage(m_image->GetBitmap(), m_image->GetActorLocation().x, m_image->GetActorLocation().y, m_image->GetActorSize().x, m_image->GetActorSize().y);
+	Renderer::RenderActor(m_image);
 
 }
 void UEndScene::LoadData()

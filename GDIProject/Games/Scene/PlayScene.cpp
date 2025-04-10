@@ -18,6 +18,11 @@ void UPlayScene::Initialize()
 	m_fPlayerCharacter = new APlayerCharacter();
 	m_fPlayerCharacter->Initialize();
 	m_fPlayerCharacter->SetActorLocation(50, 50);
+	m_fPlayerCharacter->SetActorScale(2.5f, 2.5f);
+	m_fcharacterRotationSpeed = 360;
+	m_fPlayerCharacter->SetName((wchar_t*)L"플레이어 캐릭터");
+	//m_fPlayerCharacter->SetActorSize(8.0f, 15.0f);
+	//m_fPlayerCharacter->SetActorRotation(50);
 
 	m_fFPSTimeAnimationScene = 1.0f / 24.0f;
 	m_fFPSLastTimeAnimationScene = Time::GetTotalTime();
@@ -33,16 +38,7 @@ void UPlayScene::Update()
 			->AnimationBundle.animationComponent[(int)m_fPlayerCharacter->dirState][(int)m_fPlayerCharacter->animstate]
 			->m_frames[m_fPlayerCharacter->AnimationBundle.animationComponent[(int)m_fPlayerCharacter->dirState][(int)m_fPlayerCharacter->animstate]->m_ianimationClip]
 			->m_frame,
-			m_fPlayerCharacter->GetActorLocation().x,
-			m_fPlayerCharacter->GetActorLocation().y,
 			m_fPlayerCharacter
-			->AnimationBundle.animationComponent[(int)m_fPlayerCharacter->dirState][(int)m_fPlayerCharacter->animstate]
-			->m_frames[m_fPlayerCharacter->AnimationBundle.animationComponent[(int)m_fPlayerCharacter->dirState][(int)m_fPlayerCharacter->animstate]->m_ianimationClip]
-			->m_frameScale.x,
-			m_fPlayerCharacter
-			->AnimationBundle.animationComponent[(int)m_fPlayerCharacter->dirState][(int)m_fPlayerCharacter->animstate]
-			->m_frames[m_fPlayerCharacter->AnimationBundle.animationComponent[(int)m_fPlayerCharacter->dirState][(int)m_fPlayerCharacter->animstate]->m_ianimationClip]
-			->m_frameScale.y
 		);
 	}
 
@@ -84,6 +80,12 @@ void UPlayScene::Input()
 	if (Input::IsKeyPressed(VK_5))
 	{
 		UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
+	}
+
+	if (Input::IsKeyDown(VK_R))
+	{
+		float rotation = m_fPlayerCharacter->GetActorRotation();
+		m_fPlayerCharacter->SetActorRotation(rotation + Time::GetElapsedTime() * m_fcharacterRotationSpeed);
 	}
 
 	if (Input::IsKeyDown(VK_SPACE))

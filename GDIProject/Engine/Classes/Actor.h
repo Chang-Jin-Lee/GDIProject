@@ -18,13 +18,16 @@ public:
 	virtual void LoadData();
 
 	Gdiplus::Bitmap* GetBitmap() { return StaticMeshComponent->mesh; }
-	FVector2 GetActorLocation() const { return SceneComponent->GetSceneComponentLocation(); }
-	void SetActorLocation(float x, float y) { SceneComponent->SetSceneComponentLocation(x, y); }
 
+	FVector2 GetActorLocation() const { return SceneComponent->GetSceneComponentLocation(); }
 	FVector2 GetActorSize() { return StaticMeshComponent->GetMeshSize();}
-	void SetActorScale(float x, float y) { SceneComponent->SetSceneComponentScale(x, y); }
 	FVector2 GetActorScale() { return SceneComponent->GetSceneComponentScale(); }
+	float GetActorRotation() { return SceneComponent->GetSceneComponentRotation(); }
+
+	void SetActorScale(float x, float y) { SceneComponent->SetSceneComponentScale(x, y); }
 	void SetActorSize(float x, float y) { StaticMeshComponent->SetMeshSize(x, y); }
+	void SetActorLocation(float x, float y) { SceneComponent->SetSceneComponentLocation(x, y); }
+	void SetActorRotation(float value) { SceneComponent->SetSceneComponentRotation(value); }
 	
 private:
 	USceneComponent* SceneComponent;

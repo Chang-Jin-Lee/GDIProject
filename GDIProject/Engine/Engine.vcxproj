@@ -154,6 +154,7 @@
     <ClInclude Include="Runtime\Core\FIleHelper.h" />
     <ClInclude Include="Runtime\Renderer\Renderer.h" />
     <ClInclude Include="Time\Time.h" />
+    <ClInclude Include="UI\UIText.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Actor.cpp" />
@@ -175,6 +176,7 @@
     <ClCompile Include="Runtime\Core\FileHelper.cpp" />
     <ClCompile Include="Runtime\Renderer\Renderer.cpp" />
     <ClCompile Include="Time\Time.cpp" />
+    <ClCompile Include="UI\UIText.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

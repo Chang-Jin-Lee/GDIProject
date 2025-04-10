@@ -72,6 +72,9 @@
     <ClInclude Include="Classes\Scene\Scene.h">
       <Filter>헤더 파일\Classes</Filter>
     </ClInclude>
+    <ClInclude Include="UI\UIText.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -115,6 +118,9 @@
     </ClCompile>
     <ClCompile Include="Classes\Scene\Scene.cpp">
       <Filter>소스 파일\Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIText.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

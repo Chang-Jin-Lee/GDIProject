@@ -11,13 +11,13 @@ public:
 	struct FFrame
 	{
 		Gdiplus::Bitmap* m_frame;
-		FVector2 m_frameScale;
+		FVector2 m_frameSize;
 
 		FFrame()
 		{
 			m_frame = nullptr;
-			m_frameScale.x = 0;
-			m_frameScale.y = 0;
+			m_frameSize.x = 0;
+			m_frameSize.y = 0;
 		}
 	};
 
@@ -29,7 +29,7 @@ public:
 
 	unsigned int m_irowSize = 0;			// FFrame** delete를 위해 필요한 사이즈
 	unsigned int m_icolSize = 0;
-	UAnimationComponent() : m_ianimationClip(0), m_ianimationMaxSize(0) {}
+	UAnimationComponent() : m_ianimationClip(0), m_ianimationMaxSize(0), m_irowSize(0), m_icolSize(0), m_frames(nullptr){}
 	UAnimationComponent(int rowSize, int colSize);
 	~UAnimationComponent();
 

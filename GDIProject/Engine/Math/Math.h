@@ -6,7 +6,7 @@ class TVector2
 public:
 	T x, y;
 
-	TVector2() {}
+	TVector2() : x(0), y(0) {}
 	TVector2(T _x, T _y) : x(_x), y(_y) {}
 
 	TVector2(const TVector2<T>& left) { x = left.x; y = left.y; }

@@ -80,9 +80,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		PAINTSTRUCT ps;
 		HDC hDC = BeginPaint(hwnd, &ps);
 
-		//const char* text = "윈도우 메시지출력 중";
-		//TextOutA(hDC, 10, 10, text, (int)strlen(text));
-		//
+		const char* text = "윈도우 메시지출력 중";
+		TextOutA(hDC, 10, 10, text, (int)strlen(text));
+		
 		//const int CELL_SIZE = 300;     // 셀 크기
 		//const int PADDING = 10;       // 셀 내부 여백
 		//int cols = Renderer::GetWidth() / CELL_SIZE;
@@ -101,24 +101,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		//	}
 		//}
 
-		RECT clientRect;
-		GetClientRect(hwnd, &clientRect);
-		FillRect(hDC, &clientRect, (HBRUSH)(COLOR_WINDOW + 1));
+		//RECT clientRect;
+		//GetClientRect(hwnd, &clientRect);
+		//FillRect(hDC, &clientRect, (HBRUSH)(COLOR_WINDOW + 1));
 
-		COLORREF color = RGB(255, 0, 0);
-		HPEN hPen = CreatePen(PS_SOLID, 2, color);
-		HPEN hOldPen = (HPEN)SelectObject(hDC, hPen);
-		// 브러시는 내부 채우지 않도록 NULL_BRUSH 사용
-		HBRUSH hOldBrush = (HBRUSH)SelectObject(hDC, GetStockObject(NULL_BRUSH));
+		//COLORREF color = RGB(255, 0, 0);
+		//HPEN hPen = CreatePen(PS_SOLID, 2, color);
+		//HPEN hOldPen = (HPEN)SelectObject(hDC, hPen);
+		//// 브러시는 내부 채우지 않도록 NULL_BRUSH 사용
+		//HBRUSH hOldBrush = (HBRUSH)SelectObject(hDC, GetStockObject(NULL_BRUSH));
 
-		Ellipse(hDC,
-			m_centerX - m_radius, m_centerY - m_radius,
-			m_centerX + m_radius, m_centerY + m_radius);
+		//Ellipse(hDC,
+		//	m_centerX - m_radius, m_centerY - m_radius,
+		//	m_centerX + m_radius, m_centerY + m_radius);
 
-		// 이전 객체 복원 및 펜 삭제
-		SelectObject(hDC, hOldPen);
-		SelectObject(hDC, hOldBrush);
-		DeleteObject(hPen);
+		//// 이전 객체 복원 및 펜 삭제
+		//SelectObject(hDC, hOldPen);
+		//SelectObject(hDC, hOldBrush);
+		//DeleteObject(hPen);
 
 		EndPaint(hwnd, &ps);
 		printf("WM_PAINT: 화면 다시 그리기\n");

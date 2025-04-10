@@ -25,7 +25,13 @@ void UMenuScene::Update()
 		UScene::ChangeScene<UPlayScene>(Game::GetNextScenePtr());
 		//UScene::ChangeScene<UPlayScene>(Game::GetNextScene());
 	}
-	Renderer::RenderImage(m_image->GetBitmap(), m_image->GetActorLocation().x, m_image->GetActorLocation().y, m_image->GetActorSize().x, m_image->GetActorSize().y);
+	if (Input::IsKeyDown(VK_R))
+	{
+		float rotation = m_image->GetActorRotation();
+		m_image->SetActorRotation(rotation + Time::GetElapsedTime() * 20);
+	}
+
+	Renderer::RenderActor(m_image);
 }
 
 void UMenuScene::LoadData()
