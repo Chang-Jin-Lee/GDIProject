@@ -17,7 +17,8 @@ public:
 
 	void Input();
 
-	const int MoveSpeed = 200;
+	const int RotateSpeed = 200;
+	const float MoveSpeed = 300;
 
 	float m_fFPSTimeAnimationScene = 1.0f / 24.0f;
 	float m_fFPSLastTimeAnimationScene = Time::GetTotalTime();

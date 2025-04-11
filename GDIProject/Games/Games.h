@@ -15,6 +15,12 @@ namespace Game
 	UScene** GetNextScenePtr();
 
 	void ChangeScene();
+
+	FVector2 GetLMouseClickPosition();
+	FVector2 GetRMouseClickPosition();
+	void SetLMouseClickPosition(const FVector2& rect);
+	void SetRMouseClickPosition(const FVector2& rect);
+
 	//void Render();
 	//void Release();
 	//ESceneState* GetCurrentSceneState();

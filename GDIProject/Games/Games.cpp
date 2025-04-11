@@ -18,8 +18,6 @@
 
 LPCTSTR g_szClassName = TEXT("윈도우 클래스 이름");
 
-int m_centerX = 0;
-int m_centerY = 0;
 int m_radius = 20;
 
 // 콘솔 초기화
@@ -80,8 +78,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		PAINTSTRUCT ps;
 		HDC hDC = BeginPaint(hwnd, &ps);
 
-		const char* text = "윈도우 메시지출력 중";
-		TextOutA(hDC, 10, 10, text, (int)strlen(text));
+		//const char* text = "윈도우 메시지출력 중";
+		//TextOutA(hDC, 10, 10, text, (int)strlen(text));
 		
 		//const int CELL_SIZE = 300;     // 셀 크기
 		//const int PADDING = 10;       // 셀 내부 여백
@@ -138,15 +136,29 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		//std::cout << "WM_LBUTTONDBLCLK" << std::endl;
 		// 마우스 왼쪽 버튼 더블 클릭
 		// 좌표를 가져온다.
-		//int x = LOWORD(lparam);
-		//int y = HIWORD(lparam);
-
-		m_centerX = LOWORD(lParam);
-		m_centerY = HIWORD(lParam);
+		Game::SetLMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam)));
 		//simplegeo::g_GeoShapeManager.AddCircle(x, y, 10, RGB(255, 0, 0));
 		// 펜 생성 및 선택
+		//Renderer::BeginDraw();
+		//Renderer::RenderRect(m_centerX - 10, m_centerY - 10, 20, 20);
+		//Renderer::EndDraw();
+		//::InvalidateRect(hwnd, NULL, TRUE);
 
-		::InvalidateRect(hwnd, NULL, TRUE);
+		break;
+
+	case WM_RBUTTONDOWN:
+		printf("WM_LBUTTONDOWN: 클릭 위치 x=%d y=%d\n", LOWORD(lParam), HIWORD(lParam));
+		//std::cout << "WM_LBUTTONDBLCLK" << std::endl;
+		// 마우스 왼쪽 버튼 더블 클릭
+		// 좌표를 가져온다.
+		Game::SetRMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam)));
+
+		//simplegeo::g_GeoShapeManager.AddCircle(x, y, 10, RGB(255, 0, 0));
+		// 펜 생성 및 선택
+		//Renderer::BeginDraw();
+		//Renderer::RenderRect(m_centerX - 10, m_centerY - 10, 20, 20);
+		//Renderer::EndDraw();
+		//::InvalidateRect(hwnd, NULL, TRUE);
 
 		break;
 
@@ -239,8 +251,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 namespace Game
 {
-	UScene* g_currentScene = new UMenuScene();
+	UScene* g_currentScene = new UPlayScene();
 	UScene* g_nextScene = g_currentScene;
+	FVector2 m_LMouseCickPosition;
+	FVector2 m_RMouseCickPosition;
 
 	void Initialize(HWND hwnd)
 	{
@@ -265,6 +279,8 @@ namespace Game
 		g_currentScene->Update();
 
 		//printf("%f\n", 1 / Time::GetElapsedTime());
+		Renderer::RenderRectRed(m_LMouseCickPosition.x - 10, m_LMouseCickPosition.y - 10, 20, 20);
+		Renderer::RenderRectBlue(m_RMouseCickPosition.x - 10, m_RMouseCickPosition.y - 10, 20, 20);
 
 		// Renderer::EndDraw
 		Renderer::EndDraw();
@@ -298,7 +314,6 @@ namespace Game
 		return &g_nextScene;
 	}
 
-
 	void ChangeScene()
 	{
 		if (g_currentScene != g_nextScene)
@@ -310,4 +325,18 @@ namespace Game
 			g_currentScene->LoadData();
 		}
 	}
+
+	FVector2 GetLMouseClickPosition() { return m_LMouseCickPosition; }
+	FVector2 GetRMouseClickPosition() { return m_RMouseCickPosition; }
+	void SetLMouseClickPosition(const FVector2& rect)
+	{
+		m_LMouseCickPosition.x = rect.x;
+		m_LMouseCickPosition.y = rect.y;
+	}
+	void SetRMouseClickPosition(const FVector2& rect)
+	{
+		m_RMouseCickPosition.x = rect.x;
+		m_RMouseCickPosition.y = rect.y;
+	}
+	
 }

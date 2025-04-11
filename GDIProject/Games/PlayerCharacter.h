@@ -1,6 +1,7 @@
 #pragma once
 #include <Classes/Character.h>
 #include <Runtime/Animation/AnimationComponent.h>
+#include <UI/UIText.h>
 
 class APlayerCharacter : public ACharacter
 {
@@ -38,4 +39,5 @@ public:
 	const wchar_t* GetDirStateName(DirState state);
 	const wchar_t* GetAnimStateName(AnimationState state);
 
+	SUIText* m_textui;
 };

@@ -14,6 +14,7 @@ APlayerCharacter::APlayerCharacter()
 		
 	dirState = DirState::Bottom;
 	animstate = AnimationState::Idle;
+	m_textui = new SUIText();
 }
 
 APlayerCharacter::~APlayerCharacter()
