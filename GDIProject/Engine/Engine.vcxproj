@@ -154,6 +154,7 @@
     <ClInclude Include="Runtime\Core\FIleHelper.h" />
     <ClInclude Include="Runtime\Renderer\Renderer.h" />
     <ClInclude Include="Time\Time.h" />
+    <ClInclude Include="UI\UIButton.h" />
     <ClInclude Include="UI\UIText.h" />
   </ItemGroup>
   <ItemGroup>

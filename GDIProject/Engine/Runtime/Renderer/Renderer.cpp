@@ -80,6 +80,12 @@ namespace Renderer
 		g_pBackBufferGraphics->DrawRectangle(m_BluePen, rect);
 	}
 
+	void RenderUIButton(int x, int y, int width, int height, Gdiplus::Pen* pen)
+	{
+		const Gdiplus::Rect rect(x, y, width, height);
+		g_pBackBufferGraphics->DrawRectangle(pen, rect);
+	}
+
 	// 애니메이션을 할때는 비트맵을 한장씩 넘겨야 하니까 Bitmap 받기
 	void RenderImage(Gdiplus::Bitmap* pImageBitmap, AActor* actor)
 	{

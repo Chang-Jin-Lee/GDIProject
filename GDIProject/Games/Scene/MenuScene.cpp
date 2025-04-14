@@ -6,16 +6,19 @@
 
 UMenuScene::UMenuScene()
 {
+	m_button = new SUIButton();
+	m_image = new ABackGroundImage();
 }
 
 UMenuScene::~UMenuScene()
 {
 	delete m_image;
+	delete m_button;
 }
 
 void UMenuScene::Initialize()
 {
-	m_image = new ABackGroundImage();
+	m_button->Initialize((wchar_t*)"button!", Gdiplus::Color::White, FVector2(300, 300), FVector2(100, 50));
 }
 
 void UMenuScene::Update()
@@ -32,6 +35,7 @@ void UMenuScene::Update()
 	}
 
 	Renderer::RenderActor(m_image);
+	Renderer::RenderUIButton(m_button->m_Position.x, m_button->m_Position.y, m_button->m_Size.x, m_button->m_Size.y, m_button->m_pen);
 }
 
 void UMenuScene::LoadData()

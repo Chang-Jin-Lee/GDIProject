@@ -21,6 +21,7 @@ namespace Renderer
 
 	void RenderRectRed(int x, int y, int width, int height);
 	void RenderRectBlue(int x, int y, int width, int height);
+	void RenderUIButton(int x, int y, int width, int height, Gdiplus::Pen* pen);
 
 	void RenderActor(AActor* actor);	// 액터 그리기 함수
 	void EndDraw();

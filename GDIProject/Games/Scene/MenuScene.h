@@ -3,6 +3,7 @@
 #include <Classes/Scene/Scene.h>
 #include <Classes/Components/StaticMeshComponent.h>
 #include "../BackGroundImage.h"
+#include <UI/UIButton.h>
 
 class UMenuScene : public UScene
 {
@@ -16,4 +17,6 @@ public:
 	virtual void Release() override;
 
 	ABackGroundImage* m_image;
+
+	SUIButton* m_button;
 };
