@@ -23,8 +23,8 @@ void UMenuScene::Update()
 	if (Input::IsKeyPressed(VK_5))
 	{
 		UScene::ChangeScene<UPlayScene>(Game::GetNextScenePtr());
-		//UScene::ChangeScene<UPlayScene>(Game::GetNextScene());
 	}
+
 	if (Input::IsKeyDown(VK_R))
 	{
 		float rotation = m_image->GetActorRotation();

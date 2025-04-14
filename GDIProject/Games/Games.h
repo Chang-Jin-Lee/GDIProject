@@ -2,6 +2,7 @@
 
 #include "resource.h"
 #include <Runtime/Renderer/Renderer.h>
+#include <Classes/Scene/Scene.h>
 
 namespace Game
 {

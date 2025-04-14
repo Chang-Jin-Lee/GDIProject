@@ -25,6 +25,18 @@
     <Filter Include="헤더 파일\Classes">
       <UniqueIdentifier>{8cec235e-2a7a-4ab1-bc10-1c74e751ad36}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\UI">
+      <UniqueIdentifier>{c9235101-fa7e-4ee2-9e44-8b12d3145963}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\UI">
+      <UniqueIdentifier>{9725f4fd-93e3-4cf3-8c4a-3040b883244b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Time">
+      <UniqueIdentifier>{626625ee-8b2a-4a58-9efe-e6e3c9d14215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Time">
+      <UniqueIdentifier>{b05cc3f0-a5c2-4932-926c-69bf9d2b32e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -43,9 +55,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Input\Input.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Time\Time.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Actor.h">
@@ -73,7 +82,10 @@
       <Filter>헤더 파일\Classes</Filter>
     </ClInclude>
     <ClInclude Include="UI\UIText.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Time\Time.h">
+      <Filter>헤더 파일\Time</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -90,9 +102,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Input\Input.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Time\Time.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Pawn.cpp">
@@ -120,7 +129,10 @@
       <Filter>소스 파일\Classes</Filter>
     </ClCompile>
     <ClCompile Include="UI\UIText.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Time\Time.cpp">
+      <Filter>소스 파일\Time</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
