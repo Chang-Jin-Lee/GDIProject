@@ -28,7 +28,7 @@ private:
 	FAABBBox* WorldBound = nullptr;
 	FQuadTree* quadTree = nullptr;
 
-	float m_fFPSTime = 5.0f;
+	float m_fFPSTime = 10.0f;
 	float m_fFPSLastTime = 0;
 	float m_fcountOneSecond = 0;
 	int m_enemyMaxSize = 15;

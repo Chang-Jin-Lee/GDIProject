@@ -8,12 +8,14 @@ AEnemyCharacter::AEnemyCharacter()
 	srand(Time::GetElapsedTime());
 	m_randomWidth = 2;
 	m_randomHeight = 2;
+
+	m_textui = new SUIText();
 }
 
 
 AEnemyCharacter::~AEnemyCharacter()
 {
-
+	delete m_textui;
 }
 
 void AEnemyCharacter::Initialize()
@@ -26,12 +28,29 @@ void AEnemyCharacter::Initialize()
 	SetActorSize(50, 50);
 	SetActorLocation(FRandom::GetRandomInRange(width/10, width), FRandom::GetRandomInRange(0, height));
 	SetActorScale(FRandom::GetRandomInRange(1.0, m_randomWidth), FRandom::GetRandomInRange(1.0, m_randomHeight));
+
+	int uiwidth = 120;
+	int uiheith = 20;
+	m_textui->Initialize
+	(
+		GetName(),
+		10,
+		(wchar_t*)L"Verdana",
+		Gdiplus::Color(255, 255, 255),
+		FVector2(-50, -20),
+		FVector2(uiwidth, uiheith),
+		Gdiplus::FontStyleBold,
+		Gdiplus::UnitPoint,
+		Gdiplus::StringAlignmentNear,
+		Gdiplus::StringAlignmentNear,
+		Gdiplus::StringTrimmingNone
+	);
 }
 
 void AEnemyCharacter::Update()
 {
 	__super::Update();
-	Renderer::RenderActor(this);
+	Renderer::RenderActorWithUI(this, m_textui);
 }
 
 void AEnemyCharacter::Release()

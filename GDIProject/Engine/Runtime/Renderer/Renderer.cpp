@@ -144,8 +144,11 @@ namespace Renderer
 			const float scaleX = actor->GetActorScale().x;
 			const float scaleY = actor->GetActorScale().y;
 
-			int imgWidth = pImageBitmap->GetWidth();
-			int imgHeight = pImageBitmap->GetHeight();
+			int imgWidth = actor->GetActorSize().x;
+			int imgHeight = actor->GetActorSize().y;
+
+			//int imgWidth = pImageBitmap->GetWidth();
+			//int imgHeight = pImageBitmap->GetHeight();
 
 			Gdiplus::PointF center = Gdiplus::PointF(float(imgWidth / 2), float(imgHeight / 2));
 			Gdiplus::Matrix matrix;
@@ -188,6 +191,34 @@ namespace Renderer
 		}
 	}
 
+	void RenderActorWithUI(AActor* actor, SUIText* textui)
+	{
+		Gdiplus::Bitmap* pImageBitmap = actor->GetBitmap();
+		if (pImageBitmap && g_pBackBufferGraphics)
+		{
+			const int x = actor->GetActorLocation().x;
+			const int y = actor->GetActorLocation().y;
+			const float rotation = actor->GetActorRotation();
+			const float scaleX = actor->GetActorScale().x;
+			const float scaleY = actor->GetActorScale().y;
+
+			int imgWidth = actor->GetActorSize().x;
+			int imgHeight = actor->GetActorSize().y;
+
+			Gdiplus::PointF center = Gdiplus::PointF(float(imgWidth / 2), float(imgHeight / 2));
+			Gdiplus::Matrix matrix;
+			matrix.Translate((float)x, (float)y);
+			matrix.Scale(scaleX, scaleY);
+			matrix.RotateAt(rotation, center);
+			g_pBackBufferGraphics->SetTransform(&matrix); // 매트릭스 적용.
+			g_pBackBufferGraphics->DrawImage(pImageBitmap, 0, 0, imgWidth, imgHeight);
+
+			RenderRectRed(0, 0, imgWidth, imgHeight);
+			RenderTextUI(textui, 0, 0);
+
+			g_pBackBufferGraphics->ResetTransform();
+		}
+	}
 	void RenderActorAnimation(AActor* actor)
 	{
 		Gdiplus::Bitmap* pImageBitmap = actor->GetBitmap();

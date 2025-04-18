@@ -251,7 +251,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 namespace Game
 {
-	UScene* g_currentScene = new UPlayScene();
+	UScene* g_currentScene = new UMenuScene();
 	UScene* g_nextScene = g_currentScene;
 	FVector2 m_LMouseCickPosition;
 	FVector2 m_RMouseCickPosition;
@@ -321,8 +321,6 @@ namespace Game
 			g_currentScene->Release();
 			delete g_currentScene;
 			g_currentScene = g_nextScene;
-			g_currentScene->Initialize();
-			g_currentScene->LoadData();
 		}
 	}
 

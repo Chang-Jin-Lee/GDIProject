@@ -96,6 +96,7 @@ void APlayerCharacter::Initialize()
 
 	// SceneComponent 값 초기화
 	SetActorLocation(50, 50);
+	SetActorSize(13,20);
 	SetActorScale(2.5f, 2.5f);
 	SetName((wchar_t*)L"플레이어 캐릭터");
 	// UI 초기화

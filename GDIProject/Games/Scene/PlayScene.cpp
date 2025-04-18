@@ -9,6 +9,8 @@
 
 UPlayScene::UPlayScene()
 {
+	m_objects.clear();
+	m_fPlayerCharacter.reset();
 	m_fPlayerCharacter = nullptr;
 	WorldBound = new FAABBBox(0,0,Renderer::GetWidth(), Renderer::GetHeight());
 	quadTree = new FQuadTree(0, WorldBound);
@@ -16,6 +18,8 @@ UPlayScene::UPlayScene()
 
 UPlayScene::~UPlayScene()
 {
+	m_objects.clear();
+	m_fPlayerCharacter.reset();
 	//delete m_fPlayerCharacter;
 }
 
@@ -28,8 +32,8 @@ void UPlayScene::Initialize()
 	for (int i = 0; i < m_enemyMaxSize; i++)
 	{
 		m_fEnemyCharacter = std::make_shared<AEnemyCharacter>();
+		m_fEnemyCharacter->SetName((wchar_t*)L"적 캐릭터");
 		m_fEnemyCharacter->Initialize();
-		m_fEnemyCharacter->SetName((wchar_t*)"적 캐릭터");
 		m_objects.push_back(m_fEnemyCharacter);
 	}
 
@@ -79,17 +83,17 @@ void UPlayScene::Update()
 		}
 	}
 
-
-	// 시간초당 생기는 테스트
-	//m_fFPSLastTime = Time::GetTotalTime() - m_fcountOneSecond;
-	//if (m_fFPSLastTime >= m_fFPSTime)	// 1 초에 한 번씩
-	//{
-	//	m_fEnemyCharacter = std::make_shared<AEnemyCharacter>();
-	//	m_fEnemyCharacter->Initialize();
-	//	SetName((wchar_t*)L"적 캐릭터_Default" + m_countEnemy++);
-	//	m_objects.push_back(m_fEnemyCharacter);
-	//	m_fcountOneSecond = Time::GetTotalTime();
-	//}
+	// 10초 뒤에 씬 전환
+	m_fFPSLastTime = Time::GetTotalTime() - m_fcountOneSecond;
+	if (m_fFPSLastTime >= m_fFPSTime)	// 1 초에 한 번씩
+	{
+		//UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
+		//m_fEnemyCharacter = std::make_shared<AEnemyCharacter>();
+		//m_fEnemyCharacter->Initialize();
+		//SetName((wchar_t*)L"적 캐릭터_Default" + m_countEnemy++);
+		//m_objects.push_back(m_fEnemyCharacter);
+		//m_fcountOneSecond = Time::GetTotalTime();
+	}
 
 	Input();
 }
@@ -100,7 +104,7 @@ void UPlayScene::LoadData()
 
 void UPlayScene::Release()
 {
-
+	m_objects.clear();
 }
 
 void UPlayScene::Input()
