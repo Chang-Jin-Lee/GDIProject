@@ -9,7 +9,7 @@
 
 #include <Input/Input.h>
 #include <Time/Time.h>
-#include "PlayerCharacter.h"
+#include "Character/PlayerCharacter.h"
 #include <Classes/Scene/Scene.h>
 #include "Scene/MenuScene.h"
 #include "Scene/PlayScene.h"
@@ -338,5 +338,4 @@ namespace Game
 		m_RMouseCickPosition.x = rect.x;
 		m_RMouseCickPosition.y = rect.y;
 	}
-	
 }

@@ -1,4 +1,18 @@
 #include "Object.h"
+#include "Manager/ObjectManager.h"
+
+void UObject::Initialize()
+{
+	//UObjectManager<UObject>::Get();
+}
+
+void UObject::Update()
+{
+}
+
+void UObject::Release()
+{
+}
 
 void UObject::SetName(wchar_t* value)
 {

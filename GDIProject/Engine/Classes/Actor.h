@@ -3,6 +3,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Object.h"
 #include "../Math/Math.h"
+#include "../Experiment/AABBBox.h"
 
 class AActor : public UObject
 {
@@ -24,12 +25,15 @@ public:
 	FVector2 GetActorScale() { return SceneComponent->GetSceneComponentScale(); }
 	float GetActorRotation() { return SceneComponent->GetSceneComponentRotation(); }
 
-	void SetActorScale(float x, float y) { SceneComponent->SetSceneComponentScale(x, y); }
-	void SetActorSize(float x, float y) { StaticMeshComponent->SetMeshSize(x, y); }
-	void SetActorLocation(float x, float y) { SceneComponent->SetSceneComponentLocation(x, y); }
-	void SetActorRotation(float value) { SceneComponent->SetSceneComponentRotation(value); }
+	FAABBBox GetBoundBox() { return boundBox; }
+	
+	void SetActorScale(float x, float y);
+	void SetActorSize(float x, float y);
+	void SetActorLocation(float x, float y);
+	void SetActorRotation(float value);
 	
 private:
 	USceneComponent* SceneComponent;
 	UStaticMeshComponent* StaticMeshComponent;
+	FAABBBox boundBox;
 };

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <math.h>
+#include <random>
 
 template<typename T>
 class TVector2
@@ -65,4 +66,22 @@ public:
 
 };
 
+namespace Math
+{
+	static std::random_device rd;
+
+	// 두 수 사이의 랜덤한 수를 반환. 반환값이 없으면 오류.
+	template<typename T>
+	struct TRandom
+	{
+		[[nodiscard]] static float GetRandomInRange(T Min, T Max)
+		{
+			static std::mt19937 gen(rd());
+			std::uniform_real_distribution<T> dis(Min, Max);
+			return dis(gen);
+		}
+	};
+}
+
 using FVector2 = TVector2<float>;
+using FRandom = Math::TRandom<float>;

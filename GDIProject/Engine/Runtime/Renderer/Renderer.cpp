@@ -3,6 +3,7 @@
 
 #include "Renderer.h"
 #include "../../Classes/Actor.h"
+#include "../../Math/Math.h"
 #include <iostream>
 
 
@@ -227,6 +228,7 @@ namespace Renderer
 			delete g_pBackBufferGraphics;
 		Gdiplus::GdiplusShutdown(g_GdiPlusToken);
 	}
+
 	int GetWidth()
 	{
 		return g_width;

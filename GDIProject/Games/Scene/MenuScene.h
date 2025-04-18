@@ -2,7 +2,7 @@
 
 #include <Classes/Scene/Scene.h>
 #include <Classes/Components/StaticMeshComponent.h>
-#include "../BackGroundImage.h"
+#include "../Image/BackGroundImage.h"
 #include <UI/UIButton.h>
 
 class UMenuScene : public UScene

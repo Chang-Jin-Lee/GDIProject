@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Classes/Scene/Scene.h>
-#include "../BackGroundImage.h"
+#include "../Image/BackGroundImage.h"
 
 class UEndScene : public UScene
 {

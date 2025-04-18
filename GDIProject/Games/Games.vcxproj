@@ -128,10 +128,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BackGroundImage.h" />
+    <ClInclude Include="Character\EnemyCharacter.h" />
+    <ClInclude Include="Image\BackGroundImage.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Games.h" />
-    <ClInclude Include="PlayerCharacter.h" />
+    <ClInclude Include="Character\PlayerCharacter.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scene\EndScene.h" />
     <ClInclude Include="Scene\MenuScene.h" />
@@ -139,9 +140,10 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BackGroundImage.cpp" />
+    <ClCompile Include="Character\EnemyCharacter.cpp" />
+    <ClCompile Include="Image\BackGroundImage.cpp" />
     <ClCompile Include="Games.cpp" />
-    <ClCompile Include="PlayerCharacter.cpp" />
+    <ClCompile Include="Character\PlayerCharacter.cpp" />
     <ClCompile Include="Scene\EndScene.cpp" />
     <ClCompile Include="Scene\MenuScene.cpp" />
     <ClCompile Include="Scene\PlayScene.cpp" />

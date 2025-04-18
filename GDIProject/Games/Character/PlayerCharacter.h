@@ -42,9 +42,8 @@ public:
 	SUIText* m_textui;
 
 	const int RotateSpeed = 200;
-	const float MoveSpeed = 300;
+	const float MoveSpeed = 600;
 	float m_fcharacterRotationSpeed = 85;
-
 
 	float m_fFPSTimeAnimationScene = 1.0f / 24.0f;
 	float m_fFPSLastTimeAnimationScene = 0;

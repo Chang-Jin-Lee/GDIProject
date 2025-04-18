@@ -37,6 +37,24 @@
     <Filter Include="헤더 파일\Time">
       <UniqueIdentifier>{b05cc3f0-a5c2-4932-926c-69bf9d2b32e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Classes\Camera">
+      <UniqueIdentifier>{07377056-d2b1-42c7-857b-a9e380a66520}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Classes\Camera">
+      <UniqueIdentifier>{28555826-9576-4659-9de6-edbdd1da0b65}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Classes\Manager">
+      <UniqueIdentifier>{91133755-e225-478e-b8bb-6106568a1f67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Classes\Manager">
+      <UniqueIdentifier>{862be416-5e1f-4c54-bf38-7b61c971b53c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Experiment">
+      <UniqueIdentifier>{dce01768-d49d-443d-9809-aa598ce54085}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Experiment">
+      <UniqueIdentifier>{124e3294-f939-430b-9604-20c570a15f2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -90,6 +108,24 @@
     <ClInclude Include="UI\UIButton.h">
       <Filter>헤더 파일\UI</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Camera\Camera.h">
+      <Filter>헤더 파일\Classes\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Manager\ObjectManager.h">
+      <Filter>헤더 파일\Classes\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Experiment\AABBBox.h">
+      <Filter>헤더 파일\Experiment</Filter>
+    </ClInclude>
+    <ClInclude Include="Experiment\QuadTree.h">
+      <Filter>헤더 파일\Experiment</Filter>
+    </ClInclude>
+    <ClInclude Include="Experiment\Platform.h">
+      <Filter>헤더 파일\Experiment</Filter>
+    </ClInclude>
+    <ClInclude Include="Experiment\CollistionDetection.h">
+      <Filter>헤더 파일\Experiment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -136,6 +172,15 @@
     </ClCompile>
     <ClCompile Include="Time\Time.cpp">
       <Filter>소스 파일\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Camera\CameraComponentcpp.cpp">
+      <Filter>소스 파일\Classes\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Manager\ObjectManager.cpp">
+      <Filter>소스 파일\Classes\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Experiment\AABBBox.cpp">
+      <Filter>소스 파일\Experiment</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

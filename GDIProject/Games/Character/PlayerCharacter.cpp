@@ -3,9 +3,9 @@
 #include <Runtime/Renderer/Renderer.h>
 #include <Time/Time.h>
 #include <iostream>
-#include "Games.h"
+#include "../Games.h"
 #include <Input/Input.h>
-#include "Scene/PlayScene.h"
+#include "../Scene/PlayScene.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -40,6 +40,7 @@ APlayerCharacter::~APlayerCharacter()
 #endif 
 void APlayerCharacter::Initialize()
 {
+	__super::Initialize();
 	const wchar_t delimeter = L',';
 
 	for (int dirState = 0; dirState < static_cast<int>(DirState::Max); dirState++)
@@ -118,6 +119,7 @@ void APlayerCharacter::Initialize()
 
 void APlayerCharacter::Update()
 {
+	__super::Update();
 	FVector2 mouseclick = Game::GetLMouseClickPosition();
 
 	std::cout << mouseclick.x << ' ' << mouseclick.y << '\n';
@@ -137,7 +139,6 @@ void APlayerCharacter::Update()
 			Game::SetLMouseClickPosition(FVector2(0, 0));
 		}
 	}
-
 
 	if (AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_frames)
 	{
@@ -172,7 +173,7 @@ void APlayerCharacter::Update()
 
 void APlayerCharacter::Release()
 {
-
+	__super::Release();
 }
 
 void APlayerCharacter::Input()
