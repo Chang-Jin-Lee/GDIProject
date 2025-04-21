@@ -22,6 +22,8 @@ UPlayScene::UPlayScene()
 		g->GameScore = 0;
 	}
 	m_scoreui = new SUIText();
+	m_remainTimeGuideui = new SUIText();
+	m_remainTimeui = new SUIText();
 }
 
 UPlayScene::~UPlayScene()
@@ -32,9 +34,11 @@ UPlayScene::~UPlayScene()
 	}
 	m_objects.clear();
 	m_fPlayerCharacter.reset();
-	delete m_scoreui;
 	delete WorldBound;
 	delete quadTree;
+	delete m_scoreui;
+	delete m_remainTimeGuideui;
+	delete m_remainTimeui;
 }
 
 void UPlayScene::Initialize()
@@ -48,6 +52,10 @@ void UPlayScene::Update()
 {
 	UpdateCollisionDetection();
 	Renderer::RenderTextUI(m_scoreui, Renderer::GetResolution().x * 0.5, Renderer::GetResolution().y * 0.1);
+	Renderer::RenderTextUI(m_remainTimeGuideui, Renderer::GetResolution().x * 0.4, Renderer::GetResolution().y * 0.15);
+	Renderer::RenderTextUI(m_remainTimeui, Renderer::GetResolution().x * 0.5, Renderer::GetResolution().y * 0.15);
+	UpdateTime();
+	UpdateUI();
 	UpdateInput();
 }
 
@@ -69,6 +77,7 @@ void UPlayScene::UpdateInput()
 
 	m_fPlayerCharacter->Input();
 }
+
 
 void UPlayScene::TimeInitialize()
 {
@@ -108,6 +117,34 @@ void UPlayScene::UIInitialize()
 	wchar_t gameScoreStr[10];
 	swprintf_s(gameScoreStr, 10, L"%d", 0);
 	wcscpy_s(m_scoreui->m_content, 10, gameScoreStr);
+
+	uiwidth = 150;
+	uiheith = 40;
+	m_remainTimeGuideui->Initialize
+	(
+		(wchar_t*)L"남은 시간 : ",
+		18,
+		(wchar_t*)L"Verdana",
+		Gdiplus::Color(255, 255, 255),
+		FVector2(-uiwidth / 2, -uiheith / 2),
+		FVector2(uiwidth, uiheith)
+	);
+
+	uiwidth = 60;
+	uiheith = 30;
+	m_remainTimeui->Initialize
+	(
+		nullptr,
+		10,
+		(wchar_t*)L"Verdana",
+		Gdiplus::Color(255, 255, 255),
+		FVector2(-uiwidth / 2, -uiheith / 2),
+		FVector2(uiwidth, uiheith)
+	);
+	m_remainTimeui->m_content = (wchar_t*)malloc(sizeof(wchar_t) * 10);
+	wchar_t gameremainTimeStr[10];
+	swprintf_s(gameremainTimeStr, 10, L"%f", 10.0f);
+	wcscpy_s(m_remainTimeui->m_content, 10, gameremainTimeStr);
 }
 
 void UPlayScene::UpdateCollisionDetection()
@@ -161,13 +198,16 @@ void UPlayScene::UpdateTime()
 {
 	// 10초 뒤에 씬 전환
 	m_fFPSLastTime = Time::GetTotalTime() - m_fcountOneSecond;
-	if (m_fFPSLastTime >= m_fFPSTime)	// 1 초에 한 번씩
+	if (m_fFPSLastTime >= m_fFPSTime)	// 10 초 지나면 넘어감.
 	{
-		//UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
-		//m_fEnemyCharacter = std::make_shared<AEnemyCharacter>();
-		//m_fEnemyCharacter->Initialize();
-		//SetName((wchar_t*)L"적 캐릭터_Default" + m_countEnemy++);
-		//m_objects.push_back(m_fEnemyCharacter);
-		//m_fcountOneSecond = Time::GetTotalTime();
+		UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
+		m_fcountOneSecond = Time::GetTotalTime();
 	}
+}
+
+void UPlayScene::UpdateUI()
+{
+	wchar_t gameScoreStr[10];
+	swprintf_s(gameScoreStr, 10, L"%f", m_fFPSTime-m_fFPSLastTime);
+	wcscpy_s(m_remainTimeui->m_content, 10, gameScoreStr);
 }

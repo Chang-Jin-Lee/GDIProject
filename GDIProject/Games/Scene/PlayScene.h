@@ -27,6 +27,7 @@ public:
 	void UpdateCollisionDetection();
 	void UpdateTime();
 	void UpdateInput();
+	void UpdateUI();
 
 private:
 	std::shared_ptr<APlayerCharacter> m_fPlayerCharacter;
