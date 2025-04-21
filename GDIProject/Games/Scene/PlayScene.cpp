@@ -13,7 +13,7 @@ UPlayScene::UPlayScene()
 	m_objects.clear();
 	m_fPlayerCharacter.reset();
 	m_fPlayerCharacter = nullptr;
-	WorldBound = new FAABBBox(0,0, Renderer::GetResolution().x, Renderer::GetResolution().y);
+	WorldBound = new FAABBBox(0.0f, 0.0f, Renderer::GetResolution().x, Renderer::GetResolution().y);
 	quadTree = new FQuadTree(0, WorldBound);
 
 	AdGameState* g = dynamic_cast<AdGameState*>(Game::GetGameState());
@@ -26,9 +26,15 @@ UPlayScene::UPlayScene()
 
 UPlayScene::~UPlayScene()
 {
+	for (auto object : m_objects)
+	{
+		if (std::shared_ptr<UObject> _objet = std::dynamic_pointer_cast<UObject>(object)) _objet.reset();
+	}
 	m_objects.clear();
 	m_fPlayerCharacter.reset();
 	delete m_scoreui;
+	delete WorldBound;
+	delete quadTree;
 }
 
 void UPlayScene::Initialize()
@@ -56,7 +62,7 @@ void UPlayScene::Release()
 
 void UPlayScene::UpdateInput()
 {
-	if (Input::IsKeyPressed(VK_SPACE))
+	if (Input::IsKeyPressed(VK_C))
 	{
 		UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
 	}
@@ -113,7 +119,7 @@ void UPlayScene::UpdateCollisionDetection()
 
 		if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(object))
 		{
-			quadTree->Insert(actor, actor->GetBoundBox());
+			quadTree->Insert(actor, *actor->GetBoundBox());
 		}
 	}
 
@@ -122,14 +128,14 @@ void UPlayScene::UpdateCollisionDetection()
 		// only collision detect Player to Enemy
 		if (std::shared_ptr<APlayerCharacter> actor = std::dynamic_pointer_cast<APlayerCharacter>(object))
 		{
-			FAABBBox boundA = actor->GetBoundBox();
+			FAABBBox boundA = *actor->GetBoundBox();
 			std::vector<std::shared_ptr<UObject>> TargetObject;
 			quadTree->GetElements(boundA, TargetObject);
 			for (auto tother : TargetObject)
 			{
 				if (std::shared_ptr<AEnemyCharacter> other = std::dynamic_pointer_cast<AEnemyCharacter>(tother))
 				{
-					FAABBBox boundB = other->GetBoundBox();
+					FAABBBox boundB = *other->GetBoundBox();
 					if (Experiment::FCollisionDetector::AABBCollisionCheck(boundA, boundB))
 					{
 						// 원소 지우기

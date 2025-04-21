@@ -157,7 +157,7 @@ inline void TQuadTree<ElementType, NodeCapacity>::Clear()
 	for (int i = 0; i < QUADTREE_MAX_SUBNODE_SIZE; i++) {
 		if (subNodes[i] != nullptr) {
 			subNodes[i]->Clear();
-			//delete subNodes[i];
+			delete subNodes[i];
 			subNodes[i] = nullptr;
 		}
 	}

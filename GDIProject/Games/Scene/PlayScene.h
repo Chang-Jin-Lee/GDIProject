@@ -20,7 +20,6 @@ public:
 	virtual void LoadData() override;
 	virtual void Release() override;
 
-	
 	void TimeInitialize();
 	void CharactersInitialize();
 	void UIInitialize();

@@ -25,7 +25,7 @@ public:
 	FVector2 GetActorScale() { return SceneComponent->GetSceneComponentScale(); }
 	float GetActorRotation() { return SceneComponent->GetSceneComponentRotation(); }
 
-	FAABBBox GetBoundBox() { return boundBox; }
+	FAABBBox* GetBoundBox() { return &boundBox; }
 	
 	void SetActorScale(float x, float y);
 	void SetActorSize(float x, float y);

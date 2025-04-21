@@ -89,7 +89,7 @@ void UEndScene::UIInitialize()
 
 void UEndScene::UpdateInput()
 {
-	if (Input::IsKeyPressed(VK_SPACE))
+	if (Input::IsKeyPressed(VK_C))
 	{
 		UScene::ChangeScene<UMenuScene>(Game::GetNextScenePtr());
 	}

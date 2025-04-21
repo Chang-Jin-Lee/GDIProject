@@ -4,7 +4,7 @@
 struct FAABBBox
 {
 	FAABBBox() : m_minVector(0,0), m_maxVector(0,0) {}
-	FAABBBox(float minX, float minY, float maxX, float maxY) : m_minVector(minX, minY), m_maxVector(maxX, maxY) {}
+	FAABBBox(const float& minX, const  float& minY, const float& maxX, const float& maxY) : m_minVector(minX, minY), m_maxVector(maxX, maxY) {}
 	~FAABBBox() {}
 
 	void SetMinVector(float x, float y) { m_minVector.x = x; m_minVector.y = y; }

@@ -44,8 +44,10 @@ namespace Renderer
 		Gdiplus::GdiplusStartup(&g_GdiPlusToken, &gsi, nullptr);
 		g_pBackBufferGraphics = Gdiplus::Graphics::FromHDC(g_BackBufferDC);
 
-		m_redPen = new Gdiplus::Pen(Color(255, 0, 0), 1.0f); // 說除も
-		m_BluePen = new Gdiplus::Pen(Color(0, 0, 255), 1.0f); // 說除も
+		if(m_redPen == nullptr)
+			m_redPen = new Gdiplus::Pen(Color(255, 0, 0), 1.0f); // 說除も
+		if(m_BluePen == nullptr)
+			m_BluePen = new Gdiplus::Pen(Color(0, 0, 255), 1.0f); // 說除も
 	}
 
 	void BeginDraw()
