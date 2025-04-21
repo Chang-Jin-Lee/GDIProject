@@ -206,7 +206,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	RegisterClass(&wc);
 
 	// 원하는 크기가 조정되어 리턴
-	RECT rcClient = { 0, 0, (LONG)Renderer::GetWidth(), (LONG)Renderer::GetHeight() };
+	RECT rcClient = { 0, 0, (LONG)Renderer::GetResolution().x, (LONG)Renderer::GetResolution().y };
 	AdjustWindowRect(&rcClient, WS_OVERLAPPEDWINDOW, FALSE);
 
 	//생성
@@ -222,6 +222,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	UpdateWindow(hwnd);
 
 	////////Renderer::Initialize
+	Game::PreInitialize();
 	Game::Initialize(hwnd);
 
 	MSG msg;
@@ -255,6 +256,13 @@ namespace Game
 	UScene* g_nextScene = g_currentScene;
 	FVector2 m_LMouseCickPosition;
 	FVector2 m_RMouseCickPosition;
+	AGameStateBase* g_gameInstance = nullptr;
+
+	void PreInitialize()
+	{
+		g_gameInstance = AGameStateBase::CreateInstance();
+		g_gameInstance->Initialize();
+	}
 
 	void Initialize(HWND hwnd)
 	{
@@ -312,6 +320,11 @@ namespace Game
 	UScene** GetNextScenePtr()
 	{
 		return &g_nextScene;
+	}
+
+	AGameStateBase* GetGameState()
+	{
+		return g_gameInstance;
 	}
 
 	void ChangeScene()

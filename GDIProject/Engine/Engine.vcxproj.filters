@@ -55,6 +55,12 @@
     <Filter Include="헤더 파일\Experiment">
       <UniqueIdentifier>{124e3294-f939-430b-9604-20c570a15f2e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Classes\GameFramework">
+      <UniqueIdentifier>{5ed7465d-9565-4d11-97e7-a0f47df81392}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Classes\GameFramework">
+      <UniqueIdentifier>{dc7d53e2-1d7e-4dc5-a790-3b2f6858b22a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -126,6 +132,9 @@
     <ClInclude Include="Experiment\CollistionDetection.h">
       <Filter>헤더 파일\Experiment</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\GameFramework\GameState.h">
+      <Filter>헤더 파일\Classes\GameFramework</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -181,6 +190,9 @@
     </ClCompile>
     <ClCompile Include="Experiment\AABBBox.cpp">
       <Filter>소스 파일\Experiment</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\GameFramework\GameState.cpp">
+      <Filter>소스 파일\Classes\GameFramework</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

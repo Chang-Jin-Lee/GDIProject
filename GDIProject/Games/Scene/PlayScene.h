@@ -1,9 +1,10 @@
 #pragma once
 
 #include <Classes/Scene/Scene.h>
-#include "../Character/PlayerCharacter.h"
-#include <Time/Time.h>
 #include <Experiment/QuadTree.h>
+#include <UI/UIText.h>
+#include <Time/Time.h>
+#include "../Character/PlayerCharacter.h"
 #include "../Character/EnemyCharacter.h"
 
 using FQuadTree = TQuadTree<std::shared_ptr<UObject>, 4>;
@@ -19,11 +20,22 @@ public:
 	virtual void LoadData() override;
 	virtual void Release() override;
 
-	void Input();
+	
+	void TimeInitialize();
+	void CharactersInitialize();
+	void UIInitialize();
+
+	void UpdateCollisionDetection();
+	void UpdateTime();
+	void UpdateInput();
 
 private:
 	std::shared_ptr<APlayerCharacter> m_fPlayerCharacter;
 	std::shared_ptr<AEnemyCharacter> m_fEnemyCharacter;
+
+	SUIText* m_scoreui;
+	SUIText* m_remainTimeGuideui;
+	SUIText* m_remainTimeui;
 
 	FAABBBox* WorldBound = nullptr;
 	FQuadTree* quadTree = nullptr;

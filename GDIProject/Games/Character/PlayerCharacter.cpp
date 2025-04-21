@@ -123,8 +123,8 @@ void APlayerCharacter::Update()
 	__super::Update();
 	FVector2 mouseclick = Game::GetLMouseClickPosition();
 
-	std::cout << mouseclick.x << ' ' << mouseclick.y << '\n';
-	std::cout << GetActorLocation().x << ' ' << GetActorLocation().y << '\n';
+	//std::cout << mouseclick.x << ' ' << mouseclick.y << '\n';
+	//std::cout << GetActorLocation().x << ' ' << GetActorLocation().y << '\n';
 
 	if (mouseclick.IsZero() == false)
 	{

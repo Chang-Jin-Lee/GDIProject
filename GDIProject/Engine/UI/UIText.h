@@ -20,7 +20,19 @@ public:
 	}
 	~SUIText() {}
 
-	void Initialize(wchar_t* content, float fontSize, wchar_t* fontFamily, Gdiplus::Color color, FVector2 Position, FVector2 Size, Gdiplus::FontStyle fontStyle, Gdiplus::Unit worldUnit, Gdiplus::StringAlignment fontAlignment, Gdiplus::StringAlignment fontLineAlignment, Gdiplus::StringTrimming fontTrimming)
+		void Initialize(
+			wchar_t* content,
+			float fontSize,
+			wchar_t* fontFamily,
+			Gdiplus::Color color,
+			FVector2 Position,
+			FVector2 Size,
+			Gdiplus::FontStyle fontStyle = Gdiplus::FontStyleBold,
+			Gdiplus::Unit worldUnit = Gdiplus::UnitPoint,
+			Gdiplus::StringAlignment fontAlignment = Gdiplus::StringAlignmentNear,
+			Gdiplus::StringAlignment fontLineAlignment = Gdiplus::StringAlignmentNear,
+			Gdiplus::StringTrimming fontTrimming = Gdiplus::StringTrimmingNone
+	)
 	{
 		m_content = content;
 		m_fontSize = fontSize;

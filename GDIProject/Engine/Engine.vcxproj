@@ -144,6 +144,7 @@
     <ClInclude Include="Classes\Character.h" />
     <ClInclude Include="Classes\Components\SceneComponent.h" />
     <ClInclude Include="Classes\Components\StaticMeshComponent.h" />
+    <ClInclude Include="Classes\GameFramework\GameState.h" />
     <ClInclude Include="Classes\Manager\ObjectManager.h" />
     <ClInclude Include="Classes\Object.h" />
     <ClInclude Include="Classes\Pawn.h" />
@@ -169,6 +170,7 @@
     <ClCompile Include="Classes\Character.cpp" />
     <ClCompile Include="Classes\Components\SceneComponent.cpp" />
     <ClCompile Include="Classes\Components\StaticMeshComponent.cpp" />
+    <ClCompile Include="Classes\GameFramework\GameState.cpp" />
     <ClCompile Include="Classes\Manager\ObjectManager.cpp" />
     <ClCompile Include="Classes\Object.cpp" />
     <ClCompile Include="Classes\Pawn.cpp" />

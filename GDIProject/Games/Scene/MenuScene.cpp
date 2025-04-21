@@ -6,36 +6,27 @@
 
 UMenuScene::UMenuScene()
 {
-	//m_button = new SUIButton();
 	m_image = new ABackGroundImage();
+	m_startGuideui = new SUIText();
 }
 
 UMenuScene::~UMenuScene()
 {
 	delete m_image;
-	//delete m_button;
+	delete m_startGuideui;
 }
 
 void UMenuScene::Initialize()
 {
-	//m_button->Initialize((wchar_t*)"button!", Gdiplus::Color::White, FVector2(300, 300), FVector2(100, 50));
+	UIInitialize();
 }
 
 void UMenuScene::Update()
 {
-	if (Input::IsKeyPressed(VK_5))
-	{
-		UScene::ChangeScene<UPlayScene>(Game::GetNextScenePtr());
-	}
-
-	if (Input::IsKeyDown(VK_R))
-	{
-		float rotation = m_image->GetActorRotation();
-		m_image->SetActorRotation(rotation + Time::GetElapsedTime() * 20);
-	}
+	UpdateInput();
 
 	Renderer::RenderActor(m_image);
-	//Renderer::RenderUIButton(m_button->m_Position.x, m_button->m_Position.y, m_button->m_Size.x, m_button->m_Size.y, m_button->m_pen);
+	Renderer::RenderTextUI(m_startGuideui, Renderer::GetResolution().x * 0.2, Renderer::GetResolution().y * 0.5);
 }
 
 void UMenuScene::LoadData()
@@ -47,4 +38,33 @@ void UMenuScene::LoadData()
 void UMenuScene::Release()
 {
 
+}
+
+void UMenuScene::UIInitialize()
+{
+	int uiwidth = 250;
+	int uiheith = 100;
+	m_startGuideui->Initialize
+	(
+		(wchar_t*)L"Space Bar를 눌러 시작하세요",
+		22,
+		(wchar_t*)L"Verdana",
+		Gdiplus::Color(255, 255, 255),
+		FVector2(-uiwidth / 2, -uiheith / 2),
+		FVector2(uiwidth, uiheith)
+	);
+}
+
+void UMenuScene::UpdateInput()
+{
+	if (Input::IsKeyPressed(VK_SPACE))
+	{
+		UScene::ChangeScene<UPlayScene>(Game::GetNextScenePtr());
+	}
+
+	if (Input::IsKeyDown(VK_R))
+	{
+		float rotation = m_image->GetActorRotation();
+		m_image->SetActorRotation(rotation + Time::GetElapsedTime() * 20);
+	}
 }

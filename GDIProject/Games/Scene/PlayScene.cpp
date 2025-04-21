@@ -1,29 +1,76 @@
-#include "PlayScene.h"
-#include <Runtime/Renderer/Renderer.h>
-#include <Input/Input.h>
 #include "EndScene.h"
-#include "../Games.h"
+#include "PlayScene.h"
 #include <iostream>
-#include "../Character/EnemyCharacter.h"
+#include <Runtime/Renderer/Renderer.h>
 #include <Experiment/CollistionDetection.h>
+#include <Input/Input.h>
+#include "../Games.h"
+#include "../Character/EnemyCharacter.h"
+#include "../Player/dGameState.h"
 
 UPlayScene::UPlayScene()
 {
 	m_objects.clear();
 	m_fPlayerCharacter.reset();
 	m_fPlayerCharacter = nullptr;
-	WorldBound = new FAABBBox(0,0,Renderer::GetWidth(), Renderer::GetHeight());
+	WorldBound = new FAABBBox(0,0, Renderer::GetResolution().x, Renderer::GetResolution().y);
 	quadTree = new FQuadTree(0, WorldBound);
+
+	AdGameState* g = dynamic_cast<AdGameState*>(Game::GetGameState());
+	if (g)
+	{
+		g->GameScore = 0;
+	}
+	m_scoreui = new SUIText();
 }
 
 UPlayScene::~UPlayScene()
 {
 	m_objects.clear();
 	m_fPlayerCharacter.reset();
-	//delete m_fPlayerCharacter;
+	delete m_scoreui;
 }
 
 void UPlayScene::Initialize()
+{
+	CharactersInitialize();
+	TimeInitialize();
+	UIInitialize();
+}
+
+void UPlayScene::Update()
+{
+	UpdateCollisionDetection();
+	Renderer::RenderTextUI(m_scoreui, Renderer::GetResolution().x * 0.5, Renderer::GetResolution().y * 0.1);
+	UpdateInput();
+}
+
+void UPlayScene::LoadData()
+{
+}
+
+void UPlayScene::Release()
+{
+	m_objects.clear();
+}
+
+void UPlayScene::UpdateInput()
+{
+	if (Input::IsKeyPressed(VK_SPACE))
+	{
+		UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
+	}
+
+	m_fPlayerCharacter->Input();
+}
+
+void UPlayScene::TimeInitialize()
+{
+	m_fFPSLastTime = Time::GetTotalTime();
+	m_fcountOneSecond = Time::GetTotalTime();
+}
+
+void UPlayScene::CharactersInitialize()
 {
 	m_fPlayerCharacter = std::make_shared<APlayerCharacter>();
 	m_fPlayerCharacter->Initialize();
@@ -36,12 +83,28 @@ void UPlayScene::Initialize()
 		m_fEnemyCharacter->Initialize();
 		m_objects.push_back(m_fEnemyCharacter);
 	}
-
-	m_fFPSLastTime = Time::GetTotalTime();
-	m_fcountOneSecond = Time::GetTotalTime();
 }
 
-void UPlayScene::Update()
+void UPlayScene::UIInitialize()
+{
+	int uiwidth = 60;
+	int uiheith = 30;
+	m_scoreui->Initialize
+	(
+		nullptr,
+		10,
+		(wchar_t*)L"Verdana",
+		Gdiplus::Color(255, 255, 255),
+		FVector2(-uiwidth / 2, -uiheith / 2),
+		FVector2(uiwidth, uiheith)
+	);
+	m_scoreui->m_content = (wchar_t*)malloc(sizeof(wchar_t) * 10);
+	wchar_t gameScoreStr[10];
+	swprintf_s(gameScoreStr, 10, L"%d", 0);
+	wcscpy_s(m_scoreui->m_content, 10, gameScoreStr);
+}
+
+void UPlayScene::UpdateCollisionDetection()
 {
 	quadTree->Clear();
 	for (auto object : m_objects)
@@ -50,39 +113,46 @@ void UPlayScene::Update()
 
 		if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(object))
 		{
-			// QuadTree Update
 			quadTree->Insert(actor, actor->GetBoundBox());
-			//actor->SetColor(FColor(1.0f));
 		}
 	}
 
 	for (auto object : m_objects)
 	{
-		if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(object))
+		// only collision detect Player to Enemy
+		if (std::shared_ptr<APlayerCharacter> actor = std::dynamic_pointer_cast<APlayerCharacter>(object))
 		{
 			FAABBBox boundA = actor->GetBoundBox();
 			std::vector<std::shared_ptr<UObject>> TargetObject;
 			quadTree->GetElements(boundA, TargetObject);
 			for (auto tother : TargetObject)
 			{
-				if (std::shared_ptr<AActor> other = std::dynamic_pointer_cast<AEnemyCharacter>(tother))
+				if (std::shared_ptr<AEnemyCharacter> other = std::dynamic_pointer_cast<AEnemyCharacter>(tother))
 				{
-					if (actor != other )
+					FAABBBox boundB = other->GetBoundBox();
+					if (Experiment::FCollisionDetector::AABBCollisionCheck(boundA, boundB))
 					{
-						FAABBBox boundB = other->GetBoundBox();
-						if (Experiment::FCollisionDetector::AABBCollisionCheck(boundA, boundB))
+						// 원소 지우기
+						m_objects.erase(remove(m_objects.begin(), m_objects.end(), other), m_objects.end());
+						printf("%f,  %f", other->GetActorLocation().x, other->GetActorLocation().y);
+						AdGameState* g = dynamic_cast<AdGameState*>(Game::GetGameState());
+						if (g)
 						{
-							// 원소 지우기
-							m_objects.erase(remove(m_objects.begin(), m_objects.end(), other), m_objects.end());
-							//actor->SetColor(FColor(1, 0, 0, 1));
-							//other->SetColor(FColor(1, 0, 0, 1));
+							g->GameScore++;
+							wchar_t gameScoreStr[10];
+							swprintf_s(gameScoreStr, 10, L"%d", g->GameScore);
+							wcscpy_s(m_scoreui->m_content, 10, gameScoreStr);
+							std::cout << g->GameScore << '\n';
 						}
 					}
 				}
 			}
 		}
 	}
+}
 
+void UPlayScene::UpdateTime()
+{
 	// 10초 뒤에 씬 전환
 	m_fFPSLastTime = Time::GetTotalTime() - m_fcountOneSecond;
 	if (m_fFPSLastTime >= m_fFPSTime)	// 1 초에 한 번씩
@@ -94,25 +164,4 @@ void UPlayScene::Update()
 		//m_objects.push_back(m_fEnemyCharacter);
 		//m_fcountOneSecond = Time::GetTotalTime();
 	}
-
-	Input();
-}
-
-void UPlayScene::LoadData()
-{
-}
-
-void UPlayScene::Release()
-{
-	m_objects.clear();
-}
-
-void UPlayScene::Input()
-{
-	if (Input::IsKeyPressed(VK_5))
-	{
-		UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
-	}
-
-	m_fPlayerCharacter->Input();
 }

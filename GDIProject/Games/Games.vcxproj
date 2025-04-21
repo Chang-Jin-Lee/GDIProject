@@ -133,6 +133,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Games.h" />
     <ClInclude Include="Character\PlayerCharacter.h" />
+    <ClInclude Include="Player\dGameState.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scene\EndScene.h" />
     <ClInclude Include="Scene\MenuScene.h" />
@@ -144,6 +145,7 @@
     <ClCompile Include="Image\BackGroundImage.cpp" />
     <ClCompile Include="Games.cpp" />
     <ClCompile Include="Character\PlayerCharacter.cpp" />
+    <ClCompile Include="Player\dGameState.cpp" />
     <ClCompile Include="Scene\EndScene.cpp" />
     <ClCompile Include="Scene\MenuScene.cpp" />
     <ClCompile Include="Scene\PlayScene.cpp" />

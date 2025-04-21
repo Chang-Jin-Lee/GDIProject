@@ -23,10 +23,10 @@ void AEnemyCharacter::Initialize()
 	__super::Initialize();
 	Game::GetCurrentScene();
 	LoadData(L"test", L"Rectangle.png");
-	int width = Renderer::GetWidth();
-	int height = Renderer::GetHeight();
+	int width = Renderer::GetResolution().x;
+	int height = Renderer::GetResolution().y;
 	SetActorSize(50, 50);
-	SetActorLocation(FRandom::GetRandomInRange(width/10, width), FRandom::GetRandomInRange(0, height));
+	SetActorLocation(FRandom::GetRandomInRange(width*0.2, width), FRandom::GetRandomInRange(height*0.3, height));
 	SetActorScale(FRandom::GetRandomInRange(1.0, m_randomWidth), FRandom::GetRandomInRange(1.0, m_randomHeight));
 
 	int uiwidth = 120;

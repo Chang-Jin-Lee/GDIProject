@@ -9,8 +9,7 @@
 
 namespace Renderer
 {
-	int g_width = 1280;
-	int g_height = 800;
+	FVector2 g_resolution = FVector2(1280,800);
 	HWND g_hWnd;
 	HDC g_FrontBufferDC;    // 앞면 DC
 	HDC g_BackBufferDC;    // 뒷면 DC
@@ -24,8 +23,13 @@ namespace Renderer
 
 	void SetResolution(const int& width, const int& height)
 	{
-		g_width = width;
-		g_height = height;
+		g_resolution.x = width;
+		g_resolution.y = height;
+	}
+
+	FVector2 GetResolution()
+	{
+		return g_resolution;
 	}
 
 	void Initialize(HWND hwnd)
@@ -33,7 +37,7 @@ namespace Renderer
 		////////Renderer::Initialize
 		g_FrontBufferDC = GetDC(hwnd); //윈도우 클라이언트 영역의 DeviceContext얻기
 		g_BackBufferDC = CreateCompatibleDC(g_FrontBufferDC); // 호환되는 DeviceContext 생성
-		g_BackBufferBitmap = CreateCompatibleBitmap(g_FrontBufferDC, g_width, g_height); // 메모리 영역생성
+		g_BackBufferBitmap = CreateCompatibleBitmap(g_FrontBufferDC, g_resolution.x, g_resolution.y); // 메모리 영역생성
 		SelectObject(g_BackBufferDC, g_BackBufferBitmap); // MemDC의 메모리영역 지정
 
 		Gdiplus::GdiplusStartupInput gsi;
@@ -46,7 +50,7 @@ namespace Renderer
 
 	void BeginDraw()
 	{
-		PatBlt(g_BackBufferDC, 0, 0, g_width, g_height, BLACKNESS);
+		PatBlt(g_BackBufferDC, 0, 0, g_resolution.x, g_resolution.y, BLACKNESS);
 	}
 
 	void RenderImage(Gdiplus::Bitmap* pImageBitmap, const int& x, const int& y, const float& rotation, const float& scaleX, const float& scaleY)
@@ -246,7 +250,7 @@ namespace Renderer
 
 	void EndDraw()
 	{
-		BitBlt(g_FrontBufferDC, 0, 0, g_width, g_height, g_BackBufferDC, 0, 0, SRCCOPY);
+		BitBlt(g_FrontBufferDC, 0, 0, g_resolution.x, g_resolution.y, g_BackBufferDC, 0, 0, SRCCOPY);
 	}
 
 	void Release(HWND hwnd)
@@ -258,22 +262,5 @@ namespace Renderer
 		if (g_pBackBufferGraphics != nullptr)
 			delete g_pBackBufferGraphics;
 		Gdiplus::GdiplusShutdown(g_GdiPlusToken);
-	}
-
-	int GetWidth()
-	{
-		return g_width;
-	}
-	void SetWidth(int value)
-	{
-		g_width = value;
-	}
-	int GetHeight()
-	{
-		return g_height;
-	}
-	void SetHeight(int value)
-	{
-		g_height = value;
 	}
 }

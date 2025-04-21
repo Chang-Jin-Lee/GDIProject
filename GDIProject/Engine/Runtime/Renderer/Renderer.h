@@ -11,9 +11,10 @@ using namespace Gdiplus;
 
 namespace Renderer
 {
-	void SetResolution(const int& width, const int& height);
 	void Initialize(HWND hwnd);
 	void BeginDraw();
+	void SetResolution(const int& width, const int& height);
+	FVector2 GetResolution();
 	void RenderImage(Gdiplus::Bitmap* ImageBitmap, const int& x, const int& y, const float& rotation, const float& scaleX, const float& scaleY);
 	void RenderImage(Gdiplus::Bitmap* pImageBitmap, AActor* actor); 	// 애니메이션을 위한 함수. 
 	void RenderImageWithUI(Gdiplus::Bitmap* pImageBitmap, AActor* actor, SUIText* textui);

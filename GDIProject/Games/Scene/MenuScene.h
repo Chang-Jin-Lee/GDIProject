@@ -4,6 +4,7 @@
 #include <Classes/Components/StaticMeshComponent.h>
 #include "../Image/BackGroundImage.h"
 #include <UI/UIButton.h>
+#include <UI/UIText.h>
 
 class UMenuScene : public UScene
 {
@@ -16,7 +17,11 @@ public:
 	virtual void LoadData() override;
 	virtual void Release() override;
 
-	ABackGroundImage* m_image;
+	void UIInitialize();
+	void UpdateInput();
 
-	SUIButton* m_button;
+	ABackGroundImage* m_image;
+	SUIText* m_startGuideui;
+
+	//SUIButton* m_button; 버튼은 아직 실험단계
 };
