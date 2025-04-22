@@ -5,36 +5,41 @@
 #include "../Games.h"
 #include "../Player/dGameState.h"
 #include <iostream>
+#include <UI/UITextComponent.h>
+#include "../Image/BackGroundImage.h"
 
 UEndScene::UEndScene()
 {
-	m_image = new ABackGroundImage();
-	m_scoreui = new SUIText();
-	m_scoreGuideui = new SUIText();
+	std::wstring m_imagename = L"m_image";
+	std::wstring m_scoreuiname = L"m_scoreui";
+	std::wstring m_scoreGuideuiname = L"m_scoreGuideui";
+
+	m_image = NewObject<ABackGroundImage>(m_imagename);
+	m_scoreui = NewObject<SUITextComponent>(m_scoreuiname);
+	m_scoreGuideui = NewObject<SUITextComponent>(m_scoreGuideuiname);
 }
 
 UEndScene::~UEndScene()
 {
-	delete m_image;
-	delete m_scoreui;
-	delete m_scoreGuideui;
+	m_image.reset();
+	m_scoreui.reset();
+	m_scoreGuideui.reset();
 }
 
 void UEndScene::Initialize()
 {
+	__super::Initialize();
 	UIInitialize();
 }
 
 void UEndScene::Update()
 {
+	__super::Update();
 	UpdateInput();
-	Renderer::RenderActor(m_image);
-	Renderer::RenderTextUI(m_scoreui, int(Renderer::GetResolution().x * 0.4), int(Renderer::GetResolution().y * 0.5));
-	Renderer::RenderTextUI(m_scoreGuideui, int(Renderer::GetResolution().x * 0.2), int(Renderer::GetResolution().y * 0.5));
-
 }
 void UEndScene::LoadData()
 {
+	__super::LoadData();
 	m_image->LoadData(L"Image", L"EndImage.png");
 	m_image->SetActorSize(1280, 800);
 }
@@ -46,7 +51,6 @@ void UEndScene::Release()
 
 void UEndScene::UIInitialize()
 {
-
 	// 이 UI선언을 좀더 간단하게 만들어야함.
 	float uiwidth = 60;
 	float uiheith = 30;
@@ -56,7 +60,7 @@ void UEndScene::UIInitialize()
 		18,
 		(wchar_t*)L"Verdana",
 		Gdiplus::Color(255, 255, 255),
-		FVector2(-uiwidth / 2, -uiheith / 2),
+		FVector2(int(Renderer::GetResolution().x * 0.4), int(Renderer::GetResolution().y * 0.5)),
 		FVector2(uiwidth, uiheith)
 	);
 	m_scoreui->m_content = (wchar_t*)malloc(sizeof(wchar_t) * 10);
@@ -77,13 +81,8 @@ void UEndScene::UIInitialize()
 		24,
 		(wchar_t*)L"Verdana",
 		Gdiplus::Color(255, 255, 255),
-		FVector2(-Guideuiwidth / 2, -Guideuiheith / 2),
-		FVector2(Guideuiwidth, Guideuiheith),
-		Gdiplus::FontStyleBold,
-		Gdiplus::UnitPoint,
-		Gdiplus::StringAlignmentNear,
-		Gdiplus::StringAlignmentNear,
-		Gdiplus::StringTrimmingNone
+		FVector2(int(Renderer::GetResolution().x * 0.2), int(Renderer::GetResolution().y * 0.5)),
+		FVector2(Guideuiwidth, Guideuiheith)
 	);
 }
 

@@ -59,7 +59,6 @@ namespace Renderer
 	{
 		if (pImageBitmap && g_pBackBufferGraphics)
 		{
-
 			int imgWidth = pImageBitmap->GetWidth();
 			int imgHeight = pImageBitmap->GetHeight();
 
@@ -94,15 +93,24 @@ namespace Renderer
 	}
 
 	// 애니메이션을 할때는 비트맵을 한장씩 넘겨야 하니까 Bitmap 받기
-	void RenderImage(Gdiplus::Bitmap* pImageBitmap, AActor* actor)
+	void RenderCharacterAnimation(ACharacter::FAnimationBundle& animationBundle, ACharacter* character)
 	{
+		if (character == nullptr || animationBundle.animationComponent[(int)character->dirState][(int)character->animstate]->m_frames == nullptr)
+		{
+			printf("RenderCharacterAnimation Error!!!");
+			return;
+		}
+		Gdiplus::Bitmap* pImageBitmap = animationBundle.animationComponent[(int)character->dirState][(int)character->animstate]
+			->m_frames[animationBundle.animationComponent[(int)character->dirState][(int)character->animstate]->m_ianimationClip]
+			->m_frame;
+
 		if (pImageBitmap && g_pBackBufferGraphics)
 		{
-			const float x = actor->GetActorLocation().x;
-			const float y = actor->GetActorLocation().y;
-			const float rotation = actor->GetActorRotation();
-			const float scaleX = actor->GetActorScale().x;
-			const float scaleY = actor->GetActorScale().y;
+			const float x = character->GetActorLocation().x;
+			const float y = character->GetActorLocation().y;
+			const float rotation = character->GetActorRotation();
+			const float scaleX = character->GetActorScale().x;
+			const float scaleY = character->GetActorScale().y;
 
 			int imgWidth = pImageBitmap->GetWidth();
 			int imgHeight = pImageBitmap->GetHeight();
@@ -119,7 +127,7 @@ namespace Renderer
 		}
 	}
 
-	void RenderTextUI(SUIText* textui, int _x, int _y)
+	void RenderTextUI(SUITextComponent* textui, int _x, int _y)
 	{
 		wchar_t* name = textui->m_content;
 		if (name != nullptr)
@@ -140,7 +148,7 @@ namespace Renderer
 		}
 	}
 
-	void RenderImageWithUI(Gdiplus::Bitmap* pImageBitmap, AActor* actor, SUIText* textui)
+	void RenderImageWithUI(Gdiplus::Bitmap* pImageBitmap, AActor* actor, SUITextComponent* textui)
 	{
 		if (pImageBitmap && g_pBackBufferGraphics)
 		{
@@ -197,7 +205,32 @@ namespace Renderer
 		}
 	}
 
-	void RenderActorWithUI(AActor* actor, SUIText* textui)
+	void RenderMesh(USceneComponent* sceneComponent, UStaticMeshComponent* staticMesh)
+	{
+		Gdiplus::Bitmap* pImageBitmap = staticMesh->GetMesh();
+		if (pImageBitmap && g_pBackBufferGraphics)
+		{
+			const float x = sceneComponent->GetSceneComponentLocation().x;
+			const float y = sceneComponent->GetSceneComponentLocation().y;
+			const float rotation = sceneComponent->GetSceneComponentRotation();
+			const float scaleX = sceneComponent->GetSceneComponentScale().x;
+			const float scaleY = sceneComponent->GetSceneComponentScale().y;
+
+			int imgWidth = (int)staticMesh->GetMeshSize().x;
+			int imgHeight = (int)staticMesh->GetMeshSize().y;
+
+			Gdiplus::PointF center = Gdiplus::PointF(float(imgWidth / 2), float(imgHeight / 2));
+			Gdiplus::Matrix matrix;
+			matrix.Translate(x, y);
+			matrix.Scale(scaleX, scaleY);
+			matrix.RotateAt(rotation, center);
+			g_pBackBufferGraphics->SetTransform(&matrix); // 매트릭스 적용.
+			g_pBackBufferGraphics->DrawImage(pImageBitmap, 0, 0, imgWidth, imgHeight);
+			g_pBackBufferGraphics->ResetTransform();
+		}
+	}
+
+	void RenderActorWithUI(AActor* actor, SUITextComponent* textui)
 	{
 		Gdiplus::Bitmap* pImageBitmap = actor->GetBitmap();
 		if (pImageBitmap && g_pBackBufferGraphics)

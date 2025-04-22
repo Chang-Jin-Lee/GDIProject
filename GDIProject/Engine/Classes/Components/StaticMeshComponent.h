@@ -39,4 +39,5 @@ public:
 	}
 
 	FVector2 GetMeshSize() { return m_fmeshSize; }
+	Gdiplus::Bitmap* GetMesh() { return mesh; }
 };

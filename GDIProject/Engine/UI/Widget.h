@@ -1,13 +1,11 @@
 #pragma once
 
-#include "Actor.h"
+#include "../Classes/Object.h"
 
-// 물리 충돌을 가지는 Actor를 Pawn으로 정의
-class APawn : public AActor
+class UWidget : public UObject
 {
-public:
-	APawn();
-	~APawn();
+	UWidget();
+	~UWidget();
 
 	virtual void Initialize() override;
 	virtual void Update() override;

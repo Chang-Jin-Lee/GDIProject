@@ -2,12 +2,13 @@
 
 #include <Classes/Scene/Scene.h>
 #include <Experiment/QuadTree.h>
-#include <UI/UIText.h>
 #include <Time/Time.h>
 #include "../Character/PlayerCharacter.h"
 #include "../Character/EnemyCharacter.h"
+#include <string>
 
 using FQuadTree = TQuadTree<std::shared_ptr<UObject>, 4>;
+class SUITextComponent;
 
 class UPlayScene : public UScene
 {
@@ -32,10 +33,9 @@ public:
 private:
 	std::shared_ptr<APlayerCharacter> m_fPlayerCharacter;
 	std::shared_ptr<AEnemyCharacter> m_fEnemyCharacter;
-
-	SUIText* m_scoreui;
-	SUIText* m_remainTimeGuideui;
-	SUIText* m_remainTimeui;
+	std::shared_ptr<SUITextComponent> m_scoreui;
+	std::shared_ptr<SUITextComponent> m_remainTimeGuideui;
+	std::shared_ptr<SUITextComponent> m_remainTimeui;
 
 	FAABBBox* WorldBound = nullptr;
 	FQuadTree* quadTree = nullptr;
@@ -44,4 +44,7 @@ private:
 	float m_fFPSLastTime = 0;
 	float m_fcountOneSecond = 0;
 	int m_enemyMaxSize = 15;
+
+	std::wstring PlayerName = L"플레이어 캐릭터";
+	std::wstring EnemyName = L"적 캐릭터";
 };

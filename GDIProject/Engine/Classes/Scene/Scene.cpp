@@ -17,7 +17,10 @@ void UScene::Initialize()
 
 void UScene::Update()
 {
-
+	for (auto objectPair : m_objects)
+	{
+		objectPair.second->Update();
+	}
 }
 
 void UScene::LoadData()

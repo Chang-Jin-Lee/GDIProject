@@ -7,6 +7,7 @@
 #include "../Games.h"
 #include "../Character/EnemyCharacter.h"
 #include "../Player/dGameState.h"
+#include <UI/UITextComponent.h>
 
 UPlayScene::UPlayScene()
 {
@@ -21,24 +22,29 @@ UPlayScene::UPlayScene()
 	{
 		g->GameScore = 0;
 	}
-	m_scoreui = new SUIText();
-	m_remainTimeGuideui = new SUIText();
-	m_remainTimeui = new SUIText();
+
+	std::wstring m_scoreuiname = L"m_scoreuiname";
+	std::wstring m_remainTimeGuideuiname = L"m_remainTimeGuideui";
+	std::wstring m_remainTimeuiname = L"m_remainTimeui";
+
+	m_scoreui = NewObject<SUITextComponent>(m_scoreuiname);
+	m_remainTimeGuideui = NewObject<SUITextComponent>(m_remainTimeGuideuiname);
+	m_remainTimeui = NewObject<SUITextComponent>(m_remainTimeuiname);
 }
 
 UPlayScene::~UPlayScene()
 {
 	for (auto object : m_objects)
 	{
-		if (std::shared_ptr<UObject> _objet = std::dynamic_pointer_cast<UObject>(object)) _objet.reset();
+		if (std::shared_ptr<UObject> _objet = std::dynamic_pointer_cast<UObject>(object.second)) _objet.reset();
 	}
 	m_objects.clear();
 	m_fPlayerCharacter.reset();
 	delete WorldBound;
 	delete quadTree;
-	delete m_scoreui;
-	delete m_remainTimeGuideui;
-	delete m_remainTimeui;
+	m_scoreui.reset();
+	m_remainTimeGuideui.reset();
+	m_remainTimeui.reset();
 }
 
 void UPlayScene::Initialize()
@@ -50,10 +56,8 @@ void UPlayScene::Initialize()
 
 void UPlayScene::Update()
 {
+	__super::Update();
 	UpdateCollisionDetection();
-	Renderer::RenderTextUI(m_scoreui, int(Renderer::GetResolution().x * 0.5), int(Renderer::GetResolution().y * 0.1));
-	Renderer::RenderTextUI(m_remainTimeGuideui, int(Renderer::GetResolution().x * 0.4), int(Renderer::GetResolution().y * 0.15));
-	Renderer::RenderTextUI(m_remainTimeui, int(Renderer::GetResolution().x * 0.5), int(Renderer::GetResolution().y * 0.15));
 	UpdateTime();
 	UpdateUI();
 	UpdateInput();
@@ -74,8 +78,6 @@ void UPlayScene::UpdateInput()
 	{
 		UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
 	}
-
-	m_fPlayerCharacter->Input();
 }
 
 
@@ -87,21 +89,21 @@ void UPlayScene::TimeInitialize()
 
 void UPlayScene::CharactersInitialize()
 {
-	m_fPlayerCharacter = std::make_shared<APlayerCharacter>();
+	m_fPlayerCharacter = NewObject<APlayerCharacter>(PlayerName);
+	m_fPlayerCharacter->SetName(PlayerName.c_str());
 	m_fPlayerCharacter->Initialize();
-	m_objects.push_back(m_fPlayerCharacter);
 
 	for (int i = 0; i < m_enemyMaxSize; i++)
 	{
-		m_fEnemyCharacter = std::make_shared<AEnemyCharacter>();
-		m_fEnemyCharacter->SetName((wchar_t*)L"적 캐릭터");
+		m_fEnemyCharacter = NewObject<AEnemyCharacter>(EnemyName);
+		m_fEnemyCharacter->SetName(EnemyName.c_str());
 		m_fEnemyCharacter->Initialize();
-		m_objects.push_back(m_fEnemyCharacter);
 	}
 }
 
 void UPlayScene::UIInitialize()
 {
+
 	float uiwidth = 60;
 	float uiheith = 30;
 	m_scoreui->Initialize
@@ -110,7 +112,7 @@ void UPlayScene::UIInitialize()
 		10,
 		(wchar_t*)L"Verdana",
 		Gdiplus::Color(255, 255, 255),
-		FVector2(-uiwidth / 2, -uiheith / 2),
+		FVector2(int(Renderer::GetResolution().x * 0.5), int(Renderer::GetResolution().y * 0.1)),
 		FVector2(uiwidth, uiheith)
 	);
 	m_scoreui->m_content = (wchar_t*)malloc(sizeof(wchar_t) * 10);
@@ -126,7 +128,7 @@ void UPlayScene::UIInitialize()
 		18,
 		(wchar_t*)L"Verdana",
 		Gdiplus::Color(255, 255, 255),
-		FVector2(-uiwidth / 2, -uiheith / 2),
+		FVector2(int(Renderer::GetResolution().x * 0.35), int(Renderer::GetResolution().y * 0.15)),
 		FVector2(uiwidth, uiheith)
 	);
 
@@ -138,9 +140,10 @@ void UPlayScene::UIInitialize()
 		10,
 		(wchar_t*)L"Verdana",
 		Gdiplus::Color(255, 255, 255),
-		FVector2(-uiwidth / 2, -uiheith / 2),
+		FVector2(int(Renderer::GetResolution().x * 0.5), int(Renderer::GetResolution().y * 0.15)),
 		FVector2(uiwidth, uiheith)
 	);
+
 	m_remainTimeui->m_content = (wchar_t*)malloc(sizeof(wchar_t) * 10);
 	wchar_t gameremainTimeStr[10];
 	swprintf_s(gameremainTimeStr, 10, L"%f", 10.0f);
@@ -150,18 +153,17 @@ void UPlayScene::UIInitialize()
 void UPlayScene::UpdateCollisionDetection()
 {
 	quadTree->Clear();
-	for (auto object : m_objects)
+	for (auto objectPair : m_objects)
 	{
-		object->Update();
-
-		if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(object))
+		if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(objectPair.second))
 		{
 			quadTree->Insert(actor, *actor->GetBoundBox());
 		}
 	}
 
-	for (auto object : m_objects)
+	for (auto objectPair : m_objects)
 	{
+		std::shared_ptr<UObject> object = objectPair.second;
 		// only collision detect Player to Enemy
 		if (std::shared_ptr<APlayerCharacter> actor = std::dynamic_pointer_cast<APlayerCharacter>(object))
 		{
@@ -176,8 +178,8 @@ void UPlayScene::UpdateCollisionDetection()
 					if (Experiment::FCollisionDetector::AABBCollisionCheck(boundA, boundB))
 					{
 						// 원소 지우기
-						m_objects.erase(remove(m_objects.begin(), m_objects.end(), other), m_objects.end());
-						printf("%f,  %f", other->GetActorLocation().x, other->GetActorLocation().y);
+						m_objects.erase(other->GetName());
+
 						AdGameState* g = dynamic_cast<AdGameState*>(Game::GetGameState());
 						if (g)
 						{
@@ -185,7 +187,6 @@ void UPlayScene::UpdateCollisionDetection()
 							wchar_t gameScoreStr[10];
 							swprintf_s(gameScoreStr, 10, L"%d", g->GameScore);
 							wcscpy_s(m_scoreui->m_content, 10, gameScoreStr);
-							std::cout << g->GameScore << '\n';
 						}
 					}
 				}

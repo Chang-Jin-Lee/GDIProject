@@ -105,13 +105,13 @@
     <ClInclude Include="Classes\Scene\Scene.h">
       <Filter>헤더 파일\Classes</Filter>
     </ClInclude>
-    <ClInclude Include="UI\UIText.h">
+    <ClInclude Include="UI\UITextComponent.h">
       <Filter>헤더 파일\UI</Filter>
     </ClInclude>
     <ClInclude Include="Time\Time.h">
       <Filter>헤더 파일\Time</Filter>
     </ClInclude>
-    <ClInclude Include="UI\UIButton.h">
+    <ClInclude Include="UI\UIButtonComponent.h">
       <Filter>헤더 파일\UI</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Camera\CameraBase.h">
@@ -134,6 +134,9 @@
     </ClInclude>
     <ClInclude Include="Classes\GameFramework\GameState.h">
       <Filter>헤더 파일\Classes\GameFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Widget.h">
+      <Filter>헤더 파일\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -176,7 +179,7 @@
     <ClCompile Include="Classes\Scene\Scene.cpp">
       <Filter>소스 파일\Classes</Filter>
     </ClCompile>
-    <ClCompile Include="UI\UIText.cpp">
+    <ClCompile Include="UI\UITextComponent.cpp">
       <Filter>소스 파일\UI</Filter>
     </ClCompile>
     <ClCompile Include="Time\Time.cpp">
@@ -193,6 +196,9 @@
     </ClCompile>
     <ClCompile Include="Classes\GameFramework\GameState.cpp">
       <Filter>소스 파일\Classes\GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Widget.cpp">
+      <Filter>소스 파일\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

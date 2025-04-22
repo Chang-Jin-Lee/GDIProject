@@ -16,6 +16,7 @@ UStaticMeshComponent::UStaticMeshComponent(std::wstring baseDir, std::wstring fi
 
 UStaticMeshComponent::~UStaticMeshComponent()
 {
+	delete mesh;
 }
 
 void UStaticMeshComponent::LoadData(std::wstring baseDir, std::wstring fileName)

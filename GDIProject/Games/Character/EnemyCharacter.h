@@ -1,9 +1,10 @@
 #pragma once
 #include <Classes/Character.h>
 #include <Math/Math.h>
-#include <UI/UIText.h>
 
-class AEnemyCharacter : public ACharacter
+class SUITextComponent;
+
+class AEnemyCharacter : public AActor
 {
 public:
 	AEnemyCharacter();
@@ -16,7 +17,7 @@ public:
 	void LoadData(std::wstring baseDir, std::wstring fileName);
 
 private:
-	SUIText* m_textui;
+	SUITextComponent* m_textui;
 	float m_randomWidth;
 	float m_randomHeight;
 };

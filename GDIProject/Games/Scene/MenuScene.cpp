@@ -3,34 +3,39 @@
 #include <Input/Input.h>
 #include "../Games.h"
 #include "PlayScene.h"
+#include <UI/UIButtonComponent.h>
+#include <UI/UITextComponent.h>
 
 UMenuScene::UMenuScene()
 {
-	m_image = new ABackGroundImage();
-	m_startGuideui = new SUIText();
+	std::wstring m_imagename = L"m_image";
+	std::wstring m_startGuideuiname = L"m_startGuideui";
+
+	m_image = NewObject<ABackGroundImage>(m_imagename);
+	m_startGuideui = NewObject<SUITextComponent>(m_startGuideuiname);
 }
 
 UMenuScene::~UMenuScene()
 {
-	delete m_image;
-	delete m_startGuideui;
+	m_image.reset();
+	m_startGuideui.reset();
 }
 
 void UMenuScene::Initialize()
 {
+	__super::Initialize();
 	UIInitialize();
 }
 
 void UMenuScene::Update()
 {
+	__super::Update();
 	UpdateInput();
-
-	Renderer::RenderActor(m_image);
-	Renderer::RenderTextUI(m_startGuideui, int(Renderer::GetResolution().x * 0.2), int(Renderer::GetResolution().y * 0.6));
 }
 
 void UMenuScene::LoadData()
 {
+	__super::LoadData();
 	m_image->LoadData(L"Image", L"TitleImage.png");
 	m_image->SetActorSize(1280, 800);
 }
@@ -42,7 +47,7 @@ void UMenuScene::Release()
 
 void UMenuScene::UIInitialize()
 {
-	float uiwidth = 250;
+	float uiwidth = 300;
 	float uiheith = 100;
 	m_startGuideui->Initialize
 	(
@@ -50,7 +55,7 @@ void UMenuScene::UIInitialize()
 		22,
 		(wchar_t*)L"Verdana",
 		Gdiplus::Color(255, 255, 255),
-		FVector2(-uiwidth / 2, -uiheith / 2),
+		FVector2(int(Renderer::GetResolution().x * 0.07), int(Renderer::GetResolution().y * 0.6)),
 		FVector2(uiwidth, uiheith)
 	);
 }
