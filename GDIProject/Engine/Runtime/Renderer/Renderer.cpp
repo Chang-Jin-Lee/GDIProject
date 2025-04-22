@@ -21,7 +21,7 @@ namespace Renderer
 	const Gdiplus::Pen* m_redPen = nullptr; // 빨간펜
 	const Gdiplus::Pen* m_BluePen = nullptr; // 파란펜
 
-	void SetResolution(const int& width, const int& height)
+	void SetResolution(const float& width, const float& height)
 	{
 		g_resolution.x = width;
 		g_resolution.y = height;
@@ -37,7 +37,7 @@ namespace Renderer
 		////////Renderer::Initialize
 		g_FrontBufferDC = GetDC(hwnd); //윈도우 클라이언트 영역의 DeviceContext얻기
 		g_BackBufferDC = CreateCompatibleDC(g_FrontBufferDC); // 호환되는 DeviceContext 생성
-		g_BackBufferBitmap = CreateCompatibleBitmap(g_FrontBufferDC, g_resolution.x, g_resolution.y); // 메모리 영역생성
+		g_BackBufferBitmap = CreateCompatibleBitmap(g_FrontBufferDC, (int)g_resolution.x, (int)g_resolution.y); // 메모리 영역생성
 		SelectObject(g_BackBufferDC, g_BackBufferBitmap); // MemDC의 메모리영역 지정
 
 		Gdiplus::GdiplusStartupInput gsi;
@@ -47,12 +47,12 @@ namespace Renderer
 		if(m_redPen == nullptr)
 			m_redPen = new Gdiplus::Pen(Color(255, 0, 0), 1.0f); // 빨간펜
 		if(m_BluePen == nullptr)
-			m_BluePen = new Gdiplus::Pen(Color(0, 0, 255), 1.0f); // 빨간펜
+			m_BluePen = new Gdiplus::Pen(Color(0, 0, 255), 1.0f); // 파란펜
 	}
 
 	void BeginDraw()
 	{
-		PatBlt(g_BackBufferDC, 0, 0, g_resolution.x, g_resolution.y, BLACKNESS);
+		PatBlt(g_BackBufferDC, 0, 0, (int)g_resolution.x, (int)g_resolution.y, BLACKNESS);
 	}
 
 	void RenderImage(Gdiplus::Bitmap* pImageBitmap, const int& x, const int& y, const float& rotation, const float& scaleX, const float& scaleY)
@@ -98,8 +98,8 @@ namespace Renderer
 	{
 		if (pImageBitmap && g_pBackBufferGraphics)
 		{
-			const int x = actor->GetActorLocation().x;
-			const int y = actor->GetActorLocation().y;
+			const float x = actor->GetActorLocation().x;
+			const float y = actor->GetActorLocation().y;
 			const float rotation = actor->GetActorRotation();
 			const float scaleX = actor->GetActorScale().x;
 			const float scaleY = actor->GetActorScale().y;
@@ -109,7 +109,7 @@ namespace Renderer
 
 			Gdiplus::PointF center = Gdiplus::PointF(x + float(imgWidth / 2), y + float(imgHeight / 2));
 			Gdiplus::Matrix matrix;
-			matrix.Translate((float)x, (float)y);
+			matrix.Translate(x, y);
 			matrix.Scale(scaleX, scaleY);
 			matrix.RotateAt(rotation, center);
 			g_pBackBufferGraphics->SetTransform(&matrix);	// 매트릭스 적용.
@@ -124,10 +124,10 @@ namespace Renderer
 		wchar_t* name = textui->m_content;
 		if (name != nullptr)
 		{
-			int x = _x + textui->m_Position.x;
-			int y = _y + textui->m_Position.y;
-			int width = textui->m_Size.x;
-			int height = textui->m_Size.y;
+			float x = _x + textui->m_Position.x;
+			float y = _y + textui->m_Position.y;
+			float width = textui->m_Size.x;
+			float height = textui->m_Size.y;
 			Gdiplus::FontFamily fontFamily(textui->m_fontFamily);
 			Gdiplus::Font font(&fontFamily, textui->m_fontSize, textui->m_efontStyle, textui->m_eworldUnit);
 			Gdiplus::StringFormat stringFormat;
@@ -135,8 +135,8 @@ namespace Renderer
 			stringFormat.SetLineAlignment(textui->m_fontLineAlignment); // 다음 줄로 갱신될 때 왼쪽부터 써지기
 			stringFormat.SetTrimming(textui->m_fontTrimming); // trim 안함
 			Gdiplus::SolidBrush brush(textui->m_color);
-			RenderRectRed(x,y, width, height);
-			g_pBackBufferGraphics->DrawString(name, wcslen(name), &font, Gdiplus::RectF(x, y, width, height), &stringFormat, &brush);
+			RenderRectRed((int)x, (int)y, (int)width, (int)height);
+			g_pBackBufferGraphics->DrawString(name, (INT)wcslen(name), &font, Gdiplus::RectF(x, y, width, height), &stringFormat, &brush);
 		}
 	}
 
@@ -144,14 +144,14 @@ namespace Renderer
 	{
 		if (pImageBitmap && g_pBackBufferGraphics)
 		{
-			const int x = actor->GetActorLocation().x;
-			const int y = actor->GetActorLocation().y;
+			const float x = actor->GetActorLocation().x;
+			const float y = actor->GetActorLocation().y;
 			const float rotation = actor->GetActorRotation();
 			const float scaleX = actor->GetActorScale().x;
 			const float scaleY = actor->GetActorScale().y;
 
-			int imgWidth = actor->GetActorSize().x;
-			int imgHeight = actor->GetActorSize().y;
+			int imgWidth = (int)actor->GetActorSize().x;
+			int imgHeight = (int)actor->GetActorSize().y;
 
 			//int imgWidth = pImageBitmap->GetWidth();
 			//int imgHeight = pImageBitmap->GetHeight();
@@ -177,18 +177,18 @@ namespace Renderer
 		Gdiplus::Bitmap* pImageBitmap = actor->GetBitmap();
 		if (pImageBitmap && g_pBackBufferGraphics)
 		{
-			const int x = actor->GetActorLocation().x;
-			const int y = actor->GetActorLocation().y;
+			const float x = actor->GetActorLocation().x;
+			const float y = actor->GetActorLocation().y;
 			const float rotation = actor->GetActorRotation();
 			const float scaleX = actor->GetActorScale().x;
 			const float scaleY = actor->GetActorScale().y;
 
-			int imgWidth = actor->GetActorSize().x;
-			int imgHeight = actor->GetActorSize().y;
+			int imgWidth = (int)actor->GetActorSize().x;
+			int imgHeight = (int)actor->GetActorSize().y;
 
 			Gdiplus::PointF center = Gdiplus::PointF(float(imgWidth / 2), float(imgHeight / 2));
 			Gdiplus::Matrix matrix;
-			matrix.Translate((float)x, (float)y);
+			matrix.Translate(x, y);
 			matrix.Scale(scaleX, scaleY);
 			matrix.RotateAt(rotation, center);
 			g_pBackBufferGraphics->SetTransform(&matrix); // 매트릭스 적용.
@@ -202,14 +202,14 @@ namespace Renderer
 		Gdiplus::Bitmap* pImageBitmap = actor->GetBitmap();
 		if (pImageBitmap && g_pBackBufferGraphics)
 		{
-			const int x = actor->GetActorLocation().x;
-			const int y = actor->GetActorLocation().y;
+			const float x = actor->GetActorLocation().x;
+			const float y = actor->GetActorLocation().y;
 			const float rotation = actor->GetActorRotation();
 			const float scaleX = actor->GetActorScale().x;
 			const float scaleY = actor->GetActorScale().y;
 
-			int imgWidth = actor->GetActorSize().x;
-			int imgHeight = actor->GetActorSize().y;
+			int imgWidth = (int)actor->GetActorSize().x;
+			int imgHeight = (int)actor->GetActorSize().y;
 
 			Gdiplus::PointF center = Gdiplus::PointF(float(imgWidth / 2), float(imgHeight / 2));
 			Gdiplus::Matrix matrix;
@@ -230,8 +230,8 @@ namespace Renderer
 		Gdiplus::Bitmap* pImageBitmap = actor->GetBitmap();
 		if (pImageBitmap && g_pBackBufferGraphics)
 		{
-			const int x = actor->GetActorLocation().x;
-			const int y = actor->GetActorLocation().y;
+			const float x = actor->GetActorLocation().x;
+			const float y = actor->GetActorLocation().y;
 			const float rotation = actor->GetActorRotation();
 			const float scaleX = actor->GetActorScale().x;
 			const float scaleY = actor->GetActorScale().y;
@@ -252,7 +252,7 @@ namespace Renderer
 
 	void EndDraw()
 	{
-		BitBlt(g_FrontBufferDC, 0, 0, g_resolution.x, g_resolution.y, g_BackBufferDC, 0, 0, SRCCOPY);
+		BitBlt(g_FrontBufferDC, 0, 0, (int)g_resolution.x, (int)g_resolution.y, g_BackBufferDC, 0, 0, SRCCOPY);
 	}
 
 	void Release(HWND hwnd)

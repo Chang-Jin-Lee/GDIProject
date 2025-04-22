@@ -100,8 +100,8 @@ void APlayerCharacter::Initialize()
 	SetActorScale(2.5f, 2.5f);
 	SetName((wchar_t*)L"플레이어 캐릭터");
 	// UI 초기화
-	int uiwidth = 120;
-	int uiheith = 20;
+	float uiwidth = 120;
+	float uiheith = 20;
 	m_textui->Initialize
 	(
 		GetName(),

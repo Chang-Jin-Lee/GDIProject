@@ -26,7 +26,7 @@ void UMenuScene::Update()
 	UpdateInput();
 
 	Renderer::RenderActor(m_image);
-	Renderer::RenderTextUI(m_startGuideui, Renderer::GetResolution().x * 0.2, Renderer::GetResolution().y * 0.6);
+	Renderer::RenderTextUI(m_startGuideui, int(Renderer::GetResolution().x * 0.2), int(Renderer::GetResolution().y * 0.6));
 }
 
 void UMenuScene::LoadData()
@@ -42,8 +42,8 @@ void UMenuScene::Release()
 
 void UMenuScene::UIInitialize()
 {
-	int uiwidth = 250;
-	int uiheith = 100;
+	float uiwidth = 250;
+	float uiheith = 100;
 	m_startGuideui->Initialize
 	(
 		(wchar_t*)L"C 키를 눌러 다음으로 넘어가세요",

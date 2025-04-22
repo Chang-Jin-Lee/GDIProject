@@ -29,8 +29,8 @@ void UEndScene::Update()
 {
 	UpdateInput();
 	Renderer::RenderActor(m_image);
-	Renderer::RenderTextUI(m_scoreui, Renderer::GetResolution().x * 0.4, Renderer::GetResolution().y * 0.5);
-	Renderer::RenderTextUI(m_scoreGuideui, Renderer::GetResolution().x * 0.2, Renderer::GetResolution().y * 0.5);
+	Renderer::RenderTextUI(m_scoreui, int(Renderer::GetResolution().x * 0.4), int(Renderer::GetResolution().y * 0.5));
+	Renderer::RenderTextUI(m_scoreGuideui, int(Renderer::GetResolution().x * 0.2), int(Renderer::GetResolution().y * 0.5));
 
 }
 void UEndScene::LoadData()
@@ -48,8 +48,8 @@ void UEndScene::UIInitialize()
 {
 
 	// 이 UI선언을 좀더 간단하게 만들어야함.
-	int uiwidth = 60;
-	int uiheith = 30;
+	float uiwidth = 60;
+	float uiheith = 30;
 	m_scoreui->Initialize
 	(
 		nullptr,
@@ -69,8 +69,8 @@ void UEndScene::UIInitialize()
 		std::cout << g->GameScore << '\n';
 	}
 
-	int Guideuiwidth = 250;
-	int Guideuiheith = 50;
+	float Guideuiwidth = 250;
+	float Guideuiheith = 50;
 	m_scoreGuideui->Initialize
 	(
 		(wchar_t*)L"최종 점수 : ",

@@ -140,7 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Actor.h" />
-    <ClInclude Include="Classes\Camera\Camera.h" />
+    <ClInclude Include="Classes\Camera\CameraBase.h" />
     <ClInclude Include="Classes\Character.h" />
     <ClInclude Include="Classes\Components\SceneComponent.h" />
     <ClInclude Include="Classes\Components\StaticMeshComponent.h" />
@@ -166,7 +166,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Actor.cpp" />
-    <ClCompile Include="Classes\Camera\CameraComponentcpp.cpp" />
+    <ClCompile Include="Classes\Camera\CameraBase.cpp" />
     <ClCompile Include="Classes\Character.cpp" />
     <ClCompile Include="Classes\Components\SceneComponent.cpp" />
     <ClCompile Include="Classes\Components\StaticMeshComponent.cpp" />

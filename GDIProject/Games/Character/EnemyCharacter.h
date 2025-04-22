@@ -17,6 +17,6 @@ public:
 
 private:
 	SUIText* m_textui;
-	int m_randomWidth;
-	int m_randomHeight;
+	float m_randomWidth;
+	float m_randomHeight;
 };

@@ -1,7 +1,7 @@
 #pragma once
 #include "../Math/Math.h"
 
-class SUIText
+class SUIText : public UObject
 {
 public:
 	SUIText() 

@@ -114,7 +114,7 @@
     <ClInclude Include="UI\UIButton.h">
       <Filter>헤더 파일\UI</Filter>
     </ClInclude>
-    <ClInclude Include="Classes\Camera\Camera.h">
+    <ClInclude Include="Classes\Camera\CameraBase.h">
       <Filter>헤더 파일\Classes\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Manager\ObjectManager.h">
@@ -182,7 +182,7 @@
     <ClCompile Include="Time\Time.cpp">
       <Filter>소스 파일\Time</Filter>
     </ClCompile>
-    <ClCompile Include="Classes\Camera\CameraComponentcpp.cpp">
+    <ClCompile Include="Classes\Camera\CameraBase.cpp">
       <Filter>소스 파일\Classes\Camera</Filter>
     </ClCompile>
     <ClCompile Include="Classes\Manager\ObjectManager.cpp">

@@ -4,6 +4,8 @@
 #include "Object.h"
 #include "../Math/Math.h"
 #include "../Experiment/AABBBox.h"
+#include <functional>
+#include <vector>
 
 class AActor : public UObject
 {
@@ -15,8 +17,9 @@ public:
 	virtual void Initialize() override;
 	virtual void Update();
 	virtual void Release() override;
-
 	virtual void LoadData();
+
+	//std::vector<std::function<UObject>()> functions;
 
 	Gdiplus::Bitmap* GetBitmap() { return StaticMeshComponent->mesh; }
 
@@ -32,7 +35,7 @@ public:
 	void SetActorLocation(float x, float y);
 	void SetActorRotation(float value);
 	
-private:
+protected:
 	USceneComponent* SceneComponent;
 	UStaticMeshComponent* StaticMeshComponent;
 	FAABBBox boundBox;

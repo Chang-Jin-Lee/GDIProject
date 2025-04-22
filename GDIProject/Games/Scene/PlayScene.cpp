@@ -51,9 +51,9 @@ void UPlayScene::Initialize()
 void UPlayScene::Update()
 {
 	UpdateCollisionDetection();
-	Renderer::RenderTextUI(m_scoreui, Renderer::GetResolution().x * 0.5, Renderer::GetResolution().y * 0.1);
-	Renderer::RenderTextUI(m_remainTimeGuideui, Renderer::GetResolution().x * 0.4, Renderer::GetResolution().y * 0.15);
-	Renderer::RenderTextUI(m_remainTimeui, Renderer::GetResolution().x * 0.5, Renderer::GetResolution().y * 0.15);
+	Renderer::RenderTextUI(m_scoreui, int(Renderer::GetResolution().x * 0.5), int(Renderer::GetResolution().y * 0.1));
+	Renderer::RenderTextUI(m_remainTimeGuideui, int(Renderer::GetResolution().x * 0.4), int(Renderer::GetResolution().y * 0.15));
+	Renderer::RenderTextUI(m_remainTimeui, int(Renderer::GetResolution().x * 0.5), int(Renderer::GetResolution().y * 0.15));
 	UpdateTime();
 	UpdateUI();
 	UpdateInput();
@@ -102,8 +102,8 @@ void UPlayScene::CharactersInitialize()
 
 void UPlayScene::UIInitialize()
 {
-	int uiwidth = 60;
-	int uiheith = 30;
+	float uiwidth = 60;
+	float uiheith = 30;
 	m_scoreui->Initialize
 	(
 		nullptr,

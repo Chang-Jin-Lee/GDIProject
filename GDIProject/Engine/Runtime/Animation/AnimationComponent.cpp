@@ -12,9 +12,9 @@ UAnimationComponent::UAnimationComponent(int rowSize, int colSize)
 
 UAnimationComponent::~UAnimationComponent()
 {
-	for (int i = 0; i < m_irowSize; i++)
+	for (unsigned int i = 0; i < m_irowSize; i++)
 	{
-		for (int j = 0; j < m_icolSize; j++)
+		for (unsigned int j = 0; j < m_icolSize; j++)
 		{
 			delete m_frames[i][j].m_frame;
 		}

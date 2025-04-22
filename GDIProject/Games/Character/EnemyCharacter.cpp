@@ -5,9 +5,9 @@
 
 AEnemyCharacter::AEnemyCharacter()
 {
-	srand(Time::GetElapsedTime());
-	m_randomWidth = 2;
-	m_randomHeight = 2;
+	srand((unsigned int)Time::GetElapsedTime());
+	m_randomWidth = 2.0f;
+	m_randomHeight = 2.0f;
 
 	m_textui = new SUIText();
 }
@@ -23,14 +23,14 @@ void AEnemyCharacter::Initialize()
 	__super::Initialize();
 	Game::GetCurrentScene();
 	LoadData(L"test", L"Rectangle.png");
-	int width = Renderer::GetResolution().x;
-	int height = Renderer::GetResolution().y;
+	float width = Renderer::GetResolution().x;
+	float height = Renderer::GetResolution().y;
 	SetActorSize(50, 50);
-	SetActorLocation(FRandom::GetRandomInRange(width*0.2, width), FRandom::GetRandomInRange(height*0.3, height));
-	SetActorScale(FRandom::GetRandomInRange(1.0, m_randomWidth), FRandom::GetRandomInRange(1.0, m_randomHeight));
+	SetActorLocation(FRandom::GetRandomInRange(width*0.2f, width), FRandom::GetRandomInRange(height*0.3f, height));
+	SetActorScale(FRandom::GetRandomInRange(1.0f, m_randomWidth), FRandom::GetRandomInRange(1.0f, m_randomHeight));
 
-	int uiwidth = 120;
-	int uiheith = 20;
+	float uiwidth = 120;
+	float uiheith = 20;
 	m_textui->Initialize
 	(
 		GetName(),

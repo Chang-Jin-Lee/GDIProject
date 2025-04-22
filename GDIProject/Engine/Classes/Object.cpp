@@ -8,10 +8,12 @@ void UObject::Initialize()
 
 void UObject::Update()
 {
+
 }
 
 void UObject::Release()
 {
+
 }
 
 void UObject::SetName(wchar_t* value)

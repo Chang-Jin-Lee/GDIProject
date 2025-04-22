@@ -2,9 +2,9 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include <gdiplus.h>
 #include "../../Classes/Actor.h"
 #include "../../UI/UIText.h"
+#include <gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 
 using namespace Gdiplus;
@@ -13,7 +13,7 @@ namespace Renderer
 {
 	void Initialize(HWND hwnd);
 	void BeginDraw();
-	void SetResolution(const int& width, const int& height);
+	void SetResolution(const float& width, const float& height);
 	FVector2 GetResolution();
 	void RenderImage(Gdiplus::Bitmap* ImageBitmap, const int& x, const int& y, const float& rotation, const float& scaleX, const float& scaleY);
 	void RenderImage(Gdiplus::Bitmap* pImageBitmap, AActor* actor); 	// 애니메이션을 위한 함수. 
@@ -28,9 +28,4 @@ namespace Renderer
 	void RenderActorWithUI(AActor* actor, SUIText* textui);
 	void EndDraw();
 	void Release(HWND hwnd);
-	
-	int GetWidth();
-	void SetWidth(int value);
-	int GetHeight();
-	void SetHeight(int value);
 }
