@@ -8,6 +8,7 @@ public:
 	ABackGroundImage();
 	~ABackGroundImage();
 
-	void Initialize();
+	virtual void Initialize() override;
+	virtual void Update() override;
 	void LoadData(std::wstring baseDir, std::wstring fileName);
 };

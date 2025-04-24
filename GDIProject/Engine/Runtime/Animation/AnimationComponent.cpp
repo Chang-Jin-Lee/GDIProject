@@ -46,8 +46,6 @@ void UAnimationComponent::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, 
 
 				m_frames[i]->m_frameSize.x = width * 1.5f;
 				m_frames[i]->m_frameSize.y = height * 1.5f;
-
-				//m_frames[i]->m_frame = baseImage->Clone(left, top, width, height, PixelFormat32bppARGB);
 				m_frames[i]->m_frame = baseImage->Clone(left, top, width, height, pixelformat);
 			}
 		}

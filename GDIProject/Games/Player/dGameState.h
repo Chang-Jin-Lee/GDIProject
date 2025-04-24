@@ -14,5 +14,5 @@ private:
 	static bool registered;
 
 public:
-	int GameScore = 0;
+	int m_gGameScore = 0;
 };

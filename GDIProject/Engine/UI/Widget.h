@@ -1,11 +1,11 @@
 #pragma once
-#include "../Actor.h"
 
-class UCamaraBase : public AActor
+#include "../Classes/Object.h"
+
+class UWidget : public UObject
 {
-public:
-	UCamaraBase();
-	~UCamaraBase();
+	UWidget();
+	~UWidget();
 
 	virtual void Initialize() override;
 	virtual void Update() override;

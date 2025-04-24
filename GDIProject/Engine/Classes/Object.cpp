@@ -1,6 +1,11 @@
 #include "Object.h"
 #include "Manager/ObjectManager.h"
 
+UObject::UObject()
+{
+	Name = nullptr;
+}
+
 void UObject::Initialize()
 {
 	//UObjectManager<UObject>::Get();
@@ -8,7 +13,10 @@ void UObject::Initialize()
 
 void UObject::Update()
 {
-
+	for (auto component : m_Components)
+	{
+		component.second->Update();
+	}
 }
 
 void UObject::Release()
@@ -16,7 +24,7 @@ void UObject::Release()
 
 }
 
-void UObject::SetName(wchar_t* value)
+void UObject::SetName(const wchar_t* value)
 {
 	size_t length = wcslen(value) + 1;
 	if (Name)

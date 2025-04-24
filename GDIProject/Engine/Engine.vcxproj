@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Actor.h" />
+    <ClInclude Include="Classes\Camera\CameraActor.h" />
     <ClInclude Include="Classes\Camera\CameraBase.h" />
     <ClInclude Include="Classes\Character.h" />
     <ClInclude Include="Classes\Components\SceneComponent.h" />
@@ -147,12 +148,14 @@
     <ClInclude Include="Classes\GameFramework\GameState.h" />
     <ClInclude Include="Classes\Manager\ObjectManager.h" />
     <ClInclude Include="Classes\Object.h" />
+    <ClInclude Include="Classes\ObjectBase.h" />
     <ClInclude Include="Classes\Pawn.h" />
     <ClInclude Include="Classes\Scene\Scene.h" />
     <ClInclude Include="Experiment\AABBBox.h" />
     <ClInclude Include="Experiment\CollistionDetection.h" />
     <ClInclude Include="Experiment\Platform.h" />
     <ClInclude Include="Experiment\QuadTree.h" />
+    <ClInclude Include="Experiment\StateOption.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Input\Input.h" />
     <ClInclude Include="Math\Math.h" />
@@ -161,11 +164,13 @@
     <ClInclude Include="Runtime\Core\FIleHelper.h" />
     <ClInclude Include="Runtime\Renderer\Renderer.h" />
     <ClInclude Include="Time\Time.h" />
-    <ClInclude Include="UI\UIButton.h" />
-    <ClInclude Include="UI\UIText.h" />
+    <ClInclude Include="UI\UIButtonComponent.h" />
+    <ClInclude Include="UI\UITextComponent.h" />
+    <ClInclude Include="UI\Widget.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Actor.cpp" />
+    <ClCompile Include="Classes\Camera\CameraActor.cpp" />
     <ClCompile Include="Classes\Camera\CameraBase.cpp" />
     <ClCompile Include="Classes\Character.cpp" />
     <ClCompile Include="Classes\Components\SceneComponent.cpp" />
@@ -188,7 +193,8 @@
     <ClCompile Include="Runtime\Core\FileHelper.cpp" />
     <ClCompile Include="Runtime\Renderer\Renderer.cpp" />
     <ClCompile Include="Time\Time.cpp" />
-    <ClCompile Include="UI\UIText.cpp" />
+    <ClCompile Include="UI\UITextComponent.cpp" />
+    <ClCompile Include="UI\Widget.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

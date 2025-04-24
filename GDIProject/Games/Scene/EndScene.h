@@ -2,7 +2,8 @@
 
 #include <Classes/Scene/Scene.h>
 #include "../Image/BackGroundImage.h"
-#include <UI/UIText.h>
+
+class SUITextComponent;
 
 class UEndScene : public UScene
 {
@@ -18,8 +19,8 @@ public:
 	void UIInitialize();
 	void UpdateInput();
 
-	SUIText* m_scoreui;
-	SUIText* m_scoreGuideui;
+	std::shared_ptr<SUITextComponent> m_scoreui;
+	std::shared_ptr<SUITextComponent> m_scoreGuideui;
 
-	ABackGroundImage* m_image;
+	std::shared_ptr<ABackGroundImage> m_image;
 };

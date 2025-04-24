@@ -6,6 +6,7 @@
 #include "../Games.h"
 #include <Input/Input.h>
 #include "../Scene/PlayScene.h"
+#include <UI/UITextComponent.h>
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -17,10 +18,10 @@ APlayerCharacter::APlayerCharacter()
 		}
 		AnimationBundle.baseImages[j] = new UStaticMeshComponent();
 	}
-		
+
 	dirState = DirState::Bottom;
 	animstate = AnimationState::Idle;
-	m_textui = new SUIText();
+	m_textui = CreateDefaultSubobject<SUITextComponent>(TEXT("m_textui"));
 }
 
 APlayerCharacter::~APlayerCharacter()
@@ -35,96 +36,38 @@ APlayerCharacter::~APlayerCharacter()
 	}
 	delete m_textui;
 }
-#ifndef MAX_INFOFILE_NAME_SIZE
-#define MAX_INFOFILE_NAME_SIZE 50
-#endif 
+
 void APlayerCharacter::Initialize()
 {
 	__super::Initialize();
-	const wchar_t delimeter = L',';
 
 	for (int dirState = 0; dirState < static_cast<int>(DirState::Max); dirState++)
 	{
-		int** cloneInfo = nullptr;
-		int cloneInfoRowSize = -1;
-		int cloneInfoColsize = -1;
-		const wchar_t* baseDir = L"Character1/Unarmed_Idle";
-		const wchar_t* baseSate = L"Unarmed";
-		wchar_t originalImagefileName[MAX_INFOFILE_NAME_SIZE] = { L'\0', };
-		int num = swprintf(originalImagefileName, 50, L"%s_%s.png", baseSate, GetAnimStateName(AnimationState::Idle));
-
-		wchar_t infoFileName[MAX_INFOFILE_NAME_SIZE] = { L'\0', };
-		num = swprintf(infoFileName, MAX_INFOFILE_NAME_SIZE, L"%s_%s_%s.txt", baseSate, GetAnimStateName(AnimationState::Idle), GetDirStateName(static_cast<DirState>(dirState)));
-
-		FFileHelper::LoadFileToArrayWithDelimeter<int>(baseDir, infoFileName, delimeter, 100, &cloneInfoRowSize, &cloneInfoColsize, &cloneInfo);
-		AnimationBundle.baseImages[static_cast<int>(AnimationState::Idle)]->LoadData(baseDir, originalImagefileName);
-		AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(AnimationState::Idle)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
-		AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(AnimationState::Idle)]->LoadData(AnimationBundle.baseImages[static_cast<int>(AnimationState::Idle)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
-
-		baseDir = L"Character1/Unarmed_Run";
-		baseSate = L"Unarmed";
-		memset(originalImagefileName, L'\0', MAX_INFOFILE_NAME_SIZE);
-		num = swprintf(originalImagefileName, 50, L"%s_%s.png", baseSate, GetAnimStateName(AnimationState::Run));
-
-		memset(infoFileName, L'\0', MAX_INFOFILE_NAME_SIZE);
-		num = swprintf(infoFileName, MAX_INFOFILE_NAME_SIZE, L"%s_%s_%s.txt", baseSate, GetAnimStateName(AnimationState::Run), GetDirStateName(static_cast<DirState>(dirState)));
-		FFileHelper::LoadFileToArrayWithDelimeter<int>(baseDir, infoFileName, delimeter, 100, &cloneInfoRowSize, &cloneInfoColsize, &cloneInfo);
-		AnimationBundle.baseImages[static_cast<int>(AnimationState::Run)]->LoadData(baseDir, originalImagefileName);
-		AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(AnimationState::Run)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
-		AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(AnimationState::Run)]->LoadData(AnimationBundle.baseImages[static_cast<int>(AnimationState::Run)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
-
-
-		baseDir = L"Character1/Sword_Attack";
-		baseSate = L"Sword";
-		memset(originalImagefileName, L'\0', MAX_INFOFILE_NAME_SIZE);
-		num = swprintf(originalImagefileName, 50, L"%s_%s.png", baseSate, GetAnimStateName(AnimationState::Attack));
-
-		memset(infoFileName, L'\0', MAX_INFOFILE_NAME_SIZE);
-		num = swprintf(infoFileName, MAX_INFOFILE_NAME_SIZE, L"%s_%s_%s.txt", baseSate, GetAnimStateName(AnimationState::Attack), GetDirStateName(static_cast<DirState>(dirState)));
-		FFileHelper::LoadFileToArrayWithDelimeter<int>(baseDir, infoFileName, delimeter, 100, &cloneInfoRowSize, &cloneInfoColsize, &cloneInfo);
-		AnimationBundle.baseImages[static_cast<int>(AnimationState::Attack)]->LoadData(baseDir, originalImagefileName);
-		AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(AnimationState::Attack)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
-		AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(AnimationState::Attack)]->LoadData(AnimationBundle.baseImages[static_cast<int>(AnimationState::Attack)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
+		LoadAnimationData(L"Character1/Unarmed_Idle", L"Unarmed", L',', AnimationState::Idle, static_cast<DirState>(dirState));
+		LoadAnimationData(L"Character1/Unarmed_Run", L"Unarmed", L',', AnimationState::Run, static_cast<DirState>(dirState));
+		LoadAnimationData(L"Character1/Sword_Attack", L"Sword", L',', AnimationState::Attack, static_cast<DirState>(dirState));
 	}
 
-	// 시간 초기화
-	m_fFPSTimeAnimationScene = 1.0f / 24.0f;
-	m_fFPSLastTimeAnimationScene = Time::GetTotalTime();
-	m_fcountOneSecondAnimationScene = Time::GetTotalTime();
-
 	m_fcharacterRotationSpeed = 360;
+	bPlayingAnimation = true;
 
 	// SceneComponent 값 초기화
-	SetActorLocation(50, 50);
-	SetActorSize(13,20);
-	SetActorScale(2.5f, 2.5f);
-	SetName((wchar_t*)L"플레이어 캐릭터");
+	FVector2 Location = FVector2(50.0f, 50.0f);
+	FVector2 Size = FVector2(13.0f, 20.0f);
+	FVector2 Scale = FVector2(2.5f, 2.5f);
+	SetActorLocation(Location.x, Location.y);
+	SetActorSize(Size.x, Size.y);
+	SetActorScale(Scale.x, Scale.y);
+
 	// UI 초기화
-	float uiwidth = 120;
-	float uiheith = 20;
-	m_textui->Initialize
-	(
-		GetName(),
-		10,
-		(wchar_t*)L"Verdana",
-		Gdiplus::Color(255, 255, 255),
-		FVector2(-50, -20),
-		FVector2(uiwidth, uiheith),
-		Gdiplus::FontStyleBold,
-		Gdiplus::UnitPoint,
-		Gdiplus::StringAlignmentNear,
-		Gdiplus::StringAlignmentNear,
-		Gdiplus::StringTrimmingNone
-	);
+	m_textui->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
+	m_textui->AttachedUIToActor(this);
 }
 
 void APlayerCharacter::Update()
 {
 	__super::Update();
 	FVector2 mouseclick = Game::GetLMouseClickPosition();
-
-	//std::cout << mouseclick.x << ' ' << mouseclick.y << '\n';
-	//std::cout << GetActorLocation().x << ' ' << GetActorLocation().y << '\n';
 
 	if (mouseclick.IsZero() == false)
 	{
@@ -141,35 +84,18 @@ void APlayerCharacter::Update()
 		}
 	}
 
-	if (AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_frames)
+	if (AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationClip == AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationMaxSize - 1)
 	{
-		Renderer::RenderImageWithUI(
-			AnimationBundle.animationComponent[(int)dirState][(int)animstate]
-			->m_frames[AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationClip]
-			->m_frame,
-			this,
-			m_textui
-		);
+		if (animstate == ACharacter::AnimationState::Attack)
+		{
+			m_bAttackAnimationPlaying = false;
+		}
 	}
 
-	m_fFPSLastTimeAnimationScene = Time::GetTotalTime() - m_fcountOneSecondAnimationScene;
-	if (m_fFPSLastTimeAnimationScene >= m_fFPSTimeAnimationScene)	// 1/60 초에 한 번씩
-	{
-		if (AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationMaxSize != 0)
-		{
-			if (AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationClip == AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationMaxSize - 1)
-			{
-				if (animstate == APlayerCharacter::AnimationState::Attack)
-				{
-					m_bAttackAnimationPlaying = false;
-				}
-			}
-			AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationClip =
-				(AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationClip + 1)
-				% AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationMaxSize;
-		}
-		m_fcountOneSecondAnimationScene = Time::GetTotalTime();
-	}
+	// 카메라 부착
+	Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(GetActorLocation() - (Renderer::GetResolution() / 2));
+
+	Input();
 }
 
 void APlayerCharacter::Release()
@@ -237,38 +163,4 @@ void APlayerCharacter::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int
 void APlayerCharacter::SetAnimMeshScale(float width, float height)
 {
 
-}
-
-const wchar_t* APlayerCharacter::GetDirStateName(DirState state)
-{
-	switch (state)
-	{
-	case APlayerCharacter::DirState::Left:
-		return L"Left";
-	case APlayerCharacter::DirState::Top:
-		return L"Top";
-	case APlayerCharacter::DirState::Right:
-		return L"Right";
-	case APlayerCharacter::DirState::Bottom:
-		return L"Bottom";
-	default:
-		return L"Unkown";
-	}
-}
-
-const wchar_t* APlayerCharacter::GetAnimStateName(AnimationState state)
-{
-	switch (state)
-	{
-	case APlayerCharacter::AnimationState::Idle:
-		return L"Idle_full";
-	case APlayerCharacter::AnimationState::Run:
-		return L"Run_full";
-	case APlayerCharacter::AnimationState::Attack:
-		return L"Attack_full";
-	default:
-		return L"Unkown";
-		break;
-	}
-	return nullptr;
 }

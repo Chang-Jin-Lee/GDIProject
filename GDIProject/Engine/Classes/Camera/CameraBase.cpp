@@ -2,7 +2,7 @@
 
 UCamaraBase::UCamaraBase()
 {
-	SceneComponent = new USceneComponent();
+	SceneComponent = CreateDefaultSubobject<USceneComponent>(L"SceneComponent");
 }
 
 UCamaraBase::~UCamaraBase()

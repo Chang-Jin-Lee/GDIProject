@@ -72,113 +72,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		printf("WM_CREATE: 윈도우가 생성되었습니다.\n");
 		break;
-
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-		HDC hDC = BeginPaint(hwnd, &ps);
-
-		//const char* text = "윈도우 메시지출력 중";
-		//TextOutA(hDC, 10, 10, text, (int)strlen(text));
-		
-		//const int CELL_SIZE = 300;     // 셀 크기
-		//const int PADDING = 10;       // 셀 내부 여백
-		//int cols = Renderer::GetWidth() / CELL_SIZE;
-		//int rows = Renderer::GetHeight() / CELL_SIZE;
-		//
-		//RECT rect = { 0, 0, Renderer::GetWidth(), Renderer::GetHeight() };
-		//for (int y = 0; y < rows; ++y)
-		//{
-		//	for (int x = 0; x < cols; ++x)
-		//	{
-		//		int left = x * CELL_SIZE + PADDING;
-		//		int top = y * CELL_SIZE + PADDING;
-		//		int right = (x + 1) * CELL_SIZE - PADDING;
-		//		int bottom = (y + 1) * CELL_SIZE - PADDING;
-		//		Ellipse(hDC, left, top, right, bottom);
-		//	}
-		//}
-
-		//RECT clientRect;
-		//GetClientRect(hwnd, &clientRect);
-		//FillRect(hDC, &clientRect, (HBRUSH)(COLOR_WINDOW + 1));
-
-		//COLORREF color = RGB(255, 0, 0);
-		//HPEN hPen = CreatePen(PS_SOLID, 2, color);
-		//HPEN hOldPen = (HPEN)SelectObject(hDC, hPen);
-		//// 브러시는 내부 채우지 않도록 NULL_BRUSH 사용
-		//HBRUSH hOldBrush = (HBRUSH)SelectObject(hDC, GetStockObject(NULL_BRUSH));
-
-		//Ellipse(hDC,
-		//	m_centerX - m_radius, m_centerY - m_radius,
-		//	m_centerX + m_radius, m_centerY + m_radius);
-
-		//// 이전 객체 복원 및 펜 삭제
-		//SelectObject(hDC, hOldPen);
-		//SelectObject(hDC, hOldBrush);
-		//DeleteObject(hPen);
-
-		EndPaint(hwnd, &ps);
-		printf("WM_PAINT: 화면 다시 그리기\n");
-	}
-	break;
-
-	case WM_KEYDOWN:
-		printf("WM_KEYDOWN: VK_CODE = %d\n", (int)wParam);
-		break;
-
-	case WM_CHAR:
-		printf("WM_CHAR: 문자 입력 = '%c'\n", (char)wParam);
-		break;
-
 	case WM_LBUTTONDOWN:
-		printf("WM_LBUTTONDOWN: 클릭 위치 x=%d y=%d\n", LOWORD(lParam), HIWORD(lParam));
-		//std::cout << "WM_LBUTTONDBLCLK" << std::endl;
-		// 마우스 왼쪽 버튼 더블 클릭
-		// 좌표를 가져온다.
 		Game::SetLMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam)));
-		//simplegeo::g_GeoShapeManager.AddCircle(x, y, 10, RGB(255, 0, 0));
-		// 펜 생성 및 선택
-		//Renderer::BeginDraw();
-		//Renderer::RenderRect(m_centerX - 10, m_centerY - 10, 20, 20);
-		//Renderer::EndDraw();
-		//::InvalidateRect(hwnd, NULL, TRUE);
-
 		break;
-
 	case WM_RBUTTONDOWN:
-		printf("WM_LBUTTONDOWN: 클릭 위치 x=%d y=%d\n", LOWORD(lParam), HIWORD(lParam));
-		//std::cout << "WM_LBUTTONDBLCLK" << std::endl;
-		// 마우스 왼쪽 버튼 더블 클릭
-		// 좌표를 가져온다.
-		Game::SetRMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam)));
-
-		//simplegeo::g_GeoShapeManager.AddCircle(x, y, 10, RGB(255, 0, 0));
-		// 펜 생성 및 선택
-		//Renderer::BeginDraw();
-		//Renderer::RenderRect(m_centerX - 10, m_centerY - 10, 20, 20);
-		//Renderer::EndDraw();
-		//::InvalidateRect(hwnd, NULL, TRUE);
-
+		Game::SetRMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam))); // 마우스 왼쪽 버튼 더블 클릭
 		break;
-
-		// 메세지가 너무 자주 나오는것은 출력하지 않음
-	case WM_MOUSEMOVE:
-	case WM_NCHITTEST:
-	case WM_NCMOUSEMOVE:
-	case WM_SETCURSOR:
-		break;
-
 	case WM_DESTROY:
 		printf("WM_DESTROY: 프로그램 종료\n");
 		PostQuitMessage(0);
 		break;
-
 	default:
-		//printf("%s (0x%04X)\n", GetMessageName(msg), msg);
 		break;
 	}
-
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
@@ -262,6 +168,7 @@ namespace Game
 	{
 		g_gameInstance = AGameStateBase::CreateInstance();
 		g_gameInstance->Initialize();
+		Renderer::SetMainCamera(g_gameInstance->GetMainCamera());
 	}
 
 	void Initialize(HWND hwnd)
@@ -294,6 +201,33 @@ namespace Game
 		Renderer::EndDraw();
 
 		ChangeScene();
+
+		if (Input::IsKeyDown(VK_W))
+		{
+			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
+			cameraPos += FVector2(0, -5);
+			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
+		}
+
+		if (Input::IsKeyDown(VK_S))
+		{
+			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
+			cameraPos += FVector2(0, 5);
+			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
+		}
+
+		if (Input::IsKeyDown(VK_A))
+		{
+			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
+			cameraPos += FVector2(-5, 0);
+			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
+		}
+		if (Input::IsKeyDown(VK_D))
+		{
+			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
+			cameraPos += FVector2(5, 0);
+			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
+		}
 	}
 
 	void Release(HWND hwnd)

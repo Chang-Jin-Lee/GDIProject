@@ -128,7 +128,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Camera\CameraActor.h" />
     <ClInclude Include="Character\EnemyCharacter.h" />
     <ClInclude Include="Image\BackGroundImage.h" />
     <ClInclude Include="framework.h" />
@@ -142,7 +141,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera\CameraActor.cpp" />
     <ClCompile Include="Character\EnemyCharacter.cpp" />
     <ClCompile Include="Image\BackGroundImage.cpp" />
     <ClCompile Include="Games.cpp" />

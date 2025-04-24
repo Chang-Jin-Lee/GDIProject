@@ -8,7 +8,7 @@ AdGameState::AdGameState()
 
 void AdGameState::Initialize() {
     std::cout << "AdGameState running!\n";
-    GameScore = 0;
+    m_gGameScore = 0;
 }
 
 void AdGameState::Release()

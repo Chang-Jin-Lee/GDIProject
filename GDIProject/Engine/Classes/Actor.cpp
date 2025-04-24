@@ -1,4 +1,5 @@
 #include "Actor.h"
+#include "../Runtime/Renderer/Renderer.h"
 
 AActor::AActor()
 {
@@ -6,6 +7,7 @@ AActor::AActor()
 	StaticMeshComponent = new UStaticMeshComponent();
 	boundBox.SetMinVector(0, 0);
 	boundBox.SetMaxVector(0, 0);
+	SetName((wchar_t*)L"AActor");
 }
 
 AActor::~AActor()
@@ -16,7 +18,7 @@ AActor::~AActor()
 
 void AActor::LoadStaticMeshData(std::wstring baseDir, std::wstring fileName)
 {
-	StaticMeshComponent->LoadData(baseDir,fileName);
+	StaticMeshComponent->LoadData(baseDir, fileName);
 }
 
 void AActor::Initialize()
@@ -27,7 +29,9 @@ void AActor::Initialize()
 void AActor::Update()
 {
 	__super::Update();
-	//g_pBackBufferGraphics->DrawImage(g_pImageBitmap[g_eCurrentCharacter][m_iplayidx], (int)(g_width / 2 - witdh[m_iplayidx] / 2), (int)(g_height / 2 - height[m_iplayidx] / 2), witdh[m_iplayidx], height[m_iplayidx]);
+	
+	Renderer::RenderMesh(SceneComponent, StaticMeshComponent);
+
 	boundBox.m_minVector.x = GetActorLocation().x;
 	boundBox.m_minVector.y = GetActorLocation().y;
 	boundBox.m_maxVector.x = GetActorScale().x * GetActorSize().x + GetActorLocation().x;

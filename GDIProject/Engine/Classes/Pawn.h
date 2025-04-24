@@ -6,8 +6,8 @@
 class APawn : public AActor
 {
 public:
-	APawn() {}
-	~APawn() {}
+	APawn();
+	~APawn();
 
 	virtual void Initialize() override;
 	virtual void Update() override;
