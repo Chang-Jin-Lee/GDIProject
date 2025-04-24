@@ -67,22 +67,21 @@ void APlayerCharacter::Initialize()
 void APlayerCharacter::Update()
 {
 	__super::Update();
-	FVector2 mouseclick = Game::GetLMouseClickPosition();
-
-	if (mouseclick.IsZero() == false)
-	{
-		FVector2 dir = (mouseclick - GetActorLocation()).Normalize();
-		if ((mouseclick - GetActorLocation()).Length() > 0.1f)
-		{
-			FVector2 location = GetActorLocation();
-			FVector2 updateLocation = location + dir * MoveSpeed * Time::GetElapsedTime();
-			SetActorLocation(updateLocation.x, updateLocation.y);
-		}
-		else
-		{
-			Game::SetLMouseClickPosition(FVector2(0, 0));
-		}
-	}
+	//FVector2 mouseclick = Game::GetLMouseClickPosition();
+	//if (mouseclick.IsZero() == false)
+	//{
+	//	FVector2 dir = (mouseclick - GetActorLocation()).Normalize();
+	//	if ((mouseclick - GetActorLocation()).Length() > 0.1f)
+	//	{
+	//		FVector2 location = GetActorLocation();
+	//		FVector2 updateLocation = location + dir * MoveSpeed * Time::GetElapsedTime();
+	//		SetActorLocation(updateLocation.x, updateLocation.y);
+	//	}
+	//	else
+	//	{
+	//		Game::SetLMouseClickPosition(FVector2(0, 0));
+	//	}
+	//}
 
 	if (AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationClip == AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationMaxSize - 1)
 	{
@@ -93,7 +92,7 @@ void APlayerCharacter::Update()
 	}
 
 	// Ä«¸Þ¶ó ºÎÂø
-	Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(GetActorLocation() - (Renderer::GetResolution() / 2));
+	//Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(GetActorLocation() - (Renderer::GetResolution() / 2));
 
 	Input();
 }

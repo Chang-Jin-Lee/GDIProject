@@ -21,7 +21,7 @@ public:
 	}
 
 	template<typename TReturnType>
-	std::shared_ptr<TReturnType> NewObject(std::wstring& NewobjectName)
+	std::shared_ptr<TReturnType> NewObject(const std::wstring& NewobjectName)
 	{
 		if (m_objects.find(NewobjectName) != m_objects.end())
 		{
@@ -46,7 +46,7 @@ public:
 				i++;
 			}
 			std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
-			NewobjectName = originalNewobjectName + L"_" + std::to_wstring(i);
+			const_cast<std::wstring&>(NewobjectName) = originalNewobjectName + L"_" + std::to_wstring(i);
 			m_objects.insert({ NewobjectName, temp });
 			return temp;
 		}

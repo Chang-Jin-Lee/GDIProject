@@ -59,10 +59,10 @@ namespace Renderer
 
 	void RenderImage(Gdiplus::Bitmap* pImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size)
 	{
-		if (position.x < g_mainCamera->GetCameraLocation().x * 1.3f ||
-			position.x > g_mainCamera->GetCameraLocation().x * 1.3f + g_resolution.x ||
-			position.y < g_mainCamera->GetCameraLocation().y * 1.3f ||
-			position.y > g_mainCamera->GetCameraLocation().y * 1.3f + g_resolution.y
+		if (position.x < g_mainCamera->GetCameraLocation().x - g_resolution.x * 0.2f ||
+			position.x > g_mainCamera->GetCameraLocation().x + g_resolution.x * 1.2f ||
+			position.y < g_mainCamera->GetCameraLocation().y - g_resolution.x * 0.2f ||
+			position.y > g_mainCamera->GetCameraLocation().y + g_resolution.y * 1.2f
 			)
 			return;
 
@@ -89,10 +89,10 @@ namespace Renderer
 
 	void RenderText(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush)
 	{
-		if (position.x < g_mainCamera->GetCameraLocation().x * 1.3f ||
-			position.x > g_mainCamera->GetCameraLocation().x * 1.3f + g_resolution.x ||
-			position.y < g_mainCamera->GetCameraLocation().y * 1.3f ||
-			position.y > g_mainCamera->GetCameraLocation().y * 1.3f + g_resolution.y
+		if (position.x < g_mainCamera->GetCameraLocation().x - g_resolution.x * 0.2f ||
+			position.x > g_mainCamera->GetCameraLocation().x + g_resolution.x * 1.2f ||
+			position.y < g_mainCamera->GetCameraLocation().y - g_resolution.x * 0.2f ||
+			position.y > g_mainCamera->GetCameraLocation().y + g_resolution.y * 1.2f
 			)
 			return;
 
@@ -164,16 +164,6 @@ namespace Renderer
 			Gdiplus::SolidBrush brush(textui->m_color);
 			RenderText(name, position, size, font, stringFormat, brush);
 		}
-	}
-	// 액터 그리기
-	void RenderActor(AActor* actor)
-	{
-		Gdiplus::Bitmap* pImageBitmap = actor->GetBitmap();
-		FVector2 position = actor->GetActorLocation();
-		const float rotation = actor->GetActorRotation();
-		const FVector2 scale = actor->GetActorScale();
-		const FVector2 size = actor->GetActorSize();
-		RenderImage(pImageBitmap, position, rotation, scale, size);
 	}
 
 	void RenderMesh(USceneComponent* sceneComponent, UStaticMeshComponent* staticMesh)

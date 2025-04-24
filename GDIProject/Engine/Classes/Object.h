@@ -11,7 +11,7 @@ public:
 	virtual void Release();
 	
 	template<class TReturnType>
-	TReturnType* CreateDefaultSubobject(std::wstring SubobjectName)
+	TReturnType* CreateDefaultSubobject(const std::wstring& SubobjectName)
 	{
 		if (m_Components.find(SubobjectName) != m_Components.end())
 		{

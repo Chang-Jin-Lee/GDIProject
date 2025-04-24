@@ -11,6 +11,7 @@ public:
 	AGameStateBase();
 	virtual ~AGameStateBase();
 	virtual void Initialize() = 0;
+	virtual void PostInitialize() = 0;
 	virtual void Release() = 0;
 
 	using CreatorFunc = std::function<AGameStateBase*()>;

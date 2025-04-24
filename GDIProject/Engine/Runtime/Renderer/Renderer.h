@@ -27,7 +27,7 @@ namespace Renderer
 	void RenderImage(Gdiplus::Bitmap* ImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size);
 	void RenderText(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush);
 
-	void RenderActor(AActor* actor);	// 액터 그리기 함수
+	void RenderMesh(USceneComponent* sceneComponent, UStaticMeshComponent* staticMesh);	// 액터 그리기 함수
 	void RenderCharacterAnimation(ACharacter::FAnimationBundle& animationBundle, ACharacter* character); 	// 애니메이션을 위한 함수. 
 
 	// UI 관련
@@ -36,6 +36,5 @@ namespace Renderer
 	void RenderTextUI(SUITextComponent* textui, int x, int y);
 	void RenderButtonUI(int x, int y, int width, int height, Gdiplus::Pen* pen);
 
-	void RenderMesh(USceneComponent* sceneComponent, UStaticMeshComponent* staticMesh);	// 액터 그리기 함수
 	void EndDraw();
 }

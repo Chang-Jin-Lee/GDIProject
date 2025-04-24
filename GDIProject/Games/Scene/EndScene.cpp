@@ -10,13 +10,9 @@
 
 UEndScene::UEndScene()
 {
-	std::wstring m_imagename = L"m_image";
-	std::wstring m_scoreuiname = L"m_scoreui";
-	std::wstring m_scoreGuideuiname = L"m_scoreGuideui";
-
-	m_image = NewObject<ABackGroundImage>(m_imagename);
-	m_scoreui = NewObject<SUITextComponent>(m_scoreuiname);
-	m_scoreGuideui = NewObject<SUITextComponent>(m_scoreGuideuiname);
+	m_image = NewObject<ABackGroundImage>(TEXT("m_image"));
+	m_scoreui = NewObject<SUITextComponent>(TEXT("m_scoreui"));
+	m_scoreGuideui = NewObject<SUITextComponent>(TEXT("m_scoreGuideui"));
 }
 
 UEndScene::~UEndScene()

@@ -6,6 +6,7 @@
 #include "../Character/PlayerCharacter.h"
 #include "../Character/EnemyCharacter.h"
 #include <string>
+#include "../Tile/Tile.h"
 
 using FQuadTree = TQuadTree<std::shared_ptr<UObject>, 4>;
 class SUITextComponent;
@@ -36,6 +37,7 @@ private:
 	std::shared_ptr<SUITextComponent> m_scoreui;
 	std::shared_ptr<SUITextComponent> m_remainTimeGuideui;
 	std::shared_ptr<SUITextComponent> m_remainTimeui;
+	std::shared_ptr<ATile> m_tile;
 
 	FAABBBox* WorldBound = nullptr;
 	FQuadTree* quadTree = nullptr;

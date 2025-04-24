@@ -23,13 +23,10 @@ UPlayScene::UPlayScene()
 		g->m_gGameScore = 0;
 	}
 
-	std::wstring m_scoreuiname = L"m_scoreuiname";
-	std::wstring m_remainTimeGuideuiname = L"m_remainTimeGuideui";
-	std::wstring m_remainTimeuiname = L"m_remainTimeui";
-
-	m_scoreui = NewObject<SUITextComponent>(m_scoreuiname);
-	m_remainTimeGuideui = NewObject<SUITextComponent>(m_remainTimeGuideuiname);
-	m_remainTimeui = NewObject<SUITextComponent>(m_remainTimeuiname);
+	m_scoreui = NewObject<SUITextComponent>(TEXT("m_scoreuiname"));
+	m_remainTimeGuideui = NewObject<SUITextComponent>(TEXT("m_remainTimeGuideui"));
+	m_remainTimeui = NewObject<SUITextComponent>(TEXT("m_remainTimeui"));
+	m_tile = NewObject<ATile>(TEXT("m_tile"));
 }
 
 UPlayScene::~UPlayScene()
@@ -45,6 +42,7 @@ UPlayScene::~UPlayScene()
 	m_scoreui.reset();
 	m_remainTimeGuideui.reset();
 	m_remainTimeui.reset();
+	m_tile.reset();
 }
 
 void UPlayScene::Initialize()
@@ -52,6 +50,7 @@ void UPlayScene::Initialize()
 	CharactersInitialize();
 	TimeInitialize();
 	UIInitialize();
+	m_tile->Initialize();
 }
 
 void UPlayScene::Update()
@@ -65,6 +64,7 @@ void UPlayScene::Update()
 
 void UPlayScene::LoadData()
 {
+
 }
 
 void UPlayScene::Release()
@@ -79,7 +79,6 @@ void UPlayScene::UpdateInput()
 		UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
 	}
 }
-
 
 void UPlayScene::TimeInitialize()
 {

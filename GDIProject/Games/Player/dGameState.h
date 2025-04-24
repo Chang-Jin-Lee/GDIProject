@@ -8,6 +8,7 @@ class AdGameState : public AGameStateBase
 public:
 	AdGameState();
 	virtual void Initialize() override;
+	virtual void PostInitialize() override;
 	virtual void Release() override;
 
 private:
@@ -15,4 +16,10 @@ private:
 
 public:
 	int m_gGameScore = 0;
+
+	// 타일 이미지 관련
+	int** m_TileCloneInfo = nullptr;
+	int m_TileCloneInfoRowSize = -1;
+	int m_TileCloneInfoColsize = -1;
+	Gdiplus::Bitmap* m_baseTileImage;
 };

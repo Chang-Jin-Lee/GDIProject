@@ -8,11 +8,8 @@
 
 UMenuScene::UMenuScene()
 {
-	std::wstring m_imagename = L"m_image";
-	std::wstring m_startGuideuiname = L"m_startGuideui";
-
-	m_image = NewObject<ABackGroundImage>(m_imagename);
-	m_startGuideui = NewObject<SUITextComponent>(m_startGuideuiname);
+	m_image = NewObject<ABackGroundImage>(TEXT("m_image"));
+	m_startGuideui = NewObject<SUITextComponent>(TEXT("m_startGuideui"));
 }
 
 UMenuScene::~UMenuScene()

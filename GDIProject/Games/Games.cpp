@@ -74,7 +74,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_LBUTTONDOWN:
 		Game::SetLMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam)));
+		Game::SetMouseDrageState(true);
 		break;
+	case WM_MOUSEMOVE:
+		if (Game::GetMouseDragState())
+		{
+			FVector2 currentPos = FVector2(LOWORD(lParam), HIWORD(lParam));
+			FVector2 dif = currentPos - Game::GetLMouseClickPosition();
+
+			// 카메라 위치 이동
+			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
+			cameraPos += FVector2(-dif.x, -dif.y);
+			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
+			Game::SetLMouseClickPosition(currentPos);
+		}
+		break;
+	case WM_LBUTTONUP:
+		Game::SetMouseDrageState(false);
+		ReleaseCapture(); // 마우스 캡처 해제
+		break;
+
 	case WM_RBUTTONDOWN:
 		Game::SetRMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam))); // 마우스 왼쪽 버튼 더블 클릭
 		break;
@@ -130,6 +149,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	////////Renderer::Initialize
 	Game::PreInitialize();
 	Game::Initialize(hwnd);
+	Game::PostInitialize();
 
 	MSG msg;
 	while (true)
@@ -160,9 +180,13 @@ namespace Game
 {
 	UScene* g_currentScene = new UMenuScene();
 	UScene* g_nextScene = g_currentScene;
+
+	AGameStateBase* g_gameInstance = nullptr;
+	
+	// 마우스 드래그
 	FVector2 m_LMouseCickPosition;
 	FVector2 m_RMouseCickPosition;
-	AGameStateBase* g_gameInstance = nullptr;
+	bool g_bMouseDragging = false;
 
 	void PreInitialize()
 	{
@@ -177,6 +201,11 @@ namespace Game
 		Time::Initialize();
 		Game::GetCurrentScene()->Initialize();
 		Game::GetCurrentScene()->LoadData();
+	}
+
+	void PostInitialize()
+	{
+		g_gameInstance->PostInitialize();
 	}
 
 	void LoadData()
@@ -282,5 +311,15 @@ namespace Game
 	{
 		m_RMouseCickPosition.x = rect.x;
 		m_RMouseCickPosition.y = rect.y;
+	}
+
+	bool GetMouseDragState()
+	{
+		return g_bMouseDragging;
+	}
+
+	void SetMouseDrageState(const bool& state)
+	{
+		g_bMouseDragging = state;
 	}
 }
