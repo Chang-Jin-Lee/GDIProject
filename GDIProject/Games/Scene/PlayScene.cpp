@@ -20,7 +20,7 @@ UPlayScene::UPlayScene()
 	AdGameState* g = dynamic_cast<AdGameState*>(Game::GetGameState());
 	if (g)
 	{
-		g->GameScore = 0;
+		g->m_gGameScore = 0;
 	}
 
 	std::wstring m_scoreuiname = L"m_scoreuiname";
@@ -103,7 +103,6 @@ void UPlayScene::CharactersInitialize()
 
 void UPlayScene::UIInitialize()
 {
-
 	float uiwidth = 60;
 	float uiheith = 30;
 	m_scoreui->Initialize
@@ -116,6 +115,7 @@ void UPlayScene::UIInitialize()
 		FVector2(uiwidth, uiheith)
 	);
 	m_scoreui->m_content = (wchar_t*)malloc(sizeof(wchar_t) * 10);
+	m_scoreui->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
 	wchar_t gameScoreStr[10];
 	swprintf_s(gameScoreStr, 10, L"%d", 0);
 	wcscpy_s(m_scoreui->m_content, 10, gameScoreStr);
@@ -131,6 +131,7 @@ void UPlayScene::UIInitialize()
 		FVector2(int(Renderer::GetResolution().x * 0.35), int(Renderer::GetResolution().y * 0.15)),
 		FVector2(uiwidth, uiheith)
 	);
+	m_remainTimeGuideui->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
 
 	uiwidth = 60;
 	uiheith = 30;
@@ -143,8 +144,10 @@ void UPlayScene::UIInitialize()
 		FVector2(int(Renderer::GetResolution().x * 0.5), int(Renderer::GetResolution().y * 0.15)),
 		FVector2(uiwidth, uiheith)
 	);
+	m_remainTimeui->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
 
 	m_remainTimeui->m_content = (wchar_t*)malloc(sizeof(wchar_t) * 10);
+
 	wchar_t gameremainTimeStr[10];
 	swprintf_s(gameremainTimeStr, 10, L"%f", 10.0f);
 	wcscpy_s(m_remainTimeui->m_content, 10, gameremainTimeStr);
@@ -183,9 +186,9 @@ void UPlayScene::UpdateCollisionDetection()
 						AdGameState* g = dynamic_cast<AdGameState*>(Game::GetGameState());
 						if (g)
 						{
-							g->GameScore++;
+							g->m_gGameScore++;
 							wchar_t gameScoreStr[10];
-							swprintf_s(gameScoreStr, 10, L"%d", g->GameScore);
+							swprintf_s(gameScoreStr, 10, L"%d", g->m_gGameScore);
 							wcscpy_s(m_scoreui->m_content, 10, gameScoreStr);
 						}
 					}
@@ -211,4 +214,9 @@ void UPlayScene::UpdateUI()
 	wchar_t gameScoreStr[10];
 	swprintf_s(gameScoreStr, 10, L"%f", m_fFPSTime-m_fFPSLastTime);
 	wcscpy_s(m_remainTimeui->m_content, 10, gameScoreStr);
+
+	//// Ä«¸Þ¶ó ºÎÂø
+	//m_scoreui.get()->m_Position = m_scoreui.get()->m_RelativePosition + Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
+	//m_remainTimeui.get()->m_Position = m_remainTimeui.get()->m_RelativePosition + Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
+	//m_remainTimeGuideui.get()->m_Position = m_remainTimeGuideui.get()->m_RelativePosition + Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
 }

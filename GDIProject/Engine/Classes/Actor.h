@@ -1,11 +1,9 @@
 #pragma once
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Object.h"
 #include "../Math/Math.h"
 #include "../Experiment/AABBBox.h"
-#include <functional>
-#include <vector>
+#include "Object.h"
 
 class AActor : public UObject
 {

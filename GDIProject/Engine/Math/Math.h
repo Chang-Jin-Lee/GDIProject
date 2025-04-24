@@ -20,6 +20,11 @@ public:
 		return TVector2(x * value, y * value);
 	}
 
+	TVector2 operator/(const float& value)
+	{
+		return TVector2(x / value, y / value);
+	}
+
 	TVector2 operator+(const TVector2& rhs)
 	{
 		return TVector2(x + rhs.x, y + rhs.y);
@@ -27,6 +32,11 @@ public:
 	TVector2 operator-(const TVector2& rhs)
 	{
 		return TVector2(x - rhs.x, y - rhs.y);
+	}
+	void operator*=(const TVector2& rhs)
+	{
+		x *= rhs.x;
+		y *= rhs.y;
 	}
 	void operator+=(const TVector2& rhs)
 	{
@@ -37,6 +47,11 @@ public:
 	{
 		x -= rhs.x;
 		y -= rhs.y;
+	}
+	void operator=(const TVector2& rhs)
+	{
+		x = rhs.x;
+		y = rhs.y;
 	}
 
 	bool IsZero()

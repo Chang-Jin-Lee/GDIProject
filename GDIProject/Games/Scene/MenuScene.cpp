@@ -24,6 +24,7 @@ UMenuScene::~UMenuScene()
 void UMenuScene::Initialize()
 {
 	__super::Initialize();
+	Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(FVector2(0,0));
 	UIInitialize();
 }
 

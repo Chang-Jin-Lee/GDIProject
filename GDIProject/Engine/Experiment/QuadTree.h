@@ -176,9 +176,7 @@ inline std::vector<ElementType> TQuadTree<ElementType, NodeCapacity>::GetElement
 	for (const FNode& node : nodes)
 	{
 		ElementsOut.emplace_back(node.Element);
-		//ElementsOut.insert(ElementsOut.begin(), node.Element);
 	}
-	//ElementsOut.insert(ElementsOut.end(), nodes.begin(), nodes.end());
 
 	return ElementsOut;
 }

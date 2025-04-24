@@ -29,7 +29,7 @@ void AEnemyCharacter::Initialize()
 	SetActorLocation(FRandom::GetRandomInRange(Renderer::GetResolution().x * 0.2f, Renderer::GetResolution().y), FRandom::GetRandomInRange(Renderer::GetResolution().y * 0.3f, Renderer::GetResolution().y));
 	SetActorScale(FRandom::GetRandomInRange(1.0f, m_randomWidth), FRandom::GetRandomInRange(1.0f, m_randomHeight));
 
-	m_textui->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-50, -20), FVector2(120.0f, 20.0f));
+	m_textui->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
 	m_textui->AttachedUIToActor(this);
 }
 

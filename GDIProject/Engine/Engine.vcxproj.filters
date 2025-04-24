@@ -61,18 +61,18 @@
     <Filter Include="헤더 파일\Classes\GameFramework">
       <UniqueIdentifier>{dc7d53e2-1d7e-4dc5-a790-3b2f6858b22a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Classes\Components">
+      <UniqueIdentifier>{f2e78758-a634-49d1-9c77-f871f4b69bd2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Classes\Components">
+      <UniqueIdentifier>{8352adb5-7511-4f0d-af10-38d13645352f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Components\SceneComponent.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Classes\Components\StaticMeshComponent.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Math\Math.h">
@@ -138,18 +138,27 @@
     <ClInclude Include="UI\Widget.h">
       <Filter>헤더 파일\UI</Filter>
     </ClInclude>
+    <ClInclude Include="Classes\Components\StaticMeshComponent.h">
+      <Filter>헤더 파일\Classes\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Components\SceneComponent.h">
+      <Filter>헤더 파일\Classes\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\ObjectBase.h">
+      <Filter>헤더 파일\Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Camera\CameraActor.h">
+      <Filter>헤더 파일\Classes\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Experiment\StateOption.h">
+      <Filter>헤더 파일\Experiment</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Components\SceneComponent.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Classes\Components\StaticMeshComponent.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Input\Input.cpp">
@@ -199,6 +208,15 @@
     </ClCompile>
     <ClCompile Include="UI\Widget.cpp">
       <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Components\StaticMeshComponent.cpp">
+      <Filter>소스 파일\Classes\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Components\SceneComponent.cpp">
+      <Filter>소스 파일\Classes\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Camera\CameraActor.cpp">
+      <Filter>소스 파일\Classes\Camera</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

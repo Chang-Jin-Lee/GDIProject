@@ -1,10 +1,6 @@
 #pragma once
 
 #include "../../Classes/Object.h"
-#include <string>
-#include <unordered_map>
-#include <vector>
-#include <memory>
 
 class UScene : public UObject
 {

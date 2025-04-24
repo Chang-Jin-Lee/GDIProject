@@ -2,6 +2,7 @@
 
 AGameStateBase::AGameStateBase()
 {
+	m_gMainCamera = std::make_shared<ACameraActor>();
 }
 
 AGameStateBase::~AGameStateBase()

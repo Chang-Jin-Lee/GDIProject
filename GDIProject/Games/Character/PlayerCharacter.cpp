@@ -19,8 +19,6 @@ APlayerCharacter::APlayerCharacter()
 		AnimationBundle.baseImages[j] = new UStaticMeshComponent();
 	}
 
-	bPlayingAnimation = true;
-
 	dirState = DirState::Bottom;
 	animstate = AnimationState::Idle;
 	m_textui = CreateDefaultSubobject<SUITextComponent>(TEXT("m_textui"));
@@ -51,6 +49,7 @@ void APlayerCharacter::Initialize()
 	}
 
 	m_fcharacterRotationSpeed = 360;
+	bPlayingAnimation = true;
 
 	// SceneComponent 값 초기화
 	FVector2 Location = FVector2(50.0f, 50.0f);
@@ -61,7 +60,7 @@ void APlayerCharacter::Initialize()
 	SetActorScale(Scale.x, Scale.y);
 
 	// UI 초기화
-	m_textui->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-20, -10), FVector2(120.0f, 20.0f));
+	m_textui->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
 	m_textui->AttachedUIToActor(this);
 }
 
@@ -92,6 +91,9 @@ void APlayerCharacter::Update()
 			m_bAttackAnimationPlaying = false;
 		}
 	}
+
+	// 카메라 부착
+	Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(GetActorLocation() - (Renderer::GetResolution() / 2));
 
 	Input();
 }

@@ -1,9 +1,7 @@
 #pragma once
-#include <wchar.h>
-#include <unordered_map>
-#include <string>
+#include "ObjectBase.h"
 
-class UObject
+class UObject : UObjectBase
 {
 public:
 	UObject();
@@ -24,13 +22,13 @@ public:
 				nextSubobjectName = SubobjectName + L"_" + std::to_wstring(i++);
 			}
 			TReturnType* temp = new TReturnType();
-			m_Components.insert({ nextSubobjectName, temp });
+			m_Components.insert(std::make_pair(nextSubobjectName, temp));
 			return temp;
 		}
 		else
 		{
 			TReturnType* temp = new TReturnType();
-			m_Components.insert({ SubobjectName, temp });
+			m_Components.insert(std::make_pair(SubobjectName, temp));
 			return temp;
 		}
 	}

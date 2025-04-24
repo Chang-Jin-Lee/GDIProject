@@ -1,4 +1,5 @@
 #include "UITextComponent.h"
+#include "../Classes/Camera/CameraActor.h"
 #include "../Runtime/Renderer/Renderer.h"
 
 void SUITextComponent::Initialize()

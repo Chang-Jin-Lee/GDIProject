@@ -29,6 +29,7 @@ UEndScene::~UEndScene()
 void UEndScene::Initialize()
 {
 	__super::Initialize();
+	Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(FVector2(0, 0));
 	UIInitialize();
 }
 
@@ -68,9 +69,9 @@ void UEndScene::UIInitialize()
 	if (g)
 	{
 		wchar_t gameScoreStr[10];
-		swprintf_s(gameScoreStr, 10, L"%d", g->GameScore);
+		swprintf_s(gameScoreStr, 10, L"%d", g->m_gGameScore);
 		wcscpy_s(m_scoreui->m_content, 10, gameScoreStr);
-		std::cout << g->GameScore << '\n';
+		std::cout << g->m_gGameScore << '\n';
 	}
 
 	float Guideuiwidth = 250;

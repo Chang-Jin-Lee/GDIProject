@@ -1,8 +1,8 @@
 #pragma once
 #include "../../Math/Math.h"
+#include "../Object.h"
 
-
-class USceneComponent
+class USceneComponent : public UObject
 {
 public:
 	FVector2 m_fsceneLocation;
@@ -11,19 +11,15 @@ public:
 	
 	USceneComponent() 
 	{
-		m_fsceneLocation.x = 0;
-		m_fsceneLocation.y = 0;
-		m_fsceneScale.x = 1.0f;
-		m_fsceneScale.y = 1.0f;
+		m_fsceneLocation = FVector2(0, 0);
+		m_fsceneScale = FVector2(1.0f, 1.0f);
 		m_fRotator = 0.0f;
 	}
 
 	USceneComponent(float _x, float _y) 
 	{
-		m_fsceneLocation.x = _x;
-		m_fsceneLocation.y = _y;
-		m_fsceneScale.x = 1.0f;
-		m_fsceneScale.y = 1.0f;
+		m_fsceneLocation = FVector2(_x,_y);
+		m_fsceneScale = FVector2(1.0f, 1.0f);
 		m_fRotator = 0.0f;
 	}
 
@@ -33,14 +29,17 @@ public:
 
 	void SetSceneComponentScale(float x, float y)
 	{
-		m_fsceneScale.x = x;
-		m_fsceneScale.y = y;
+		m_fsceneScale = FVector2(x, y);
 	}
 
 	void SetSceneComponentLocation(float x, float y)
 	{
-		m_fsceneLocation.x = x;
-		m_fsceneLocation.y = y;
+		m_fsceneLocation = FVector2(x, y);
+	}
+
+	void SetSceneComponentLocation(const FVector2& location)
+	{
+		m_fsceneLocation = location;
 	}
 
 	void SetSceneComponentRotation(float value)
@@ -49,7 +48,6 @@ public:
 			m_fRotator = 0;
 		else
 			m_fRotator = value;
-
 	}
 
 	FVector2 GetSceneComponentLocation() { return m_fsceneLocation; }

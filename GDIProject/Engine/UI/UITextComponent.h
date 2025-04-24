@@ -1,6 +1,7 @@
 #pragma once
 #include "../Math/Math.h"
 #include "../Classes/Actor.h"
+#include "../Experiment/StateOption.h"
 
 class SUITextComponent : public UObject
 {
