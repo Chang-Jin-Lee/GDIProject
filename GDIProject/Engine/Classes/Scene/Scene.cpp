@@ -24,6 +24,7 @@ void UScene::Update()
 		for (auto objectPair : objectMap)
 		{
 			objectPair.second->Update();
+			// 여기에 컬링 추가
 			Renderer::SetRenderObject(objectPair.second);
 		}
 	}

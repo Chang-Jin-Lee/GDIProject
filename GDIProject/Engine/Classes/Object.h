@@ -36,6 +36,8 @@ public:
 	wchar_t* GetName() { return Name; }
 	void SetName(const wchar_t* value);
 
+public:
+	bool bStatic = false;
 private:
 	std::unordered_map<std::wstring, UObject*> m_Components;
 	wchar_t* Name;

@@ -31,11 +31,13 @@ void AActor::Update()
 	__super::Update();
 	
 	//Renderer::RenderMesh(SceneComponent, StaticMeshComponent);
-
-	boundBox.m_minVector.x = GetActorLocation().x;
-	boundBox.m_minVector.y = GetActorLocation().y;
-	boundBox.m_maxVector.x = GetActorScale().x * GetActorSize().x + GetActorLocation().x;
-	boundBox.m_maxVector.y = GetActorScale().y * GetActorSize().y + GetActorLocation().y;
+	if (bStatic == false)
+	{
+		boundBox.m_minVector.x = GetActorLocation().x;
+		boundBox.m_minVector.y = GetActorLocation().y;
+		boundBox.m_maxVector.x = GetActorScale().x * GetActorSize().x + GetActorLocation().x;
+		boundBox.m_maxVector.y = GetActorScale().y * GetActorSize().y + GetActorLocation().y;
+	}
 }
 
 void AActor::Release()

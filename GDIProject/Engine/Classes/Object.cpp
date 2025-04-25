@@ -13,9 +13,12 @@ void UObject::Initialize()
 
 void UObject::Update()
 {
-	for (auto component : m_Components)
+	if (bStatic == false)
 	{
-		component.second->Update();
+		for (auto component : m_Components)
+		{
+			component.second->Update();
+		}
 	}
 }
 

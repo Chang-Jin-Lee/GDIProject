@@ -17,6 +17,8 @@ void ATile::Initialize()
 {
 	__super::Initialize();
 
+	bStatic = true;
+
 	AdGameState* gs = dynamic_cast<AdGameState*>(Game::GetGameState());
 	if (gs)
 	{
