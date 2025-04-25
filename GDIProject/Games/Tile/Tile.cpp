@@ -36,11 +36,11 @@ void ATile::Initialize()
 				int height = bottom - top;
 
 				StaticMeshComponent->SetMeshSize(width, height);
-
 				StaticMeshComponent->mesh = baseImage->Clone(left, top, width, height, PixelFormat32bppARGB);
 			}
 		}
 	}
+	//StaticMeshComponent->SetMeshSize(InitialTileSize.x, InitialTileSize.y);
 }
 
 void ATile::Update()

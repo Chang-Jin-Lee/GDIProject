@@ -15,7 +15,7 @@ void AdGameState::Initialize() {
 void AdGameState::PostInitialize()
 {
     FFileHelper::LoadFileToArrayWithDelimeter<int>(L"Tile", L"Tiles.txt", L',', 100, &m_TileCloneInfoRowSize, &m_TileCloneInfoColsize, &m_TileCloneInfo);
-    m_baseTileImage = new Gdiplus::Bitmap(L"../Resource/Tile/Tiles.png");
+    m_baseTileImage = new Gdiplus::Bitmap(L"../Resource/Tile/Tiles.bmp");
 }
 
 void AdGameState::Release()

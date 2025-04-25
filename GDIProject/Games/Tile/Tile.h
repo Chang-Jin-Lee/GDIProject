@@ -8,7 +8,8 @@ enum class ETileType
 	Grassland,
 	Hills,
 	Plain,
-	Mountain
+	Mountain,
+	MAX,
 };
 
 class ATile : public AActor
@@ -22,4 +23,7 @@ public:
 	virtual void LoadData() override;
 
 	ETileType m_etileType = ETileType::Desert;
+
+private:
+	FVector2 InitialTileSize = FVector2(100, 110);
 };

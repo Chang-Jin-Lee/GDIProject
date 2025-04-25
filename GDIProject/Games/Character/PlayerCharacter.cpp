@@ -54,7 +54,7 @@ void APlayerCharacter::Initialize()
 	// SceneComponent 값 초기화
 	FVector2 Location = FVector2(50.0f, 50.0f);
 	FVector2 Size = FVector2(13.0f, 20.0f);
-	FVector2 Scale = FVector2(2.5f, 2.5f);
+	FVector2 Scale = FVector2(1.5f, 1.5f);
 	SetActorLocation(Location.x, Location.y);
 	SetActorSize(Size.x, Size.y);
 	SetActorScale(Scale.x, Scale.y);

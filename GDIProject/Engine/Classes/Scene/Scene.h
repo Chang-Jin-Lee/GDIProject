@@ -2,6 +2,16 @@
 
 #include "../../Classes/Object.h"
 
+#define DEFAULT_LAYER_SIZE 3
+
+enum class ELAYER
+{
+	GROUND,
+	CHARACTER,
+	UI,
+	MAX
+};
+
 class UScene : public UObject
 {
 public:
@@ -20,10 +30,34 @@ public:
 		(*curScene)->LoadData();
 	}
 
-	template<typename TReturnType>
-	std::shared_ptr<TReturnType> NewObject(const std::wstring& NewobjectName)
+	bool HasObjectName(const std::wstring& NewobjectName)
 	{
-		if (m_objects.find(NewobjectName) != m_objects.end())
+		for (auto objectPair : m_objects)
+		{
+			if (objectPair.find(NewobjectName) != objectPair.end())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void SetCountDuplicateObjectName(const std::wstring& objectName, int& index)
+	{
+		for (auto objectPair : m_objects)
+		{
+			while (objectPair.find(objectName + L"_" + std::to_wstring(index)) != objectPair.end())
+			{
+				index++;
+			}
+		}
+	}
+
+	template<typename TReturnType>
+	std::shared_ptr<TReturnType> NewObject(const std::wstring& NewobjectName, ELAYER layer = ELAYER::CHARACTER)
+	{
+		int intLayer = static_cast<int>(layer);
+		if (HasObjectName(NewobjectName))
 		{
 			int i = 0;
 			std::wstring originalNewobjectName = L"";
@@ -41,19 +75,16 @@ public:
 				i = std::stoi(wstr);
 			}
 				
-			while (m_objects.find(originalNewobjectName + L"_" + std::to_wstring(i)) != m_objects.end())
-			{
-				i++;
-			}
+			SetCountDuplicateObjectName(originalNewobjectName, i);
 			std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
 			const_cast<std::wstring&>(NewobjectName) = originalNewobjectName + L"_" + std::to_wstring(i);
-			m_objects.insert({ NewobjectName, temp });
+			m_objects[intLayer].insert({NewobjectName, temp});
 			return temp;
 		}
 		else
 		{
 			std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
-			m_objects.insert({ NewobjectName, temp });
+			m_objects[intLayer].insert({ NewobjectName, temp });
 			return temp;
 		}
 	}
@@ -65,5 +96,5 @@ private:
 	wchar_t* m_sceneName;
 
 protected:
-	std::unordered_map<std::wstring, std::shared_ptr<UObject>> m_objects;
+	std::vector<std::unordered_map<std::wstring, std::shared_ptr<UObject>>> m_objects;
 };

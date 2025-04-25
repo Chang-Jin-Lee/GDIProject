@@ -222,7 +222,7 @@ namespace Game
 
 		g_currentScene->Update();
 
-		//printf("%f\n", 1 / Time::GetElapsedTime());
+		printf("%f\n", 1 / Time::GetElapsedTime());
 		Renderer::RenderRectRed(int(m_LMouseCickPosition.x - 10), int(m_LMouseCickPosition.y - 10), 20, 20);
 		Renderer::RenderRectBlue(int(m_RMouseCickPosition.x - 10), int(m_RMouseCickPosition.y - 10), 20, 20);
 
