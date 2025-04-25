@@ -3,7 +3,7 @@
 #include "../Classes/Actor.h"
 #include "../Experiment/StateOption.h"
 
-class SUITextComponent : public UObject
+class SUITextComponent : public AActor
 {
 public:
 	virtual void Initialize() override;

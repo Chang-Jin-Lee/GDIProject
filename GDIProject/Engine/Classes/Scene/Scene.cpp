@@ -1,10 +1,9 @@
 #include "Scene.h"
-#include "../Actor.h"
 #include "../../Runtime/Renderer/Renderer.h"
 
 UScene::UScene()
 {
-	m_objects.assign(DEFAULT_LAYER_SIZE, std::unordered_map<std::wstring, std::shared_ptr<UObject>>());
+	m_objects.assign(DEFAULT_LAYER_SIZE, std::unordered_map<std::wstring, std::shared_ptr<AActor>>());
 }
 
 UScene::~UScene()

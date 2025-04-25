@@ -40,7 +40,7 @@ void ATile::Initialize()
 			}
 		}
 	}
-	StaticMeshComponent->SetMeshSize(InitialTileSize.x, InitialTileSize.y);
+	//StaticMeshComponent->SetMeshSize(InitialTileSize.x, InitialTileSize.y);
 }
 
 void ATile::Update()

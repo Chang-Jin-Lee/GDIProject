@@ -1,6 +1,5 @@
 #pragma once
-
-#include "../../Classes/Object.h"
+#include "../Actor.h"
 
 #define DEFAULT_LAYER_SIZE 3
 
@@ -96,5 +95,5 @@ private:
 	wchar_t* m_sceneName;
 
 protected:
-	std::vector<std::unordered_map<std::wstring, std::shared_ptr<UObject>>> m_objects;
+	std::vector<std::unordered_map<std::wstring, std::shared_ptr<AActor>>> m_objects;
 };

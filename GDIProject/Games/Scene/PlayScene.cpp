@@ -83,11 +83,13 @@ void UPlayScene::Initialize()
 			FVector2 size = m_tiles[i][j].get()->GetActorSize();
 			if (i % 2 == 0)
 			{
-				m_tiles[i][j].get()->SetActorLocation(j * size.x, -i * size.y / 3 +  i * size.y);
+				//m_tiles[i][j].get()->SetActorLocation(j * size.x, -i * size.y / 3 + i * size.y);
+				m_tiles[i][j].get()->SetActorLocation(j * m_tiles[i][j].get()->InitialTileSize.x, -i * m_tiles[i][j].get()->InitialTileSize.y / 3 +  i * m_tiles[i][j].get()->InitialTileSize.y);
 			}
 			else
 			{
-				m_tiles[i][j].get()->SetActorLocation(size.x * 0.5f + j * size.x, -i * size.y/3 + i * size.y);
+				//m_tiles[i][j].get()->SetActorLocation(size.x * 0.5f + j * size.x, -i * size.y / 3 + i * size.y);
+				m_tiles[i][j].get()->SetActorLocation(m_tiles[i][j].get()->InitialTileSize.x * 0.5f + j * m_tiles[i][j].get()->InitialTileSize.x, -i * m_tiles[i][j].get()->InitialTileSize.y/3 + i * m_tiles[i][j].get()->InitialTileSize.y);
 			}
 		}
 	}
