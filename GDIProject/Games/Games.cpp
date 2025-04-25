@@ -114,7 +114,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef MEMORY_LEAK_CHECK
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-	Renderer::SetResolution(1280, 800);	// 해상도 조절
+	Renderer::SetResolution(800, 600);	// 해상도 조절
+	//Renderer::SetResolution(1280, 800);	// 해상도 조절
 	InitConsole();  // 콘솔 출력 초기화
 
 	char szPath[MAX_PATH] = { 0, };
@@ -221,6 +222,7 @@ namespace Game
 		Renderer::BeginDraw();
 
 		g_currentScene->Update();
+		Renderer::Update();
 
 		printf("%f\n", 1 / Time::GetElapsedTime());
 		Renderer::RenderRectRed(int(m_LMouseCickPosition.x - 10), int(m_LMouseCickPosition.y - 10), 20, 20);

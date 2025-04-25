@@ -16,6 +16,7 @@ class ACameraActor;
 namespace Renderer
 {
 	void Initialize(HWND hwnd);
+	void Update();
 	void BeginDraw();
 	void Release(HWND hwnd);
 
@@ -35,6 +36,9 @@ namespace Renderer
 	void RenderRectBlue(int x, int y, int width, int height);
 	void RenderTextUI(SUITextComponent* textui, int x, int y);
 	void RenderButtonUI(int x, int y, int width, int height, Gdiplus::Pen* pen);
+
+	void ClearRenderObjects();
+	void SetRenderObject(std::shared_ptr<UObject> obj);
 
 	void EndDraw();
 }

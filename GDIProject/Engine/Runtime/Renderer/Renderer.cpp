@@ -20,6 +20,7 @@ namespace Renderer
 	Gdiplus::Graphics* g_pBackBufferGraphics = nullptr;
 
 	std::shared_ptr<ACameraActor> g_mainCamera;
+	std::vector<std::shared_ptr<UObject>> g_renderedObjs;
 
 	const Gdiplus::Pen* m_redPen = nullptr; // »¡°£Ææ
 	const Gdiplus::Pen* m_BluePen = nullptr; // ÆÄ¶õÆæ
@@ -40,6 +41,22 @@ namespace Renderer
 			m_redPen = new Gdiplus::Pen(Color(255, 0, 0), 1.0f); // »¡°£Ææ
 		if (m_BluePen == nullptr)
 			m_BluePen = new Gdiplus::Pen(Color(0, 0, 255), 1.0f); // ÆÄ¶õÆæ
+	}
+
+	void Update()
+	{
+		for (auto object : g_renderedObjs)
+		{
+			if (std::shared_ptr<ACharacter> character = std::dynamic_pointer_cast<ACharacter>(object))
+			{
+				RenderCharacterAnimation(character->AnimationBundle, character.get());
+			}
+			else if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(object))
+			{
+				RenderMesh(actor.get()->SceneComponent, actor.get()->StaticMeshComponent);
+				//RenderMesh(actor.get()->get,)
+			}
+		}
 	}
 
 	void BeginDraw()
@@ -127,6 +144,16 @@ namespace Renderer
 	{
 		const Gdiplus::Rect rect(x, y, width, height);
 		g_pBackBufferGraphics->DrawRectangle(pen, rect);
+	}
+
+	void ClearRenderObjects()
+	{
+		g_renderedObjs.clear();
+	}
+
+	void SetRenderObject(std::shared_ptr<UObject> obj)
+	{
+		g_renderedObjs.push_back(obj);
 	}
 
 	// ¾Ö´Ï¸ÞÀÌ¼ÇÀ» ÇÒ¶§´Â ºñÆ®¸ÊÀ» ÇÑÀå¾¿ ³Ñ±â±â

@@ -38,7 +38,7 @@ void UEndScene::LoadData()
 {
 	__super::LoadData();
 	m_image->LoadData(L"Image", L"EndImage.png");
-	m_image->SetActorSize(1280, 800);
+	m_image->SetActorSize(Renderer::GetResolution().x, Renderer::GetResolution().y);
 }
 
 void UEndScene::Release()

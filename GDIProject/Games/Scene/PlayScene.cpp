@@ -28,9 +28,9 @@ UPlayScene::UPlayScene()
 		g->m_gGameScore = 0;
 	}
 
-	m_scoreui = NewObject<SUITextComponent>(TEXT("scoreuiname"));
-	m_remainTimeGuideui = NewObject<SUITextComponent>(TEXT("remainTimeGuideui"));
-	m_remainTimeui = NewObject<SUITextComponent>(TEXT("remainTimeui"));
+	m_scoreui = NewObject<SUITextComponent>(TEXT("scoreuiname"), ELAYER::UI);
+	m_remainTimeGuideui = NewObject<SUITextComponent>(TEXT("remainTimeGuideui"), ELAYER::UI);
+	m_remainTimeui = NewObject<SUITextComponent>(TEXT("remainTimeui"), ELAYER::UI);
 
 	m_tiles.assign(TILE_COL_SIZE, std::vector<std::shared_ptr<ATile>>());
 	for (int i = 0; i < TILE_COL_SIZE; i++)
@@ -132,12 +132,12 @@ void UPlayScene::CharactersInitialize()
 	m_fPlayerCharacter->SetName(PlayerName.c_str());
 	m_fPlayerCharacter->Initialize();
 
-	//for (int i = 0; i < m_enemyMaxSize; i++)
-	//{
-	//	m_fEnemyCharacter = NewObject<AEnemyCharacter>(EnemyName, ELAYER::CHARACTER);
-	//	m_fEnemyCharacter->SetName(EnemyName.c_str());
-	//	m_fEnemyCharacter->Initialize();
-	//}
+	for (int i = 0; i < m_enemyMaxSize; i++)
+	{
+		m_fEnemyCharacter = NewObject<AEnemyCharacter>(EnemyName, ELAYER::CHARACTER);
+		m_fEnemyCharacter->SetName(EnemyName.c_str());
+		m_fEnemyCharacter->Initialize();
+	}
 }
 
 void UPlayScene::UIInitialize()
@@ -206,9 +206,9 @@ void UPlayScene::UpdateCollisionDetection()
 		}
 	}
 
-	for (auto objectMap : m_objects)
+	for (auto& objectMap : m_objects)
 	{
-		for (auto objectPair : objectMap)
+		for (auto& objectPair : objectMap)
 		{
 			std::shared_ptr<UObject> object = objectPair.second;
 			// only collision detect Player to Enemy
@@ -259,9 +259,4 @@ void UPlayScene::UpdateUI()
 	wchar_t gameScoreStr[10];
 	swprintf_s(gameScoreStr, 10, L"%f", m_fFPSTime-m_fFPSLastTime);
 	wcscpy_s(m_remainTimeui->m_content, 10, gameScoreStr);
-
-	//// Ä«¸Þ¶ó ºÎÂø
-	//m_scoreui.get()->m_Position = m_scoreui.get()->m_RelativePosition + Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
-	//m_remainTimeui.get()->m_Position = m_remainTimeui.get()->m_RelativePosition + Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
-	//m_remainTimeGuideui.get()->m_Position = m_remainTimeGuideui.get()->m_RelativePosition + Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
 }

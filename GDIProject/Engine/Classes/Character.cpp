@@ -27,7 +27,7 @@ void ACharacter::Update()
 {
 	__super::Update();
 
-	Renderer::RenderCharacterAnimation(AnimationBundle, this);
+	//Renderer::RenderCharacterAnimation(AnimationBundle, this);
 
 	if (bPlayingAnimation)	// 플레이 가능할 때만 플레이
 	{

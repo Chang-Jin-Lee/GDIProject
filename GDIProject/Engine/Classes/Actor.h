@@ -33,7 +33,7 @@ public:
 	void SetActorLocation(float x, float y);
 	void SetActorRotation(float value);
 	
-protected:
+public:
 	USceneComponent* SceneComponent;
 	UStaticMeshComponent* StaticMeshComponent;
 	FAABBBox boundBox;

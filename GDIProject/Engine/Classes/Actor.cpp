@@ -30,7 +30,7 @@ void AActor::Update()
 {
 	__super::Update();
 	
-	Renderer::RenderMesh(SceneComponent, StaticMeshComponent);
+	//Renderer::RenderMesh(SceneComponent, StaticMeshComponent);
 
 	boundBox.m_minVector.x = GetActorLocation().x;
 	boundBox.m_minVector.y = GetActorLocation().y;

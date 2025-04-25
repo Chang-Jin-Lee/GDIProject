@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "../Actor.h"
+#include "../../Runtime/Renderer/Renderer.h"
 
 UScene::UScene()
 {
@@ -18,11 +19,13 @@ void UScene::Initialize()
 
 void UScene::Update()
 {
-	for (auto objectVector : m_objects)
+	Renderer::ClearRenderObjects();
+	for (auto objectMap : m_objects)
 	{
-		for (auto objectPair : objectVector)
+		for (auto objectPair : objectMap)
 		{
 			objectPair.second->Update();
+			Renderer::SetRenderObject(objectPair.second);
 		}
 	}
 }
