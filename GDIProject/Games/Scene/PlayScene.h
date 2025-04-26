@@ -7,6 +7,8 @@
 #include "../Character/EnemyCharacter.h"
 #include <string>
 #include "../Tile/Tile.h"
+#include "../UI/ScoreWidget.h"
+#include "../UI/PlayScene_Widget.h"
 
 #define TILE_COL_SIZE 20
 #define TILE_ROW_SIZE 30
@@ -25,6 +27,8 @@ public:
 	virtual void LoadData() override;
 	virtual void Release() override;
 
+	virtual void DeleteNullObjects() override;
+
 	void TimeInitialize();
 	void CharactersInitialize();
 	void UIInitialize();
@@ -34,12 +38,15 @@ public:
 	void UpdateInput();
 	void UpdateUI();
 
+
+	// delegate
+	void printTest();
+
 private:
 	std::shared_ptr<APlayerCharacter> m_fPlayerCharacter;
 	std::shared_ptr<AEnemyCharacter> m_fEnemyCharacter;
-	std::shared_ptr<SUITextComponent> m_scoreui;
-	std::shared_ptr<SUITextComponent> m_remainTimeGuideui;
-	std::shared_ptr<SUITextComponent> m_remainTimeui;
+	std::shared_ptr<UScoreWidget> m_ScoreWidget;
+	std::shared_ptr<UPlayScene_Widget> m_PlayScene_Widget;
 	std::vector<std::vector<std::shared_ptr<ATile>>> m_tiles;
 
 	FAABBBox* WorldBound = nullptr;

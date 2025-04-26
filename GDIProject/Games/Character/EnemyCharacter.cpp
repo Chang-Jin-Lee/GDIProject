@@ -5,6 +5,7 @@
 
 AEnemyCharacter::AEnemyCharacter()
 {
+	bStatic = true;
 	srand((unsigned int)Time::GetElapsedTime());
 	m_randomWidth = 2.0f;
 	m_randomHeight = 2.0f;
@@ -15,7 +16,7 @@ AEnemyCharacter::AEnemyCharacter()
 
 AEnemyCharacter::~AEnemyCharacter()
 {
-	delete m_textui;
+	m_textui.reset();
 }
 
 void AEnemyCharacter::Initialize()

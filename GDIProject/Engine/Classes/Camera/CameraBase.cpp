@@ -7,7 +7,7 @@ UCamaraBase::UCamaraBase()
 
 UCamaraBase::~UCamaraBase()
 {
-	delete SceneComponent;
+	SceneComponent.reset();
 }
 
 void UCamaraBase::Initialize()

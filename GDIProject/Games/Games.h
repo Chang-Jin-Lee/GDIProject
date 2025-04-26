@@ -13,6 +13,8 @@ namespace Game
 	void LoadData();
 	void Update();
 	void Release(HWND hwnd);
+
+	void CheckWidgetClick(const FVector2& clickPosition);
 	UScene* GetCurrentScene();
 	UScene** GetCurrentScenePtr();
 	UScene* GetNextScene();
@@ -28,10 +30,4 @@ namespace Game
 
 	bool GetMouseDragState();
 	void SetMouseDrageState(const bool& state);
-
-	//void Render();
-	//void Release();
-	//ESceneState* GetCurrentSceneState();
-	//void ChangeScene(const ESceneState& scene);
-	//void GameExit();
 }

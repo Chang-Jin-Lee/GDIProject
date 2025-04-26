@@ -25,5 +25,5 @@ public:
 	ETileType m_etileType = ETileType::Desert;
 
 public:
-	FVector2 InitialTileSize = FVector2(135, 160);
+	FVector2 InitialTileSize = FVector2(98, 120);
 };

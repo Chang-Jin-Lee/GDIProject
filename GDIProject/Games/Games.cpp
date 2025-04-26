@@ -75,6 +75,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 		Game::SetLMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam)));
 		Game::SetMouseDrageState(true);
+		Game::CheckWidgetClick(FVector2(LOWORD(lParam), HIWORD(lParam)));
 		break;
 	case WM_MOUSEMOVE:
 		if (Game::GetMouseDragState())
@@ -114,8 +115,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef MEMORY_LEAK_CHECK
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-	Renderer::SetResolution(800, 600);	// 해상도 조절
+	//Renderer::SetResolution(800, 600);	// 해상도 조절
 	//Renderer::SetResolution(1280, 800);	// 해상도 조절
+	Renderer::SetResolution(1024, 600);	// 해상도 조절
 	InitConsole();  // 콘솔 출력 초기화
 
 	char szPath[MAX_PATH] = { 0, };
@@ -222,6 +224,8 @@ namespace Game
 		Renderer::BeginDraw();
 
 		g_currentScene->Update();
+		g_currentScene->DeleteNullObjects();
+
 		Renderer::Update();
 
 		printf("%f\n", 1 / Time::GetElapsedTime());
@@ -232,39 +236,36 @@ namespace Game
 		Renderer::EndDraw();
 
 		ChangeScene();
-
-		if (Input::IsKeyDown(VK_W))
-		{
-			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
-			cameraPos += FVector2(0, -5);
-			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
-		}
-
-		if (Input::IsKeyDown(VK_S))
-		{
-			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
-			cameraPos += FVector2(0, 5);
-			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
-		}
-
-		if (Input::IsKeyDown(VK_A))
-		{
-			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
-			cameraPos += FVector2(-5, 0);
-			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
-		}
-		if (Input::IsKeyDown(VK_D))
-		{
-			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
-			cameraPos += FVector2(5, 0);
-			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
-		}
 	}
 
 	void Release(HWND hwnd)
 	{
 		Renderer::Release(hwnd);
 		g_currentScene->Release();
+	}
+
+	void CheckWidgetClick(const FVector2& clickPosition)
+	{
+		std::vector<std::unordered_map<std::wstring, std::shared_ptr<UWidget>>>& Widgets = g_currentScene->GetWidgets();
+		for (auto& button : Widgets[static_cast<int>(EUILAYER::BUTTON)])
+		{
+			if (button.second->bVisible)
+			{
+				for (auto& component : button.second.get()->WidgetComponents)
+				{
+					if (clickPosition.x < component.get()->m_Position.x ||
+						clickPosition.x > component.get()->m_Position.x + component.get()->m_Size.x ||
+						clickPosition.y < component.get()->m_Position.y ||
+						clickPosition.y > component.get()->m_Position.y + component.get()->m_Size.y
+						)
+						continue;
+					if (component->FVoidDelegate)
+					{
+						component->FVoidDelegate();
+					}
+				}
+			}
+		}
 	}
 
 	UScene* GetCurrentScene()

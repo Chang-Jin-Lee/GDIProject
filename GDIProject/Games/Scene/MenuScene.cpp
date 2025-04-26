@@ -5,11 +5,12 @@
 #include "PlayScene.h"
 #include <UI/UIButtonComponent.h>
 #include <UI/UITextComponent.h>
+#include <Classes/Scene/Scene.h>
 
 UMenuScene::UMenuScene()
 {
 	m_image = NewObject<ABackGroundImage>(TEXT("m_image"));
-	m_startGuideui = NewObject<SUITextComponent>(TEXT("m_startGuideui"));
+	m_startGuideui = CreateWidget<UMenuscene_StartGuide>(TEXT("startGuideui"));
 }
 
 UMenuScene::~UMenuScene()
@@ -43,19 +44,14 @@ void UMenuScene::Release()
 
 }
 
+void UMenuScene::DeleteNullObjects()
+{
+	__super::DeleteNullObjects();
+}
+
 void UMenuScene::UIInitialize()
 {
-	float uiwidth = 300;
-	float uiheith = 100;
-	m_startGuideui->Initialize
-	(
-		(wchar_t*)L"C 키를 눌러 다음으로 넘어가세요",
-		22,
-		(wchar_t*)L"Verdana",
-		Gdiplus::Color(255, 255, 255),
-		FVector2(int(Renderer::GetResolution().x * 0.07), int(Renderer::GetResolution().y * 0.6)),
-		FVector2(uiwidth, uiheith)
-	);
+	m_startGuideui->Initialize();
 }
 
 void UMenuScene::UpdateInput()

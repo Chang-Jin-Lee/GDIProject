@@ -5,7 +5,7 @@
 
 ATile::ATile()
 {
-
+	bStatic = true;
 }
 
 ATile::~ATile()
@@ -38,6 +38,7 @@ void ATile::Initialize()
 				int height = bottom - top;
 
 				StaticMeshComponent->SetMeshSize(width, height);
+				//InitialTileSize = FVector2(width, height);
 				StaticMeshComponent->mesh = baseImage->Clone(left, top, width, height, PixelFormat32bppARGB);
 			}
 		}

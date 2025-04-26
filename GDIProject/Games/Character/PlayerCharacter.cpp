@@ -6,10 +6,13 @@
 #include "../Games.h"
 #include <Input/Input.h>
 #include "../Scene/PlayScene.h"
+#include "../UI/CharacterNameWidget.h"
 #include <UI/UITextComponent.h>
 
 APlayerCharacter::APlayerCharacter()
 {
+	bStatic = true;
+
 	for (int j = 0; j < static_cast<int>(AnimationState::Max); j++)
 	{
 		for (int i = 0; i < static_cast<int>(DirState::Max); i++)
@@ -21,7 +24,8 @@ APlayerCharacter::APlayerCharacter()
 
 	dirState = DirState::Bottom;
 	animstate = AnimationState::Idle;
-	m_textui = CreateDefaultSubobject<SUITextComponent>(TEXT("m_textui"));
+	m_nameWidget = CreateDefaultSubobject<UCharacterNameWidget>(TEXT("nameWidget"));
+	attachedWidgets.push_back(m_nameWidget);
 }
 
 APlayerCharacter::~APlayerCharacter()
@@ -34,7 +38,7 @@ APlayerCharacter::~APlayerCharacter()
 		}
 		delete AnimationBundle.baseImages[j];
 	}
-	delete m_textui;
+	m_nameWidget.reset();
 }
 
 void APlayerCharacter::Initialize()
@@ -52,7 +56,7 @@ void APlayerCharacter::Initialize()
 	bPlayingAnimation = true;
 
 	// SceneComponent 값 초기화
-	FVector2 Location = FVector2(50.0f, 50.0f);
+	FVector2 Location = FVector2(Renderer::GetResolution().x * 0.5, Renderer::GetResolution().y * 0.5);
 	FVector2 Size = FVector2(13.0f, 20.0f);
 	FVector2 Scale = FVector2(1.5f, 1.5f);
 	SetActorLocation(Location.x, Location.y);
@@ -60,8 +64,8 @@ void APlayerCharacter::Initialize()
 	SetActorScale(Scale.x, Scale.y);
 
 	// UI 초기화
-	m_textui->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
-	m_textui->AttachedUIToActor(this);
+	m_nameWidget->m_nameUI->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
+	m_nameWidget->m_nameUI->AttachedUIToActor(this);
 }
 
 void APlayerCharacter::Update()

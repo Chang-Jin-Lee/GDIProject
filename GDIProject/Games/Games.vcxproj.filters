@@ -16,6 +16,18 @@
     <Filter Include="소스 파일\Scene">
       <UniqueIdentifier>{51ec75a3-18c6-4b20-bab1-90285fb4a43d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\UI">
+      <UniqueIdentifier>{26dc4f7d-5f5c-4070-ab9b-b7a5020a97bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\UI">
+      <UniqueIdentifier>{dc2224a2-f03e-4ecb-8a93-2e4e5c047f00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Manager">
+      <UniqueIdentifier>{56c21d38-66dc-4761-ac61-9144189e8d5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Manager">
+      <UniqueIdentifier>{13fd606f-f5cf-48b6-86db-e0fbe1ad9d90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -54,6 +66,24 @@
     <ClInclude Include="Tile\Tile.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="UI\ScoreWidget.h">
+      <Filter>헤더 파일\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\PlayScene_Widget.h">
+      <Filter>헤더 파일\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\MenuScene_StartGuide.h">
+      <Filter>헤더 파일\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\EndScene_ScoreGuide.h">
+      <Filter>헤더 파일\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\CharacterNameWidget.h">
+      <Filter>헤더 파일\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager\TurnManager.h">
+      <Filter>헤더 파일\Manager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Games.cpp">
@@ -82,6 +112,24 @@
     </ClCompile>
     <ClCompile Include="Tile\Tile.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\ScoreWidget.cpp">
+      <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\PlayScene_Widget.cpp">
+      <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\MenuScene_StartGuide.cpp">
+      <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\EndScene_ScoreGuide.cpp">
+      <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\CharacterNameWidget.cpp">
+      <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager\TurnManager.cpp">
+      <Filter>소스 파일\Manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

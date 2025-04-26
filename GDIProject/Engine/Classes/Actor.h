@@ -5,6 +5,8 @@
 #include "../Experiment/AABBBox.h"
 #include "Object.h"
 
+class UWidget;
+
 class AActor : public UObject
 {
 public:
@@ -31,10 +33,12 @@ public:
 	void SetActorScale(float x, float y);
 	void SetActorSize(float x, float y);
 	void SetActorLocation(float x, float y);
+	void SetActorLocation(const FVector2& Position);
 	void SetActorRotation(float value);
 	
 public:
-	USceneComponent* SceneComponent;
-	UStaticMeshComponent* StaticMeshComponent;
+	std::shared_ptr<USceneComponent> SceneComponent;
+	std::shared_ptr<UStaticMeshComponent> StaticMeshComponent;
 	FAABBBox boundBox;
+	std::vector<std::shared_ptr<UWidget>> attachedWidgets;
 };

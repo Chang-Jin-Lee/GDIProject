@@ -3,6 +3,7 @@
 #include <Runtime/Animation/AnimationComponent.h>
 
 class SUITextComponent;
+class UCharacterNameWidget;
 
 class APlayerCharacter : public ACharacter
 {
@@ -20,7 +21,7 @@ public:
 	void SetAnimMeshScale(float width, float height);
 	
 	bool m_bAttackAnimationPlaying = false;
-	SUITextComponent* m_textui;
+	std::shared_ptr<UCharacterNameWidget> m_nameWidget;
 
 	const int RotateSpeed = 200;
 	const float MoveSpeed = 600;

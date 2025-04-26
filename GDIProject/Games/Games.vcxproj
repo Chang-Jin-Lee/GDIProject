@@ -133,6 +133,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="Games.h" />
     <ClInclude Include="Character\PlayerCharacter.h" />
+    <ClInclude Include="Manager\TurnManager.h" />
     <ClInclude Include="Player\dGameState.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Scene\EndScene.h" />
@@ -140,17 +141,28 @@
     <ClInclude Include="Scene\PlayScene.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Tile\Tile.h" />
+    <ClInclude Include="UI\CharacterNameWidget.h" />
+    <ClInclude Include="UI\EndScene_ScoreGuide.h" />
+    <ClInclude Include="UI\MenuScene_StartGuide.h" />
+    <ClInclude Include="UI\PlayScene_Widget.h" />
+    <ClInclude Include="UI\ScoreWidget.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Character\EnemyCharacter.cpp" />
     <ClCompile Include="Image\BackGroundImage.cpp" />
     <ClCompile Include="Games.cpp" />
     <ClCompile Include="Character\PlayerCharacter.cpp" />
+    <ClCompile Include="Manager\TurnManager.cpp" />
     <ClCompile Include="Player\dGameState.cpp" />
     <ClCompile Include="Scene\EndScene.cpp" />
     <ClCompile Include="Scene\MenuScene.cpp" />
     <ClCompile Include="Scene\PlayScene.cpp" />
     <ClCompile Include="Tile\Tile.cpp" />
+    <ClCompile Include="UI\CharacterNameWidget.cpp" />
+    <ClCompile Include="UI\MenuScene_StartGuide.cpp" />
+    <ClCompile Include="UI\PlayScene_Widget.cpp" />
+    <ClCompile Include="UI\ScoreWidget.cpp" />
+    <ClCompile Include="UI\EndScene_ScoreGuide.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Games.rc" />

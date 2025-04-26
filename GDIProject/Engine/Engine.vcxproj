@@ -167,6 +167,8 @@
     <ClInclude Include="UI\UIButtonComponent.h" />
     <ClInclude Include="UI\UITextComponent.h" />
     <ClInclude Include="UI\Widget.h" />
+    <ClInclude Include="UI\WidgetComponent.h" />
+    <ClInclude Include="UI\WidgetComponentBase.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Actor.cpp" />
@@ -193,8 +195,11 @@
     <ClCompile Include="Runtime\Core\FileHelper.cpp" />
     <ClCompile Include="Runtime\Renderer\Renderer.cpp" />
     <ClCompile Include="Time\Time.cpp" />
+    <ClCompile Include="UI\UIButtonComponent.cpp" />
     <ClCompile Include="UI\UITextComponent.cpp" />
     <ClCompile Include="UI\Widget.cpp" />
+    <ClCompile Include="UI\WidgetComponent.cpp" />
+    <ClCompile Include="UI\WidgetComponentBase.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

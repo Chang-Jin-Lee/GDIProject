@@ -3,8 +3,8 @@
 
 AActor::AActor()
 {
-	SceneComponent = new USceneComponent();
-	StaticMeshComponent = new UStaticMeshComponent();
+	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
+	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RootStaticMeshComponent"));
 	boundBox.SetMinVector(0, 0);
 	boundBox.SetMaxVector(0, 0);
 	SetName((wchar_t*)L"AActor");
@@ -12,8 +12,8 @@ AActor::AActor()
 
 AActor::~AActor()
 {
-	delete SceneComponent;
-	delete StaticMeshComponent;
+	SceneComponent.reset();
+	StaticMeshComponent.reset();
 }
 
 void AActor::LoadStaticMeshData(std::wstring baseDir, std::wstring fileName)
@@ -62,6 +62,11 @@ void AActor::SetActorSize(float x, float y)
 void AActor::SetActorLocation(float x, float y)
 {
 	SceneComponent->SetSceneComponentLocation(x, y);
+}
+
+void AActor::SetActorLocation(const FVector2& Position)
+{
+	SceneComponent->SetSceneComponentLocation(Position.x, Position.y);
 }
 
 void AActor::SetActorRotation(float value)

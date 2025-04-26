@@ -4,7 +4,7 @@
 
 ABackGroundImage::ABackGroundImage()
 {
-
+	bStatic = true;
 }
 
 ABackGroundImage::~ABackGroundImage()

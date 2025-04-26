@@ -7,19 +7,18 @@
 #include <iostream>
 #include <UI/UITextComponent.h>
 #include "../Image/BackGroundImage.h"
+#include "../UI/EndScene_ScoreGuide.h"
 
 UEndScene::UEndScene()
 {
 	m_image = NewObject<ABackGroundImage>(TEXT("m_image"));
-	m_scoreui = NewObject<SUITextComponent>(TEXT("m_scoreui"));
-	m_scoreGuideui = NewObject<SUITextComponent>(TEXT("m_scoreGuideui"));
+	m_scoreGuide = CreateWidget<UEndScene_ScoreGuide>(TEXT("scoreGuide"));
 }
 
 UEndScene::~UEndScene()
 {
 	m_image.reset();
-	m_scoreui.reset();
-	m_scoreGuideui.reset();
+	m_scoreGuide.reset();
 }
 
 void UEndScene::Initialize()
@@ -46,41 +45,23 @@ void UEndScene::Release()
 
 }
 
+void UEndScene::DeleteNullObjects()
+{
+	__super::DeleteNullObjects();
+}
+
 void UEndScene::UIInitialize()
 {
-	// 이 UI선언을 좀더 간단하게 만들어야함.
-	float uiwidth = 60;
-	float uiheith = 30;
-	m_scoreui->Initialize
-	(
-		nullptr,
-		18,
-		(wchar_t*)L"Verdana",
-		Gdiplus::Color(255, 255, 255),
-		FVector2(int(Renderer::GetResolution().x * 0.4), int(Renderer::GetResolution().y * 0.5)),
-		FVector2(uiwidth, uiheith)
-	);
-	m_scoreui->m_content = (wchar_t*)malloc(sizeof(wchar_t) * 10);
+	m_scoreGuide->Initialize();
 	AdGameState* g = dynamic_cast<AdGameState*>(Game::GetGameState());
 	if (g)
 	{
-		wchar_t gameScoreStr[10];
-		swprintf_s(gameScoreStr, 10, L"%d", g->m_gGameScore);
-		wcscpy_s(m_scoreui->m_content, 10, gameScoreStr);
+		//wchar_t gameScoreStr[10];
+		//swprintf_s(gameScoreStr, 10, L"%d", g->m_gGameScore);
+		//wcscpy_s(m_scoreGuide->m_scoreui->m_content, 10, gameScoreStr);
+		m_scoreGuide->m_scoreui->m_content = std::to_wstring(g->m_gGameScore);
 		std::cout << g->m_gGameScore << '\n';
 	}
-
-	float Guideuiwidth = 250;
-	float Guideuiheith = 50;
-	m_scoreGuideui->Initialize
-	(
-		(wchar_t*)L"최종 점수 : ",
-		24,
-		(wchar_t*)L"Verdana",
-		Gdiplus::Color(255, 255, 255),
-		FVector2(int(Renderer::GetResolution().x * 0.2), int(Renderer::GetResolution().y * 0.5)),
-		FVector2(Guideuiwidth, Guideuiheith)
-	);
 }
 
 void UEndScene::UpdateInput()

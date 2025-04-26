@@ -17,7 +17,7 @@ public:
 	void LoadData(std::wstring baseDir, std::wstring fileName);
 
 private:
-	SUITextComponent* m_textui;
+	std::shared_ptr<SUITextComponent> m_textui;
 	float m_randomWidth;
 	float m_randomHeight;
 };

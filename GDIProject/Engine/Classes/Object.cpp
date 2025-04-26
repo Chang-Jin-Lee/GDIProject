@@ -15,7 +15,7 @@ void UObject::Update()
 {
 	if (bStatic == false)
 	{
-		for (auto component : m_Components)
+		for (auto component : m_components)
 		{
 			component.second->Update();
 		}
