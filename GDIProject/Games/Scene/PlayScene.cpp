@@ -40,7 +40,7 @@ UPlayScene::UPlayScene()
 	{
 		for (int j = 0; j < TILE_ROW_SIZE; j++)
 		{
-			m_tiles[i].push_back(NewObject<ATile>(TEXT("tile"), ESCENELAYER::GROUND));
+			m_tiles[i].push_back(NewObject<ATile>(TEXT("tile") + std::to_wstring(TILE_ROW_SIZE*i+j), ESCENELAYER::GROUND));
 		}
 	}
 }

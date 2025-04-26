@@ -73,6 +73,17 @@ public:
 	std::shared_ptr<TReturnType> NewObject(const std::wstring& NewobjectName, ESCENELAYER layer = ESCENELAYER::CHARACTER)
 	{
 		int intLayer = static_cast<int>(layer);
+		std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
+		if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(temp))	// 만약 씬에서 생성할때 위젯이 부착되어 있으면 걔도 관리해줌.
+		{
+			for (std::shared_ptr<UWidget>& widget : actor->attachedWidgets)
+			{
+				m_widgets[widget.get()->UIlayer].insert({ widget->GetName(), widget });
+			}
+		}
+		m_objects[intLayer].insert({ NewobjectName, temp });
+		return temp;
+
 		if (HasObjectName<AActor>(NewobjectName, m_objects))
 		{
 			int i = 0;
@@ -124,6 +135,10 @@ public:
 	std::shared_ptr<TReturnType> CreateWidget(const std::wstring& NewWidgetName, EUILAYER layer = EUILAYER::TEXT)
 	{
 		int intLayer = static_cast<int>(layer);
+		std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
+		m_widgets[intLayer].insert({ NewWidgetName, temp });
+		return temp;
+
 		if (HasObjectName<UWidget>(NewWidgetName, m_widgets))
 		{
 			int i = 0;

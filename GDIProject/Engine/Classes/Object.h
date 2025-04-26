@@ -13,6 +13,10 @@ public:
 	template<class TReturnType>
 	std::shared_ptr<TReturnType> CreateDefaultSubobject(const std::wstring& SubobjectName)
 	{
+		std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
+		m_components.insert(std::make_pair(SubobjectName, temp));
+		return temp;
+
 		if (m_components.find(SubobjectName) != m_components.end())
 		{
 			int i = 0;
