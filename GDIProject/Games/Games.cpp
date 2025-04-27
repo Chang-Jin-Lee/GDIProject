@@ -184,7 +184,7 @@ namespace Game
 	UScene* g_currentScene = new UMenuScene();
 	UScene* g_nextScene = g_currentScene;
 
-	AGameStateBase* g_gameInstance = nullptr;
+	GameStateBase* g_gameInstance = nullptr;
 	
 	// 마우스 드래그
 	FVector2 m_LMouseCickPosition;
@@ -193,7 +193,7 @@ namespace Game
 
 	void PreInitialize()
 	{
-		g_gameInstance = AGameStateBase::CreateInstance();
+		g_gameInstance = GameStateBase::CreateInstance();
 		g_gameInstance->Initialize();
 		Renderer::SetMainCamera(g_gameInstance->GetMainCamera());
 	}
@@ -288,7 +288,7 @@ namespace Game
 		return &g_nextScene;
 	}
 
-	AGameStateBase* GetGameState()
+	GameStateBase* GetGameState()
 	{
 		return g_gameInstance;
 	}

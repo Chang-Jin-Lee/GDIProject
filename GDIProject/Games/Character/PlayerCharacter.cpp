@@ -11,7 +11,7 @@
 
 APlayerCharacter::APlayerCharacter()
 {
-	bStatic = true;
+	bStatic = false;
 
 	for (int j = 0; j < static_cast<int>(AnimationState::Max); j++)
 	{

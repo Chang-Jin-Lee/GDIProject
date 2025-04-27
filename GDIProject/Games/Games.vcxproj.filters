@@ -60,7 +60,7 @@
     <ClInclude Include="Character\EnemyCharacter.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Player\dGameState.h">
+    <ClInclude Include="Player\TurnGameState.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Tile\Tile.h">
@@ -83,6 +83,18 @@
     </ClInclude>
     <ClInclude Include="Manager\TurnManager.h">
       <Filter>헤더 파일\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Character\Unit.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\AIPlayer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\PlayerController.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile\City.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -107,7 +119,7 @@
     <ClCompile Include="Character\EnemyCharacter.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="Player\dGameState.cpp">
+    <ClCompile Include="Player\TurnGameState.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Tile\Tile.cpp">
@@ -130,6 +142,18 @@
     </ClCompile>
     <ClCompile Include="Manager\TurnManager.cpp">
       <Filter>소스 파일\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Character\Unit.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\AIPlayer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\PlayerController.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile\City.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

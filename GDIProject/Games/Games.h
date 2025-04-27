@@ -19,7 +19,7 @@ namespace Game
 	UScene** GetCurrentScenePtr();
 	UScene* GetNextScene();
 	UScene** GetNextScenePtr();
-	AGameStateBase* GetGameState();
+	GameStateBase* GetGameState();
 
 	void ChangeScene();
 

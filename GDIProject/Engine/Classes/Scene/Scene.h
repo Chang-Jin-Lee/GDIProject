@@ -78,7 +78,7 @@ public:
 		{
 			for (std::shared_ptr<UWidget>& widget : actor->attachedWidgets)
 			{
-				m_widgets[widget.get()->UIlayer].insert({ widget->GetName(), widget });
+				m_widgets[widget.get()->RenderLayer].insert({ widget->GetName(), widget });
 			}
 		}
 		m_objects[intLayer].insert({ NewobjectName, temp });
@@ -110,7 +110,7 @@ public:
 			{
 				for (std::shared_ptr<UWidget>& widget : actor->attachedWidgets)
 				{
-					m_widgets[widget.get()->UIlayer].insert({widget->GetName(), widget});
+					m_widgets[widget.get()->RenderLayer].insert({widget->GetName(), widget});
 				}
 			}
 			m_objects[intLayer].insert({NewobjectName, temp});
@@ -123,7 +123,7 @@ public:
 			{
 				for (std::shared_ptr<UWidget>& widget : actor->attachedWidgets)
 				{
-					m_widgets[widget.get()->UIlayer].insert({ widget->GetName(), widget });
+					m_widgets[widget.get()->RenderLayer].insert({ widget->GetName(), widget });
 				}
 			}
 			m_objects[intLayer].insert({ NewobjectName, temp });

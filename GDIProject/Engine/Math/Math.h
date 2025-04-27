@@ -33,6 +33,10 @@ public:
 	{
 		return TVector2(x - rhs.x, y - rhs.y);
 	}
+	bool operator!=(const TVector2& rhs)
+	{
+		return x != rhs.x && y != rhs.y;
+	}
 	void operator*=(const TVector2& rhs)
 	{
 		x *= rhs.x;

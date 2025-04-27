@@ -5,8 +5,8 @@ AActor::AActor()
 {
 	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RootStaticMeshComponent"));
-	boundBox.SetMinVector(0, 0);
-	boundBox.SetMaxVector(0, 0);
+	boundBox.SetMinVector(-1, -1);
+	boundBox.SetMaxVector(-1, -1);
 	SetName((wchar_t*)L"AActor");
 }
 

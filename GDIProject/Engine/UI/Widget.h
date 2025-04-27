@@ -17,6 +17,5 @@ public:
 public:
 	std::vector<std::shared_ptr<UWidgetComponent>> WidgetComponents;
 	bool bAttached = false;
-	int UIlayer = 0;
 	bool bVisible = true;
 };

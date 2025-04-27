@@ -3,7 +3,7 @@
 #include <Input/Input.h>
 #include "MenuScene.h"
 #include "../Games.h"
-#include "../Player/dGameState.h"
+#include "../Player/TurnGameState.h"
 #include <iostream>
 #include <UI/UITextComponent.h>
 #include "../Image/BackGroundImage.h"
@@ -53,7 +53,7 @@ void UEndScene::DeleteNullObjects()
 void UEndScene::UIInitialize()
 {
 	m_scoreGuide->Initialize();
-	AdGameState* g = dynamic_cast<AdGameState*>(Game::GetGameState());
+	TurnGameState* g = dynamic_cast<TurnGameState*>(Game::GetGameState());
 	if (g)
 	{
 		//wchar_t gameScoreStr[10];

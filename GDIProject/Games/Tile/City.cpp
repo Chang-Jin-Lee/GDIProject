@@ -1,19 +1,8 @@
-#include <Runtime/Core/FIleHelper.h>
-#include "Tile.h"
-#include "../Games.h"
+#include "City.h"
 #include "../Player/TurnGameState.h"
+#include "../Games.h"
 
-ATile::ATile()
-{
-	bStatic = true;
-}
-
-ATile::~ATile()
-{
-
-}
-
-void ATile::Initialize()
+void ACity::Initialize() 
 {
 	__super::Initialize();
 
@@ -30,7 +19,7 @@ void ATile::Initialize()
 		//mesh = baseBitMap;
 		if (cloneInfo)
 		{
-			int Type = static_cast<int>(m_etileType);
+			int Type = static_cast<int>(ETileType::Capital);
 			if (cloneInfo[Type] && cloneInfoColsize > 3)
 			{
 				int left = cloneInfo[Type][0], top = cloneInfo[Type][1], right = cloneInfo[Type][2], bottom = cloneInfo[Type][3];
@@ -46,12 +35,15 @@ void ATile::Initialize()
 	//StaticMeshComponent->SetMeshSize(InitialTileSize.x, InitialTileSize.y);
 }
 
-void ATile::Update()
+void ACity::Update()
 {
-	__super::Update();
+    ProductionPoints++;
 }
 
-void ATile::LoadData()
+std::shared_ptr<AUnit> ACity::ProduceUnit(EUnitType Type)
 {
-	__super::LoadData();
+    auto unit = std::make_shared<AUnit>(Type);
+    ProducedUnits.push_back(unit);
+    ProductionPoints = 0;
+    return unit;
 }

@@ -1,37 +1,32 @@
 #pragma once
-
+#include <memory>
 #include <Classes/Object.h>
+#include "../Player/PlayerController.h"
+#include "../Player/AIPlayer.h"
 
-class UTurnManager : public UObject
+enum class ETurnState
+{
+    PlayerTurn,
+    AITurn,
+    MAX
+};
+
+class TurnManager : public UObject
 {
 public:
-    std::vector<std::shared_ptr<APlayer>> m_Players;
-    int m_CurrentTurnIndex = 0;
-    bool bTurnInProgress = false;
+    TurnManager();
+    ~TurnManager();
 
-    void Initialize(std::vector<std::shared_ptr<APlayer>> players)
-    {
-        m_Players = players;
-        m_CurrentTurnIndex = 0;
-        bTurnInProgress = true;
-        m_Players[m_CurrentTurnIndex]->StartTurn();
-    }
+    void Initialize();
+    void Update();
+    void EndTurn(); // "턴 끝내기" 버튼에서 호출
 
-    void EndTurn()
-    {
-        m_Players[m_CurrentTurnIndex]->EndTurn();
-        m_CurrentTurnIndex = (m_CurrentTurnIndex + 1) % m_Players.size();
-        m_Players[m_CurrentTurnIndex]->StartTurn();
-    }
+    inline  ETurnState GetCurrentTurn() const { return CurrentTurn; }
+    inline std::shared_ptr<APlayerController> GetPlayer() { return Player; }
+    inline std::vector<std::shared_ptr<AAIPlayer>>& GetAIPlayers() { return AIPlayers; }
 
-    void Update()
-    {
-        if (!bTurnInProgress)
-            return;
-
-        if (m_Players[m_CurrentTurnIndex]->IsTurnFinished())
-        {
-            EndTurn();
-        }
-    }
+private:
+    ETurnState CurrentTurn;
+    std::shared_ptr<APlayerController> Player;
+    std::vector<std::shared_ptr<AAIPlayer>> AIPlayers;
 };

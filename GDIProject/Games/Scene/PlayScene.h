@@ -38,7 +38,6 @@ public:
 	void UpdateInput();
 	void UpdateUI();
 
-
 	// delegate
 	void printTest();
 

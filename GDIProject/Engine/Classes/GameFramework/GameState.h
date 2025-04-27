@@ -5,18 +5,18 @@
 #include <memory>
 #include "../Camera/CameraActor.h"
 
-class AGameStateBase
+class GameStateBase
 {
 public:
-	AGameStateBase();
-	virtual ~AGameStateBase();
+	GameStateBase();
+	virtual ~GameStateBase();
 	virtual void Initialize() = 0;
 	virtual void PostInitialize() = 0;
 	virtual void Release() = 0;
 
-	using CreatorFunc = std::function<AGameStateBase*()>;
+	using CreatorFunc = std::function<GameStateBase*()>;
 	static void RegistGameState(const std::wstring& name, CreatorFunc func);
-	static AGameStateBase* CreateInstance();
+	static GameStateBase* CreateInstance();
 
 	std::shared_ptr<ACameraActor> GetMainCamera()
 	{

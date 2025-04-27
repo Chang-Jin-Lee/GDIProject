@@ -13,6 +13,8 @@ struct FAABBBox
 	FVector2 GetMinVector() { return m_minVector; }
 	FVector2 GetMaxVector() { return m_maxVector; }
 
+	bool IsValid() { return m_minVector != FVector2(-1, -1) && m_maxVector != FVector2(-1, -1); }
+
 	FVector2 GetCenter()
 	{
 		return FVector2((m_minVector + m_maxVector) * 0.5f);

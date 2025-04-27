@@ -6,7 +6,7 @@
 #include <Input/Input.h>
 #include "../Games.h"
 #include "../Character/EnemyCharacter.h"
-#include "../Player/dGameState.h"
+#include "../Player/TurnGameState.h"
 #include <UI/UITextComponent.h>
 #include <Math/Math.h>
 #include <Classes/Scene/Scene.h>
@@ -23,7 +23,7 @@ UPlayScene::UPlayScene()
 	WorldBound = new FAABBBox(0.0f, 0.0f, Renderer::GetResolution().x, Renderer::GetResolution().y);
 	quadTree = new FQuadTree(0, WorldBound);
 
-	AdGameState* g = dynamic_cast<AdGameState*>(Game::GetGameState());
+	TurnGameState* g = dynamic_cast<TurnGameState*>(Game::GetGameState());
 	if (g)
 	{
 		g->m_gGameScore = 0;
@@ -33,6 +33,7 @@ UPlayScene::UPlayScene()
 	m_ScoreWidget = CreateWidget<UScoreWidget>(TEXT("ScoreWidget"));
 	m_PlayScene_Widget = CreateWidget<UPlayScene_Widget>(TEXT("PlaySceneWidget"), EUILAYER::BUTTON);
 	m_PlayScene_Widget->m_Button->SetVoidDelegate([this]() { printTest(); });
+	//m_PlayScene_Widget->m_Button->SetVoidDelegate(UPlayScene::printTest);
 	//m_PlayScene_Widget->m_Button = UPlayScene::printTest;
 
 	m_tiles.assign(TILE_COL_SIZE, std::vector<std::shared_ptr<ATile>>());
@@ -40,7 +41,9 @@ UPlayScene::UPlayScene()
 	{
 		for (int j = 0; j < TILE_ROW_SIZE; j++)
 		{
-			m_tiles[i].push_back(NewObject<ATile>(TEXT("tile") + std::to_wstring(TILE_ROW_SIZE*i+j), ESCENELAYER::GROUND));
+			std::wstring str = TEXT("tile") + std::to_wstring(TILE_ROW_SIZE * i + j);
+			m_tiles[i].push_back(NewObject<ATile>(str, ESCENELAYER::GROUND));
+			m_tiles[i][j].get()->SetName(str);
 		}
 	}
 }
@@ -140,12 +143,13 @@ void UPlayScene::CharactersInitialize()
 	m_fPlayerCharacter->SetName(PlayerName.c_str());
 	m_fPlayerCharacter->Initialize();
 
-	//for (int i = 0; i < m_enemyMaxSize; i++)
-	//{
-	//	m_fEnemyCharacter = NewObject<AEnemyCharacter>(EnemyName, ESCENELAYER::CHARACTER);
-	//	m_fEnemyCharacter->SetName(EnemyName.c_str());
-	//	m_fEnemyCharacter->Initialize();
-	//}
+	for (int i = 0; i < m_enemyMaxSize; i++)
+	{
+		std::wstring str = EnemyName + std::to_wstring(i);
+		m_fEnemyCharacter = NewObject<AEnemyCharacter>(str, ESCENELAYER::CHARACTER);
+		m_fEnemyCharacter->SetName(str);
+		m_fEnemyCharacter->Initialize();
+	}
 }
 
 void UPlayScene::UIInitialize()
@@ -179,17 +183,23 @@ void UPlayScene::UpdateCollisionDetection()
 				FAABBBox boundA = *actor->GetBoundBox();
 				std::vector<std::shared_ptr<UObject>> TargetObject;
 				quadTree->GetElements(boundA, TargetObject);
-				for (auto tother : TargetObject)
+				if (boundA.IsValid() == false) continue;
+				for (auto& tother : TargetObject)
 				{
 					if (std::shared_ptr<AEnemyCharacter> other = std::dynamic_pointer_cast<AEnemyCharacter>(tother))
 					{
 						FAABBBox boundB = *other->GetBoundBox();
+						if (boundB.IsValid() == false) continue;
 						if (Experiment::FCollisionDetector::AABBCollisionCheck(boundA, boundB))
 						{
 							// 원소 지우기
+							std::wstring dd = other->GetName();
 							objectMap.erase(other->GetName());
+							//m_objects[other.get()->]
+							//tother.reset();
+							//m_objects[other->RenderLayer].erase(other->GetName());
 
-							AdGameState* g = dynamic_cast<AdGameState*>(Game::GetGameState());
+							TurnGameState* g = dynamic_cast<TurnGameState*>(Game::GetGameState());
 							if (g)
 							{
 								g->m_gGameScore++;
@@ -226,10 +236,10 @@ void UPlayScene::printTest()
 {
 	printf("test\n");
 
-	m_fPlayerCharacter = NewObject<APlayerCharacter>(PlayerName, ESCENELAYER::CHARACTER);
+	m_fPlayerCharacter = NewObject<APlayerCharacter>(PlayerName + std::to_wstring(FRandom::GetRandomInRange(0,10000000.0f)), ESCENELAYER::CHARACTER);
 	m_fPlayerCharacter->SetName(PlayerName.c_str());
 	m_fPlayerCharacter->Initialize();
-	AdGameState* g = dynamic_cast<AdGameState*>(Game::GetGameState());
+	TurnGameState* g = dynamic_cast<TurnGameState*>(Game::GetGameState());
 	if (g)
 	{
 		m_fPlayerCharacter->SetActorLocation(g->GetMainCamera().get()->GetActorLocation() + Renderer::GetResolution()/2);
