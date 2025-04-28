@@ -46,7 +46,7 @@ public:
 
 	bool bPlayingAnimation = false;
 
-	float m_fFPSTimeAnimationScene = 1.0f / 24.0f;
+	float m_fFPSTimeAnimationScene = 1.0f / 18.0f;
 	float m_fFPSLastTimeAnimationScene = 0;
 	float m_fcountOneSecondAnimationScene = 0;
 };

@@ -12,13 +12,15 @@
 UEndScene::UEndScene()
 {
 	m_image = NewObject<ABackGroundImage>(TEXT("m_image"));
-	m_scoreGuide = CreateWidget<UEndScene_ScoreGuide>(TEXT("scoreGuide"));
+	m_Widget = CreateWidget<UEndScene_Widget>(TEXT("scoreGuide"), EUILAYER::BUTTON);
+
+	m_Widget->m_startGameButton->SetVoidDelegate([this]() { StartGame(); });
 }
 
 UEndScene::~UEndScene()
 {
 	m_image.reset();
-	m_scoreGuide.reset();
+	m_Widget.reset();
 }
 
 void UEndScene::Initialize()
@@ -52,14 +54,14 @@ void UEndScene::DeleteNullObjects()
 
 void UEndScene::UIInitialize()
 {
-	m_scoreGuide->Initialize();
+	m_Widget->Initialize();
 	TurnGameState* g = dynamic_cast<TurnGameState*>(Game::GetGameState());
 	if (g)
 	{
 		//wchar_t gameScoreStr[10];
 		//swprintf_s(gameScoreStr, 10, L"%d", g->m_gGameScore);
 		//wcscpy_s(m_scoreGuide->m_scoreui->m_content, 10, gameScoreStr);
-		m_scoreGuide->m_scoreui->m_content = std::to_wstring(g->m_gGameScore);
+		m_Widget->m_scoreui->m_content = std::to_wstring(g->m_gGameScore);
 		std::cout << g->m_gGameScore << '\n';
 	}
 }
@@ -70,4 +72,10 @@ void UEndScene::UpdateInput()
 	{
 		UScene::ChangeScene<UMenuScene>(Game::GetNextScenePtr());
 	}
+}
+
+void UEndScene::StartGame()
+{
+	printf("Go UMenuScene");
+	UScene::ChangeScene<UMenuScene>(Game::GetNextScenePtr());
 }

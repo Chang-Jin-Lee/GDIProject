@@ -1,5 +1,5 @@
 #pragma once
-
+#include "WidgetComponent.h"
 
 class SUIButtonComponent : public UWidgetComponent
 {
@@ -12,8 +12,9 @@ public:
 	}
 	~SUIButtonComponent() {}
 	
-	void Initialize(Color color, FVector2 Position, FVector2 Size, int _radius)
+	void Initialize(Gdiplus::Color color, FVector2 Position, FVector2 Size, int _radius)
 	{
+		if(m_brush == nullptr) m_brush = new Gdiplus::SolidBrush(Gdiplus::Color(255, 255, 255));
 		m_brush->SetColor(color);
 		m_Position = Position;
 		m_Size = Size;

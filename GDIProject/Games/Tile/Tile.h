@@ -9,7 +9,7 @@ enum class ETileType
 	Hills,
 	Plain,
 	Mountain,
-	Capital,
+	//Capital,
 	MAX,
 };
 

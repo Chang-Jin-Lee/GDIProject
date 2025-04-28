@@ -74,7 +74,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_LBUTTONDOWN:
 		Game::SetLMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam)));
-		Game::SetMouseDrageState(true);
+		Game::SetMouseDragState(true);
 		Game::CheckWidgetClick(FVector2(LOWORD(lParam), HIWORD(lParam)));
 		break;
 	case WM_MOUSEMOVE:
@@ -91,7 +91,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_LBUTTONUP:
-		Game::SetMouseDrageState(false);
+		Game::SetMouseDragState(false);
 		ReleaseCapture(); // 마우스 캡처 해제
 		break;
 
@@ -191,6 +191,8 @@ namespace Game
 	FVector2 m_RMouseCickPosition;
 	bool g_bMouseDragging = false;
 
+	double m_FPSPerformancetime = 0;
+
 	void PreInitialize()
 	{
 		g_gameInstance = GameStateBase::CreateInstance();
@@ -204,6 +206,7 @@ namespace Game
 		Time::Initialize();
 		Game::GetCurrentScene()->Initialize();
 		Game::GetCurrentScene()->LoadData();
+		m_FPSPerformancetime = Time::GetTotalTime();
 	}
 
 	void PostInitialize()
@@ -228,7 +231,11 @@ namespace Game
 
 		Renderer::Update();
 
-		printf("%f\n", 1 / Time::GetElapsedTime());
+		if (Time::GetTotalTime() - m_FPSPerformancetime > 2)
+		{
+			printf("%f\n", 1 / Time::GetElapsedTime());
+			m_FPSPerformancetime = Time::GetTotalTime();
+		}
 		Renderer::RenderRectRed(int(m_LMouseCickPosition.x - 10), int(m_LMouseCickPosition.y - 10), 20, 20);
 		Renderer::RenderRectBlue(int(m_RMouseCickPosition.x - 10), int(m_RMouseCickPosition.y - 10), 20, 20);
 
@@ -321,8 +328,11 @@ namespace Game
 		return g_bMouseDragging;
 	}
 
-	void SetMouseDrageState(const bool& state)
+	void SetMouseDragState(const bool& state)
 	{
-		g_bMouseDragging = state;
+		if (UPlayScene* scene = dynamic_cast<UPlayScene*>(g_currentScene))
+		{
+			g_bMouseDragging = state;
+		}
 	}
 }

@@ -1,4 +1,5 @@
 #include "PlayerController.h"
+#include <Time/Time.h>
 
 APlayerController::APlayerController() {}
 
@@ -7,10 +8,10 @@ APlayerController::~APlayerController() {}
 void APlayerController::Initialize()
 {
     // °³Ã´ÀÚ ¼ÒÈ¯
-    auto Settler = CreateDefaultSubobject<AUnit>(L"Setteler" + std::to_wstring(FRandom::GetRandomInRange(0,10000000.0f)));
-    //auto Settler = std::make_shared<AUnit>(EUnitType::Settler, this);
-    Settler->SetActorLocation(FVector2(2, 2));
-    Units.push_back(Settler);
+    //auto Settler = CreateDefaultSubobject<APlayerCharacter>(L"Setteler" + std::to_wstring(Time::GetElapsedTime()));
+    ////auto Settler = std::make_shared<AUnit>(EUnitType::Settler, this);
+    //Settler->SetActorLocation(FVector2(2, 2));
+    //Units.push_back(Settler);
 }
 
 void APlayerController::UpdateTurn()

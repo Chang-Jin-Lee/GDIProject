@@ -29,5 +29,5 @@ namespace Game
 	void SetRMouseClickPosition(const FVector2& rect);
 
 	bool GetMouseDragState();
-	void SetMouseDrageState(const bool& state);
+	void SetMouseDragState(const bool& state);
 }

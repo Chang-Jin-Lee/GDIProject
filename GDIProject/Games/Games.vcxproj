@@ -128,7 +128,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Character\Unit.h" />
     <ClInclude Include="Character\EnemyCharacter.h" />
     <ClInclude Include="Image\BackGroundImage.h" />
     <ClInclude Include="framework.h" />
@@ -152,7 +151,6 @@
     <ClInclude Include="UI\ScoreWidget.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Character\Unit.cpp" />
     <ClCompile Include="Character\EnemyCharacter.cpp" />
     <ClCompile Include="Image\BackGroundImage.cpp" />
     <ClCompile Include="Games.cpp" />

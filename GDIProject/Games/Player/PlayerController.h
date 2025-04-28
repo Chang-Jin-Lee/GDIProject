@@ -3,8 +3,8 @@
 #include <vector>
 #include <Classes/Object.h>
 #include "../Tile/City.h"
-#include "../Character/Unit.h"
 #include "../Tile/Tile.h"
+#include "../Character/PlayerCharacter.h"
 
 class APlayerController : public UObject
 {
@@ -21,9 +21,9 @@ public:
     void BuildCityWithSelectedSettler();
 
 private:
-    std::shared_ptr<AUnit> SelectedUnit;
+    std::shared_ptr<APlayerCharacter> SelectedUnit;
 
 public:
-    std::vector<std::shared_ptr<AUnit>> Units;
+    std::vector<std::shared_ptr<APlayerCharacter>> Units;
     std::vector<std::shared_ptr<ACity>> Cities;
 };

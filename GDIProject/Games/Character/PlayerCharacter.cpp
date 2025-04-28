@@ -24,19 +24,26 @@ APlayerCharacter::APlayerCharacter()
 
 	dirState = DirState::Bottom;
 	animstate = AnimationState::Idle;
-	m_nameWidget = CreateDefaultSubobject<UCharacterNameWidget>(TEXT("nameWidget"));
+	std::wstring Name = TEXT("nameWidget") + std::to_wstring(Time::GetElapsedTime());
+	m_nameWidget = CreateDefaultSubobject<UCharacterNameWidget>(Name);
+	m_nameWidget->SetName(Name);
 	attachedWidgets.push_back(m_nameWidget);
+}
+
+APlayerCharacter::APlayerCharacter(EUnitType Type)
+{
+	SetUnitType(Type);
 }
 
 APlayerCharacter::~APlayerCharacter()
 {
-	for (int j = 0; j < static_cast<int>(AnimationState::Max); j++)
+	for (int i = 0; i < static_cast<int>(DirState::Max); i++)
 	{
-		for (int i = 0; i < static_cast<int>(DirState::Max); i++)
+		for (int j = 0; j < static_cast<int>(AnimationState::Max); j++)
 		{
 			delete AnimationBundle.animationComponent[i][j];
 		}
-		delete AnimationBundle.baseImages[j];
+		//delete AnimationBundle.baseImages[i];
 	}
 	m_nameWidget.reset();
 }
@@ -166,4 +173,93 @@ void APlayerCharacter::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int
 void APlayerCharacter::SetAnimMeshScale(float width, float height)
 {
 
+}
+
+void APlayerCharacter::Attack(APlayerCharacter* Target)
+{
+	if (Target)
+	{
+		Target->Health -= AttackDamage;
+		if (Target->Health <= 0)
+		{
+			Target->bIsDead = true;
+		}
+	}
+}
+
+void APlayerCharacter::MoveTo(const FVector2& TargetPosition)
+{
+	SetActorLocation(TargetPosition);
+}
+
+void APlayerCharacter::SetUnitType(EUnitType Type)
+{
+	UnitType = Type;
+
+	switch (Type)
+	{
+	case EUnitType::Settler:
+		Health = 50;
+		AttackDamage = 0;
+		MoveRange = 2;
+		break;
+	case EUnitType::Warrior:
+		Health = 100;
+		AttackDamage = 20;
+		MoveRange = 1;
+		break;
+	case EUnitType::Archer:
+		Health = 70;
+		AttackDamage = 15;
+		MoveRange = 1;
+		AttackRange = 2;
+		break;
+	default:
+		break;
+	}
+}
+
+void APlayerCharacter::SetUnitType(int value)
+{
+	EUnitType Type = static_cast<EUnitType>(value);
+	UnitType = Type;
+
+	switch (Type)
+	{
+	case EUnitType::Settler:
+		Health = 50;
+		AttackDamage = 0;
+		MoveRange = 2;
+		break;
+	case EUnitType::Warrior:
+		Health = 100;
+		AttackDamage = 20;
+		MoveRange = 1;
+		break;
+	case EUnitType::Archer:
+		Health = 70;
+		AttackDamage = 15;
+		MoveRange = 1;
+		AttackRange = 2;
+		break;
+	default:
+		break;
+	}
+}
+
+std::wstring APlayerCharacter::GetUnitTypeString(int value)
+{
+	EUnitType Type = static_cast<EUnitType>(value);
+
+	switch (Type)
+	{
+	case EUnitType::Settler:
+		return L"°³Ã´ÀÚ";
+	case EUnitType::Warrior:
+		return L"Àü»ç";
+	case EUnitType::Archer:
+		return L"±Ã¼ö";
+	default:
+		return L"default";
+	}
 }

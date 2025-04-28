@@ -1,14 +1,17 @@
 #pragma once
 
+#include <memory>
+#include <string>
 #include <Classes/Scene/Scene.h>
 #include <Experiment/QuadTree.h>
 #include <Time/Time.h>
 #include "../Character/PlayerCharacter.h"
 #include "../Character/EnemyCharacter.h"
-#include <string>
 #include "../Tile/Tile.h"
 #include "../UI/ScoreWidget.h"
 #include "../UI/PlayScene_Widget.h"
+#include "../Manager/TurnManager.h"
+
 
 #define TILE_COL_SIZE 20
 #define TILE_ROW_SIZE 30
@@ -32,6 +35,8 @@ public:
 	void TimeInitialize();
 	void CharactersInitialize();
 	void UIInitialize();
+	void TileInitilize();
+	void TurnManagerInitilize();
 
 	void UpdateCollisionDetection();
 	void UpdateTime();
@@ -39,7 +44,12 @@ public:
 	void UpdateUI();
 
 	// delegate
-	void printTest();
+	void NextTurn();
+	void SpawnUnit(int type);
+	void GoNextScene();
+
+	// 턴제 게임
+	void CheckVictoryConditions();
 
 private:
 	std::shared_ptr<APlayerCharacter> m_fPlayerCharacter;
@@ -56,6 +66,18 @@ private:
 	float m_fcountOneSecond = 0;
 	int m_enemyMaxSize = 15;
 
-	std::wstring PlayerName = L"플레이어 캐릭터";
 	std::wstring EnemyName = L"적 캐릭터";
+
+	// 턴제 게임 관련
+	bool bIsGameOver = false;
+	int TurnCount = 0;
+	int MaxTurn = 30;
+	//void GameManager::Update()
+	//{
+	//	if (bIsGameOver)
+	//		return;
+
+	//	TurnMgr->Update();
+	//}
+	std::shared_ptr<TurnManager> TurnMgr;	// Scene에서 Update() 해줘야함.
 };

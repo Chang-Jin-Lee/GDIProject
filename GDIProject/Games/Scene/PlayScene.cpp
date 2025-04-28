@@ -1,4 +1,4 @@
-#include "EndScene.h"
+﻿#include "EndScene.h"
 #include "PlayScene.h"
 #include <iostream>
 #include <Runtime/Renderer/Renderer.h>
@@ -18,8 +18,8 @@ UPlayScene::UPlayScene()
 		objectMap.clear();
 	}
 
-	m_fPlayerCharacter.reset();
-	m_fPlayerCharacter = nullptr;
+	//m_fPlayerCharacter.reset();
+	//m_fPlayerCharacter = nullptr;
 	WorldBound = new FAABBBox(0.0f, 0.0f, Renderer::GetResolution().x, Renderer::GetResolution().y);
 	quadTree = new FQuadTree(0, WorldBound);
 
@@ -29,10 +29,15 @@ UPlayScene::UPlayScene()
 		g->m_gGameScore = 0;
 	}
 
-	m_fPlayerCharacter = NewObject<APlayerCharacter>(PlayerName, ESCENELAYER::CHARACTER);
+	//m_fPlayerCharacter = NewObject<APlayerCharacter>(m_fPlayerCharacter->GetUnitTypeString(), ESCENELAYER::CHARACTER);
 	m_ScoreWidget = CreateWidget<UScoreWidget>(TEXT("ScoreWidget"));
 	m_PlayScene_Widget = CreateWidget<UPlayScene_Widget>(TEXT("PlaySceneWidget"), EUILAYER::BUTTON);
-	m_PlayScene_Widget->m_Button->SetVoidDelegate([this]() { printTest(); });
+	//m_PlayScene_Widget->m_spawnSettelerUnitButton->SetVoidDelegate([this]() { SpawnUnit(); });
+	m_PlayScene_Widget->m_spawnSettelerUnitButton->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Settler)); });
+	m_PlayScene_Widget->m_spawnWarriorUnitButton->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Warrior)); });
+	m_PlayScene_Widget->m_spawnArcherUnitButton->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Archer)); });
+	m_PlayScene_Widget->m_endGameButton->SetVoidDelegate([this]() { GoNextScene(); });
+	m_PlayScene_Widget->m_nextStageButton->SetVoidDelegate([this]() { NextTurn(); });
 	//m_PlayScene_Widget->m_Button->SetVoidDelegate(UPlayScene::printTest);
 	//m_PlayScene_Widget->m_Button = UPlayScene::printTest;
 
@@ -58,7 +63,8 @@ UPlayScene::~UPlayScene()
 		}
 	}
 	m_objects.clear();
-	m_fPlayerCharacter.reset();
+	if(m_fPlayerCharacter.get() != nullptr)
+		m_fPlayerCharacter.reset();
 	delete WorldBound;
 	delete quadTree;
 	m_ScoreWidget.reset();
@@ -77,27 +83,8 @@ void UPlayScene::Initialize()
 	CharactersInitialize(); 
 	TimeInitialize();
 	UIInitialize();
-
-	for (int i = 0; i < TILE_COL_SIZE; i++)
-	{
-		for (int j = 0; j < TILE_ROW_SIZE; j++)
-		{
-			m_tiles[i][j].get()->m_etileType = static_cast<ETileType>((int)FRandom::GetRandomInRange(0, static_cast<int>(ETileType::MAX)));
-			//m_tiles[i][j].get()->m_etileType = ETileType::Plain;
-			m_tiles[i][j].get()->Initialize();
-			FVector2 size = m_tiles[i][j].get()->GetActorSize();
-			if (i % 2 == 0)
-			{
-				//m_tiles[i][j].get()->SetActorLocation(j * size.x, -i * size.y / 3 + i * size.y);
-				m_tiles[i][j].get()->SetActorLocation(j * m_tiles[i][j].get()->InitialTileSize.x, -i * m_tiles[i][j].get()->InitialTileSize.y / 3 +  i * m_tiles[i][j].get()->InitialTileSize.y);
-			}
-			else
-			{
-				//m_tiles[i][j].get()->SetActorLocation(size.x * 0.5f + j * size.x, -i * size.y / 3 + i * size.y);
-				m_tiles[i][j].get()->SetActorLocation(m_tiles[i][j].get()->InitialTileSize.x * 0.5f + j * m_tiles[i][j].get()->InitialTileSize.x, -i * m_tiles[i][j].get()->InitialTileSize.y/3 + i * m_tiles[i][j].get()->InitialTileSize.y);
-			}
-		}
-	}
+	TileInitilize();
+	TurnManagerInitilize();	
 }
 
 void UPlayScene::Update()
@@ -140,22 +127,52 @@ void UPlayScene::TimeInitialize()
 
 void UPlayScene::CharactersInitialize()
 {
-	m_fPlayerCharacter->SetName(PlayerName.c_str());
-	m_fPlayerCharacter->Initialize();
+	//m_fPlayerCharacter->SetName(PlayerName.c_str());
+	//m_fPlayerCharacter->Initialize();
 
-	for (int i = 0; i < m_enemyMaxSize; i++)
-	{
-		std::wstring str = EnemyName + std::to_wstring(i);
-		m_fEnemyCharacter = NewObject<AEnemyCharacter>(str, ESCENELAYER::CHARACTER);
-		m_fEnemyCharacter->SetName(str);
-		m_fEnemyCharacter->Initialize();
-	}
+	//for (int i = 0; i < m_enemyMaxSize; i++)
+	//{
+	//	std::wstring str = EnemyName + std::to_wstring(i);
+	//	m_fEnemyCharacter = NewObject<AEnemyCharacter>(str, ESCENELAYER::CHARACTER);
+	//	m_fEnemyCharacter->SetName(str);
+	//	m_fEnemyCharacter->Initialize();
+	//}
 }
 
 void UPlayScene::UIInitialize()
 {
 	m_ScoreWidget->Initialize();
 	m_PlayScene_Widget->Initialize();
+}
+
+void UPlayScene::TileInitilize()
+{
+	for (int i = 0; i < TILE_COL_SIZE; i++)
+	{
+		for (int j = 0; j < TILE_ROW_SIZE; j++)
+		{
+			m_tiles[i][j].get()->m_etileType = static_cast<ETileType>((int)FRandom::GetRandomInRange(0, static_cast<int>(ETileType::MAX)));
+			//m_tiles[i][j].get()->m_etileType = ETileType::Plain;
+			m_tiles[i][j].get()->Initialize();
+			FVector2 size = m_tiles[i][j].get()->GetActorSize();
+			if (i % 2 == 0)
+			{
+				//m_tiles[i][j].get()->SetActorLocation(j * size.x, -i * size.y / 3 + i * size.y);
+				m_tiles[i][j].get()->SetActorLocation(j * m_tiles[i][j].get()->InitialTileSize.x, -i * m_tiles[i][j].get()->InitialTileSize.y / 3 + i * m_tiles[i][j].get()->InitialTileSize.y);
+			}
+			else
+			{
+				//m_tiles[i][j].get()->SetActorLocation(size.x * 0.5f + j * size.x, -i * size.y / 3 + i * size.y);
+				m_tiles[i][j].get()->SetActorLocation(m_tiles[i][j].get()->InitialTileSize.x * 0.5f + j * m_tiles[i][j].get()->InitialTileSize.x, -i * m_tiles[i][j].get()->InitialTileSize.y / 3 + i * m_tiles[i][j].get()->InitialTileSize.y);
+			}
+		}
+	}
+}
+
+void UPlayScene::TurnManagerInitilize()
+{
+	TurnMgr = std::make_shared<TurnManager>();
+	TurnMgr->Initialize();
 }
 
 void UPlayScene::UpdateCollisionDetection()
@@ -192,7 +209,7 @@ void UPlayScene::UpdateCollisionDetection()
 						if (boundB.IsValid() == false) continue;
 						if (Experiment::FCollisionDetector::AABBCollisionCheck(boundA, boundB))
 						{
-							// ���� �����
+							// 원소 지우기
 							std::wstring dd = other->GetName();
 							objectMap.erase(other->GetName());
 							//m_objects[other.get()->]
@@ -215,9 +232,9 @@ void UPlayScene::UpdateCollisionDetection()
 
 void UPlayScene::UpdateTime()
 {
-	// 10�� �ڿ� �� ��ȯ
+	// 10초 뒤에 씬 전환
 	m_fFPSLastTime = Time::GetTotalTime() - m_fcountOneSecond;
-	if (m_fFPSLastTime >= m_fFPSTime)	// 10 �� ������ �Ѿ.
+	if (m_fFPSLastTime >= m_fFPSTime)	// 10 초 지나면 넘어감.
 	{
 		//UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
 		m_fcountOneSecond = Time::GetTotalTime();
@@ -232,16 +249,68 @@ void UPlayScene::UpdateUI()
 	}
 }
 
-void UPlayScene::printTest()
+void UPlayScene::NextTurn()
+{
+	printf("nextTurn!");
+}
+
+void UPlayScene::SpawnUnit(int type)
 {
 	printf("test\n");
 
-	m_fPlayerCharacter = NewObject<APlayerCharacter>(PlayerName + std::to_wstring(FRandom::GetRandomInRange(0,10000000.0f)), ESCENELAYER::CHARACTER);
-	m_fPlayerCharacter->SetName(PlayerName.c_str());
+	m_fPlayerCharacter = NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
+	m_fPlayerCharacter->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
+	m_fPlayerCharacter->SetUnitType(type);
 	m_fPlayerCharacter->Initialize();
 	TurnGameState* g = dynamic_cast<TurnGameState*>(Game::GetGameState());
 	if (g)
 	{
 		m_fPlayerCharacter->SetActorLocation(g->GetMainCamera().get()->GetActorLocation() + Renderer::GetResolution()/2);
+	}
+}
+
+void UPlayScene::GoNextScene()
+{
+	Game::SetMouseDragState(false);
+	UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
+}
+
+void UPlayScene::CheckVictoryConditions()
+{
+	TurnCount++;
+
+	// 1. 턴 수 제한
+	if (TurnCount >= MaxTurn)
+	{
+		printf("턴 제한 도달! 승패 자동 판정!\n");
+		bIsGameOver = true;
+		// 점수 높은 쪽 승리 처리 가능
+		return;
+	}
+
+	// 2. AI 모두 도시 없음 → 플레이어 승리
+	bool bAllAIKilled = true;
+	for (auto& ai : TurnMgr->GetAIPlayers())
+	{
+		if (!ai->Cities.empty())
+		{
+			bAllAIKilled = false;
+			break;
+		}
+	}
+
+	if (bAllAIKilled)
+	{
+		printf("🎉 플레이어 승리!\n");
+		bIsGameOver = true;
+		return;
+	}
+
+	// 3. 플레이어 도시 모두 파괴 → 플레이어 패배
+	if (TurnMgr->GetPlayer()->Cities.empty())
+	{
+		printf("💀 플레이어 패배!\n");
+		bIsGameOver = true;
+		return;
 	}
 }

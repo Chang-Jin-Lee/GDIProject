@@ -16,6 +16,16 @@ public:
 public:
 	std::shared_ptr<SUITextComponent> m_remainTimeGuideui;
 	std::shared_ptr<SUITextComponent> m_remainTimeui;
-	std::shared_ptr<SUITextComponent> m_ButtonText;
-	std::shared_ptr<SUIButtonComponent> m_Button;
+
+	std::shared_ptr<SUIButtonComponent> m_spawnSettelerUnitButton;
+	std::shared_ptr<SUITextComponent> m_spawnSettelerUnitButtonText;
+	std::shared_ptr<SUIButtonComponent> m_spawnWarriorUnitButton;
+	std::shared_ptr<SUITextComponent> m_spawnWarriorUnitButtonText;
+	std::shared_ptr<SUIButtonComponent> m_spawnArcherUnitButton;
+	std::shared_ptr<SUITextComponent> m_spawnArcherUnitButtonText;
+	std::shared_ptr<SUIButtonComponent> m_nextStageButton;
+	std::shared_ptr<SUITextComponent> m_nextStageButtonText;
+
+	std::shared_ptr<SUIButtonComponent> m_endGameButton;
+	std::shared_ptr<SUITextComponent> m_endGameButtonText;
 };

@@ -17,4 +17,10 @@ public:
 	{
 		FVoidDelegate = f;
 	}
+
+	std::function<void(int)> FOneIntParamDelegate;
+	void SetVoidDelegate(const std::function<void(int)>& f)
+	{
+		FOneIntParamDelegate = f;
+	}
 };

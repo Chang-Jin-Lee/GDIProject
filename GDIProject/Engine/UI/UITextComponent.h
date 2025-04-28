@@ -18,8 +18,10 @@ public:
 		m_color = Gdiplus::Color(255, 255, 255);
 		m_efontStyle = FontStyleBold;
 		m_eworldUnit = UnitPoint;
-		m_fontAlignment = StringAlignmentNear;
-		m_fontLineAlignment = StringAlignmentNear;
+		//m_fontAlignment = StringAlignmentNear;	// 기본이 왼쪽에 붙은 정렬
+		//m_fontLineAlignment = StringAlignmentNear;
+		m_fontAlignment = StringAlignmentCenter;	// 기본이 중앙 정렬
+		m_fontLineAlignment = StringAlignmentCenter;
 		m_fontTrimming = StringTrimmingNone;
 		m_Size = FVector2(150, 150);
 		m_Position = FVector2(0, 0);
@@ -35,8 +37,10 @@ public:
 		FVector2 Size,
 		Gdiplus::FontStyle fontStyle = Gdiplus::FontStyleBold,
 		Gdiplus::Unit worldUnit = Gdiplus::UnitPoint,
-		Gdiplus::StringAlignment fontAlignment = Gdiplus::StringAlignmentNear,
-		Gdiplus::StringAlignment fontLineAlignment = Gdiplus::StringAlignmentNear,
+		//Gdiplus::StringAlignment fontAlignment = Gdiplus::StringAlignmentNear,
+		//Gdiplus::StringAlignment fontLineAlignment = Gdiplus::StringAlignmentNear,
+		Gdiplus::StringAlignment fontAlignment = Gdiplus::StringAlignmentCenter,
+		Gdiplus::StringAlignment fontLineAlignment = Gdiplus::StringAlignmentCenter,
 		Gdiplus::StringTrimming fontTrimming = Gdiplus::StringTrimmingNone
 	)
 	{

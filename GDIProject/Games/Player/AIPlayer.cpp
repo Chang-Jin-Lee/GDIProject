@@ -7,10 +7,10 @@ AAIPlayer::~AAIPlayer() {}
 void AAIPlayer::Initialize()
 {
     // 초기 개척자 한 명 소환
-    //auto Settler = std::make_shared<AUnit>(EUnitType::Settler, this);
-    auto Settler = std::make_shared<AUnit>(EUnitType::Settler);
-    Settler->SetActorLocation(FVector2(5, 5)); // 시작 위치
-    Units.push_back(Settler);
+    //auto Settler = std::make_shared<APlayerCharacter>(EUnitType::Settler, this);
+    //auto Settler = std::make_shared<APlayerCharacter>(EUnitType::Settler);
+    //Settler->SetActorLocation(FVector2(5, 5)); // 시작 위치
+    //Units.push_back(Settler);
 }
 
 void AAIPlayer::UpdateTurn()
@@ -52,7 +52,7 @@ void AAIPlayer::UpdateCities()
         if (city->ProductionPoints <= 0)
         {
             // 간단한 로직: 전사 생산
-            auto unit = std::make_shared<AUnit>(EUnitType::Warrior);
+            auto unit = std::make_shared<APlayerCharacter>(EUnitType::Warrior);
             unit->SetActorLocation(city->GetActorLocation());
             Units.push_back(unit);
 
@@ -61,7 +61,7 @@ void AAIPlayer::UpdateCities()
     }
 }
 
-void AAIPlayer::HandleSettler(std::shared_ptr<AUnit> Settler)
+void AAIPlayer::HandleSettler(std::shared_ptr<APlayerCharacter> Settler)
 {
     //auto tile = GetTileAtPosition(Settler->GetActorLocation());
     //
@@ -89,7 +89,7 @@ void AAIPlayer::HandleSettler(std::shared_ptr<AUnit> Settler)
    // }
 }
 
-void AAIPlayer::HandleCombatUnit(std::shared_ptr<AUnit> CombatUnit)
+void AAIPlayer::HandleCombatUnit(std::shared_ptr<APlayerCharacter> CombatUnit)
 {
     //auto enemy = FindNearestEnemy(CombatUnit->GetLocation());
     //if (!enemy)

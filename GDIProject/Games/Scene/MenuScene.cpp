@@ -2,21 +2,22 @@
 #include <Runtime/Renderer/Renderer.h>
 #include <Input/Input.h>
 #include "../Games.h"
-#include "PlayScene.h"
-#include <UI/UIButtonComponent.h>
-#include <UI/UITextComponent.h>
 #include <Classes/Scene/Scene.h>
+#include "PlayScene.h"
 
 UMenuScene::UMenuScene()
 {
 	m_image = NewObject<ABackGroundImage>(TEXT("m_image"));
-	m_startGuideui = CreateWidget<UMenuscene_StartGuide>(TEXT("startGuideui"));
+	m_MenuSceneWidget = CreateWidget<UMenuscene_StartGuide>(TEXT("m_MenuSceneWidget"), EUILAYER::BUTTON);
+
+	m_MenuSceneWidget->m_startGameButton->SetVoidDelegate([this]() { StartGame(); });
+	m_MenuSceneWidget->m_endGameButton->SetVoidDelegate([this]() { EndGame(); });
 }
 
 UMenuScene::~UMenuScene()
 {
 	m_image.reset();
-	m_startGuideui.reset();
+	m_MenuSceneWidget.reset();
 }
 
 void UMenuScene::Initialize()
@@ -51,7 +52,7 @@ void UMenuScene::DeleteNullObjects()
 
 void UMenuScene::UIInitialize()
 {
-	m_startGuideui->Initialize();
+	m_MenuSceneWidget->Initialize();
 }
 
 void UMenuScene::UpdateInput()
@@ -66,4 +67,16 @@ void UMenuScene::UpdateInput()
 		float rotation = m_image->GetActorRotation();
 		m_image->SetActorRotation(rotation + Time::GetElapsedTime() * 20);
 	}
+}
+
+void UMenuScene::StartGame()
+{
+	printf("StartGame");
+	UScene::ChangeScene<UPlayScene>(Game::GetNextScenePtr());
+}
+
+void UMenuScene::EndGame()
+{
+	printf("EndGame");
+	PostQuitMessage(0);
 }

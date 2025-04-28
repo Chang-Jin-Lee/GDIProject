@@ -1,6 +1,7 @@
 #include "City.h"
-#include "../Player/TurnGameState.h"
 #include "../Games.h"
+#include "Tile.h"
+#include "../Player/TurnGameState.h"
 
 void ACity::Initialize() 
 {
@@ -19,7 +20,8 @@ void ACity::Initialize()
 		//mesh = baseBitMap;
 		if (cloneInfo)
 		{
-			int Type = static_cast<int>(ETileType::Capital);
+			//int Type = static_cast<int>(ETileType::Capital);
+			int Type = static_cast<int>(ETileType::Grassland);
 			if (cloneInfo[Type] && cloneInfoColsize > 3)
 			{
 				int left = cloneInfo[Type][0], top = cloneInfo[Type][1], right = cloneInfo[Type][2], bottom = cloneInfo[Type][3];
@@ -40,9 +42,9 @@ void ACity::Update()
     ProductionPoints++;
 }
 
-std::shared_ptr<AUnit> ACity::ProduceUnit(EUnitType Type)
+std::shared_ptr<APlayerCharacter> ACity::ProduceUnit(EUnitType Type)
 {
-    auto unit = std::make_shared<AUnit>(Type);
+    auto unit = std::make_shared<APlayerCharacter>(Type);
     ProducedUnits.push_back(unit);
     ProductionPoints = 0;
     return unit;
