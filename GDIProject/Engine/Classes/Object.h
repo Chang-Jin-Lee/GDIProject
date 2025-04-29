@@ -36,14 +36,23 @@ public:
 		//	return temp;
 		//}
 	}
+
+	void DestroyComponent(const std::wstring& name)
+	{
+		if(name.empty() == false)
+			m_components.erase(name);
+	}
 	
 	std::wstring GetName() { return Name; }
 	void SetName(const std::wstring& value);
 
+	std::wstring GetEditorName() { return InEditorName; }
+	void SetEditorName(const std::wstring& value);
 public:
 	bool bStatic = false;
 	int RenderLayer = 0;
 private:
 	std::unordered_map<std::wstring, std::shared_ptr<UObject>> m_components;
 	std::wstring Name;
+	std::wstring InEditorName;
 };

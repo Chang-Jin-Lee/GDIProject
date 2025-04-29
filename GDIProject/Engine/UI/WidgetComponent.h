@@ -13,8 +13,12 @@ public:
 
 	void AttachedUIToActor(AActor* actor);
 
+	bool IsVisible() { return m_bVisible; }
+
 public:
 	AActor* m_AttachedActor = nullptr;
 	FVector2 m_Position;
 	FVector2 m_Size;
+
+	bool m_bVisible = true;
 };

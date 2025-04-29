@@ -15,10 +15,10 @@ namespace Game
 	void Release(HWND hwnd);
 
 	void CheckWidgetClick(const FVector2& clickPosition);
-	UScene* GetCurrentScene();
-	UScene** GetCurrentScenePtr();
-	UScene* GetNextScene();
-	UScene** GetNextScenePtr();
+	std::shared_ptr<UScene> GetCurrentScene();
+	std::shared_ptr<UScene>* GetCurrentScenePtr();
+	std::shared_ptr<UScene> GetNextScene();
+	std::shared_ptr<UScene>* GetNextScenePtr();
 	GameStateBase* GetGameState();
 
 	void ChangeScene();

@@ -49,7 +49,9 @@ public:
 	void GoNextScene();
 
 	// 턴제 게임
+	bool CheckUnitActionCount();
 	void CheckVictoryConditions();
+	void PopUpUI(const std::wstring& str);
 
 private:
 	std::shared_ptr<APlayerCharacter> m_fPlayerCharacter;
@@ -69,9 +71,7 @@ private:
 	std::wstring EnemyName = L"적 캐릭터";
 
 	// 턴제 게임 관련
-	bool bIsGameOver = false;
-	int TurnCount = 0;
-	int MaxTurn = 30;
+	int m_iMaxTurn = 30;
 	//void GameManager::Update()
 	//{
 	//	if (bIsGameOver)

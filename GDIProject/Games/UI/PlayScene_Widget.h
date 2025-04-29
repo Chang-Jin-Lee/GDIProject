@@ -13,6 +13,10 @@ public:
 	virtual void Update() override;
 	virtual void Release() override;
 
+	bool m_bPopUpText = false;
+	double m_currentTime = 0;
+	double m_PopUpTextDelay = 2.0;
+
 public:
 	std::shared_ptr<SUITextComponent> m_remainTimeGuideui;
 	std::shared_ptr<SUITextComponent> m_remainTimeui;
@@ -28,4 +32,6 @@ public:
 
 	std::shared_ptr<SUIButtonComponent> m_endGameButton;
 	std::shared_ptr<SUITextComponent> m_endGameButtonText;
+
+	std::shared_ptr<SUITextComponent> m_popupText;
 };

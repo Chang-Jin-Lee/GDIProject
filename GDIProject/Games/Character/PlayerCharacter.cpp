@@ -63,7 +63,7 @@ void APlayerCharacter::Initialize()
 	bPlayingAnimation = true;
 
 	// SceneComponent 값 초기화
-	FVector2 Location = FVector2(Renderer::GetResolution().x * 0.5, Renderer::GetResolution().y * 0.5);
+	FVector2 Location = FVector2(Renderer::GetResolution().x * 0.5f, Renderer::GetResolution().y * 0.5f);
 	FVector2 Size = FVector2(13.0f, 20.0f);
 	FVector2 Scale = FVector2(1.5f, 1.5f);
 	SetActorLocation(Location.x, Location.y);
@@ -202,17 +202,20 @@ void APlayerCharacter::SetUnitType(EUnitType Type)
 		Health = 50;
 		AttackDamage = 0;
 		MoveRange = 2;
+		ActionCount = 1;
 		break;
 	case EUnitType::Warrior:
 		Health = 100;
 		AttackDamage = 20;
 		MoveRange = 1;
+		ActionCount = 3;
 		break;
 	case EUnitType::Archer:
 		Health = 70;
 		AttackDamage = 15;
 		MoveRange = 1;
 		AttackRange = 2;
+		ActionCount = 4;
 		break;
 	default:
 		break;
@@ -230,17 +233,20 @@ void APlayerCharacter::SetUnitType(int value)
 		Health = 50;
 		AttackDamage = 0;
 		MoveRange = 2;
+		ActionCount = 1;
 		break;
 	case EUnitType::Warrior:
 		Health = 100;
 		AttackDamage = 20;
 		MoveRange = 1;
+		ActionCount = 3;
 		break;
 	case EUnitType::Archer:
 		Health = 70;
 		AttackDamage = 15;
 		MoveRange = 1;
 		AttackRange = 2;
+		ActionCount = 4;
 		break;
 	default:
 		break;

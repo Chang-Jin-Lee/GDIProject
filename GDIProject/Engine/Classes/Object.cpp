@@ -48,3 +48,8 @@ void UObject::SetName(const std::wstring& value)
 	//wmemset(Name, L'\0', length);
 	//wcscpy_s(Name, length, value);
 }
+
+void UObject::SetEditorName(const std::wstring& value)
+{
+	InEditorName = value;
+}

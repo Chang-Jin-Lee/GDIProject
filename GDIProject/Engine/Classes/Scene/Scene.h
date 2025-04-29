@@ -24,7 +24,7 @@ class GarbageUpdate
 	virtual void DeleteNullObjects() = 0;
 };
 
-class UScene : public UObject, public GarbageUpdate
+class UScene : public UObject, public GarbageUpdate, public std::enable_shared_from_this<UScene>
 {
 public:
 	UScene();
@@ -37,9 +37,9 @@ public:
 	virtual void DeleteNullObjects();
 
 	template<typename T>
-	void ChangeScene(UScene** curScene)
+	void ChangeScene(std::shared_ptr<UScene>* curScene)
 	{
-		*curScene = new T();
+		*curScene = std::make_shared<T>();
 		(*curScene)->Initialize();
 		(*curScene)->LoadData();
 	}
@@ -74,11 +74,15 @@ public:
 	{
 		int intLayer = static_cast<int>(layer);
 		std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
-		if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(temp))	// 만약 씬에서 생성할때 위젯이 부착되어 있으면 걔도 관리해줌.
+		if (std::shared_ptr<UObject> object = std::dynamic_pointer_cast<AActor>(temp))	// 만약 씬에서 생성할때 위젯이 부착되어 있으면 걔도 관리해줌.
 		{
-			for (std::shared_ptr<UWidget>& widget : actor->attachedWidgets)
+			object->SetEditorName(NewobjectName);
+			if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(object))
 			{
-				m_widgets[widget.get()->RenderLayer].insert({ widget->GetName(), widget });
+				for (std::shared_ptr<UWidget>& widget : actor->attachedWidgets)
+				{
+					m_widgets[widget.get()->RenderLayer].insert({ widget->GetName(), widget });
+				}
 			}
 		}
 		m_objects[intLayer].insert({ NewobjectName, temp });

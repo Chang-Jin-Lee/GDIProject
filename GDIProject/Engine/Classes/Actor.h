@@ -15,7 +15,7 @@ public:
 	void LoadStaticMeshData(std::wstring baseDir, std::wstring fileName);
 
 	virtual void Initialize() override;
-	virtual void Update();
+	virtual void Update() override;
 	virtual void Release() override;
 	virtual void LoadData();
 

@@ -14,6 +14,7 @@ public:
 	virtual void Update() override;
 	virtual void Release() override;
 
+
 public:
 	std::vector<std::shared_ptr<UWidgetComponent>> WidgetComponents;
 	bool bAttached = false;

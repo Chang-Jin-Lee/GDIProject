@@ -181,8 +181,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 namespace Game
 {
-	UScene* g_currentScene = new UMenuScene();
-	UScene* g_nextScene = g_currentScene;
+	std::shared_ptr<UScene> g_currentScene = std::make_shared<UMenuScene>();
+	std::shared_ptr<UScene> g_nextScene = g_currentScene;
 
 	GameStateBase* g_gameInstance = nullptr;
 	
@@ -275,22 +275,22 @@ namespace Game
 		}
 	}
 
-	UScene* GetCurrentScene()
+	std::shared_ptr<UScene> GetCurrentScene()
 	{
 		return g_currentScene;
 	}
 
-	UScene** GetCurrentScenePtr()
+	std::shared_ptr<UScene>* GetCurrentScenePtr()
 	{
 		return &g_currentScene;
 	}
 
-	UScene* GetNextScene()
+	std::shared_ptr<UScene> GetNextScene()
 	{
 		return g_nextScene;
 	}
 
-	UScene** GetNextScenePtr()
+	std::shared_ptr<UScene>* GetNextScenePtr()
 	{
 		return &g_nextScene;
 	}
@@ -305,7 +305,7 @@ namespace Game
 		if (g_currentScene != g_nextScene)
 		{
 			g_currentScene->Release();
-			delete g_currentScene;
+			g_currentScene.reset();
 			g_currentScene = g_nextScene;
 		}
 	}
@@ -330,7 +330,7 @@ namespace Game
 
 	void SetMouseDragState(const bool& state)
 	{
-		if (UPlayScene* scene = dynamic_cast<UPlayScene*>(g_currentScene))
+		if (std::shared_ptr<UPlayScene> scene = std::dynamic_pointer_cast<UPlayScene>(g_currentScene))
 		{
 			g_bMouseDragging = state;
 		}

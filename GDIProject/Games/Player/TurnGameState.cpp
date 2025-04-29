@@ -10,6 +10,7 @@ TurnGameState::TurnGameState()
 void TurnGameState::Initialize() {
     std::cout << "AdGameState running!\n";
     m_gGameScore = 0;
+    m_iTurnCount = 0;
 }
 
 void TurnGameState::PostInitialize()

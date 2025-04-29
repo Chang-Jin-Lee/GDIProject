@@ -11,7 +11,9 @@ enum class ETurnState
     MAX
 };
 
-class TurnManager : public UObject
+class UScene;
+
+class TurnManager : public AActor
 {
 public:
     TurnManager();
@@ -24,6 +26,9 @@ public:
     inline  ETurnState GetCurrentTurn() const { return CurrentTurn; }
     inline std::shared_ptr<APlayerController> GetPlayer() { return Player; }
     inline std::vector<std::shared_ptr<AAIPlayer>>& GetAIPlayers() { return AIPlayers; }
+
+public:
+    std::shared_ptr<UScene> OwnerScene;
 
 private:
     ETurnState CurrentTurn;

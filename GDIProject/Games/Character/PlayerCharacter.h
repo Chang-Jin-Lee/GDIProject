@@ -50,4 +50,5 @@ public:
 	int MoveRange = 1;
 	int AttackRange = 1;
 	bool bIsDead = false;
+	int ActionCount = 0;
 };

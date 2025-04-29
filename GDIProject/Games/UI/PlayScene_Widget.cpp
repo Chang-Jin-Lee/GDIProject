@@ -11,12 +11,12 @@ UPlayScene_Widget::UPlayScene_Widget()
 	m_spawnSettelerUnitButtonText = CreateDefaultSubobject<SUITextComponent>(TEXT("m_spawnSettelerUnitButtonText"));
 	m_spawnWarriorUnitButtonText = CreateDefaultSubobject<SUITextComponent>(TEXT("m_spawnWarriorUnitButtonText"));
 	m_spawnArcherUnitButtonText = CreateDefaultSubobject<SUITextComponent>(TEXT("m_spawnArcherUnitButtonText"));
-
 	m_nextStageButton = CreateDefaultSubobject<SUIButtonComponent>(TEXT("nextStageButton"));
 	m_nextStageButtonText = CreateDefaultSubobject<SUITextComponent>(TEXT("nextStageButtonText"));
-
 	m_endGameButton = CreateDefaultSubobject<SUIButtonComponent>(TEXT("endGameButton"));
 	m_endGameButtonText = CreateDefaultSubobject<SUITextComponent>(TEXT("endGameButtonText"));
+	m_popupText = CreateDefaultSubobject<SUITextComponent>(TEXT("m_popupText"));
+	m_popupText->m_bVisible = false;
 
 	WidgetComponents.push_back(m_remainTimeGuideui);
 	WidgetComponents.push_back(m_remainTimeui);
@@ -31,6 +31,7 @@ UPlayScene_Widget::UPlayScene_Widget()
 	WidgetComponents.push_back(m_nextStageButtonText);
 	WidgetComponents.push_back(m_endGameButton);
 	WidgetComponents.push_back(m_endGameButtonText);
+	WidgetComponents.push_back(m_popupText);
 }
 
 UPlayScene_Widget::~UPlayScene_Widget()
@@ -124,8 +125,8 @@ void UPlayScene_Widget::Initialize()
 	);
 	m_nextStageButtonText->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
 
-	x = int(Renderer::GetResolution().x * 0.3);
-	y = int(Renderer::GetResolution().y * 0.2);
+	x = int(Renderer::GetResolution().x * 0.1);
+	y = int(Renderer::GetResolution().y * 0.1);
 	width = 160;
 	m_endGameButton->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
 	m_endGameButton->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
@@ -139,6 +140,17 @@ void UPlayScene_Widget::Initialize()
 		FVector2(width, height)
 	);
 	m_endGameButtonText->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
+
+	m_popupText->Initialize
+	(
+		L"안내 텍스트. 아직 행동 수가 남아 있습니다.",
+		10,
+		(wchar_t*)L"Verdana",
+		Gdiplus::Color(255, 255, 255),
+		FVector2(int(Renderer::GetResolution().x * 0.5) - 160, int(Renderer::GetResolution().y * 0.5) - 30),
+		FVector2(320, 60)
+	);
+	m_popupText->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
 }
 
 void UPlayScene_Widget::Update()

@@ -2,7 +2,14 @@
 
 TurnManager::TurnManager()
 {
+    bStatic = true;
     CurrentTurn = ETurnState::PlayerTurn;
+    Player = CreateDefaultSubobject<APlayerController>(TEXT("Player"));
+    for (int i = 0; i < 2; ++i)
+    {
+        auto ai = CreateDefaultSubobject<AAIPlayer>(TEXT("AIPlayer_") + std::to_wstring(i));
+        AIPlayers.push_back(ai);
+    }
 }
 
 TurnManager::~TurnManager() 
@@ -12,15 +19,20 @@ TurnManager::~TurnManager()
 
 void TurnManager::Initialize()
 {
-    Player = std::make_shared<APlayerController>();
-    Player->Initialize();
+    if (Player)
+    {
+        Player->OwnerScene = OwnerScene;
+        Player->Initialize();
+    }
 
     // AI 2¸í Ãß°¡
     for (int i = 0; i < 2; ++i)
     {
-        auto ai = std::make_shared<AAIPlayer>();
-        ai->Initialize();
-        AIPlayers.push_back(ai);
+        if (AIPlayers[i])
+        {
+            AIPlayers[i]->OwnerScene = OwnerScene;
+            AIPlayers[i]->Initialize();
+        }
     }
 }
 

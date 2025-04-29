@@ -114,6 +114,7 @@ namespace Renderer
 			{
 				for (const auto& UWidgetComponent : widget->WidgetComponents)
 				{
+					if (UWidgetComponent->IsVisible() == false) continue;
 					if (UWidgetComponent->m_AttachedActor == nullptr) // 액터에 부착되어 있지 않을 때
 					{
 						if (std::shared_ptr<SUITextComponent> uitextComponent = std::dynamic_pointer_cast<SUITextComponent>(UWidgetComponent))

@@ -141,6 +141,7 @@
     <ClInclude Include="Scene\EndScene.h" />
     <ClInclude Include="Scene\MenuScene.h" />
     <ClInclude Include="Scene\PlayScene.h" />
+    <ClInclude Include="Scene\WinScene.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Tile\City.h" />
     <ClInclude Include="Tile\Tile.h" />
@@ -162,6 +163,7 @@
     <ClCompile Include="Scene\EndScene.cpp" />
     <ClCompile Include="Scene\MenuScene.cpp" />
     <ClCompile Include="Scene\PlayScene.cpp" />
+    <ClCompile Include="Scene\WinScene.cpp" />
     <ClCompile Include="Tile\City.cpp" />
     <ClCompile Include="Tile\Tile.cpp" />
     <ClCompile Include="UI\CharacterNameWidget.cpp" />

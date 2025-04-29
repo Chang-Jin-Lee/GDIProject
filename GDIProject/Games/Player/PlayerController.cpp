@@ -1,5 +1,9 @@
 #include "PlayerController.h"
 #include <Time/Time.h>
+#include <Classes/Scene/Scene.h>
+#include <Runtime/Renderer/Renderer.h>
+#include "TurnGameState.h"
+#include "../Games.h"
 
 APlayerController::APlayerController() {}
 
@@ -12,6 +16,16 @@ void APlayerController::Initialize()
     ////auto Settler = std::make_shared<AUnit>(EUnitType::Settler, this);
     //Settler->SetActorLocation(FVector2(2, 2));
     //Units.push_back(Settler);
+    int type = static_cast<int>(EUnitType::Settler);
+    auto Unit = OwnerScene->NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
+    Unit->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
+    Unit->SetUnitType(type);
+    Unit->Initialize();
+    if (g_TurnGameStateInstanceIsValid)
+    {
+        Unit->SetActorLocation(g_TurnGameStateInstance->GetMainCamera().get()->GetActorLocation() + Renderer::GetResolution() / 2);
+    }
+    Units.push_back(Unit);
 }
 
 void APlayerController::UpdateTurn()
