@@ -64,11 +64,13 @@ void APlayerCharacter::Initialize()
 
 	// SceneComponent 값 초기화
 	FVector2 Location = FVector2(Renderer::GetResolution().x * 0.5f, Renderer::GetResolution().y * 0.5f);
-	FVector2 Size = FVector2(13.0f, 20.0f);
-	FVector2 Scale = FVector2(1.5f, 1.5f);
+	//FVector2 Size = FVector2(13.0f, 20.0f);
+	//FVector2 Scale = FVector2(1.5f, 1.5f);
 	SetActorLocation(Location.x, Location.y);
-	SetActorSize(Size.x, Size.y);
-	SetActorScale(Scale.x, Scale.y);
+	if (AnimationBundle.animationComponent && AnimationBundle.animationComponent[0] && AnimationBundle.animationComponent[0][0]->m_frames)
+		SetActorSize(AnimationBundle.animationComponent[0][0]->m_frames[0]->m_frame->GetWidth(), AnimationBundle.animationComponent[0][0]->m_frames[0]->m_frame->GetHeight());
+	//SetActorSize(Size.x, Size.y);
+	//SetActorScale(Scale.x, Scale.y);
 
 	// UI 초기화
 	m_nameWidget->m_nameUI->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));

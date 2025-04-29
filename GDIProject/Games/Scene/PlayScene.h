@@ -8,7 +8,6 @@
 #include "../Character/PlayerCharacter.h"
 #include "../Character/EnemyCharacter.h"
 #include "../Tile/Tile.h"
-#include "../UI/ScoreWidget.h"
 #include "../UI/PlayScene_Widget.h"
 #include "../Manager/TurnManager.h"
 
@@ -53,10 +52,11 @@ public:
 	void CheckVictoryConditions();
 	void PopUpUI(const std::wstring& str);
 
+	void ReadyForNextStage();
+
 private:
 	std::shared_ptr<APlayerCharacter> m_fPlayerCharacter;
 	std::shared_ptr<AEnemyCharacter> m_fEnemyCharacter;
-	std::shared_ptr<UScoreWidget> m_ScoreWidget;
 	std::shared_ptr<UPlayScene_Widget> m_PlayScene_Widget;
 	std::vector<std::vector<std::shared_ptr<ATile>>> m_tiles;
 
@@ -80,4 +80,5 @@ private:
 	//	TurnMgr->Update();
 	//}
 	std::shared_ptr<TurnManager> TurnMgr;	// Scene에서 Update() 해줘야함.
+	
 };

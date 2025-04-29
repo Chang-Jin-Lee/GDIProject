@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Windows.h>
+#include "../Math/Math.h"
 
 #define VK_A 0x41  // 'A'
 #define VK_B 0x42  // 'B'
@@ -43,10 +44,12 @@
 
 namespace Input
 {
+    void Initialize(HWND hwnd);
     void Update();
     bool IsKeyDown(int vKey);
     bool IsKeyPressed(int vKey);
     bool IsKeyReleased(int vKey);
+    FVector2 GetMousePosition();
 }
 
 

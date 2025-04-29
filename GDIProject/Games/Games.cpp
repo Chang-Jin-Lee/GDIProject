@@ -76,6 +76,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		Game::SetLMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam)));
 		Game::SetMouseDragState(true);
 		Game::CheckWidgetClick(FVector2(LOWORD(lParam), HIWORD(lParam)));
+		{
+			FVector2 CameraPosition = Game::GetGameState()->GetMainCamera().get()->GetActorLocation();
+			FVector2 index = ATile::GetIndexAtPosition(FVector2(LOWORD(lParam), HIWORD(lParam)) + CameraPosition);
+			FVector2 pos = ATile::GetTilePositionAtIndex(index.x, index.y);
+			std::cout << "index : " << index.x << "  " << index.y << '\n';
+			std::cout << "position : " << pos.x << ' ' << pos.y << '\n';
+		}
 		break;
 	case WM_MOUSEMOVE:
 		if (Game::GetMouseDragState())
@@ -190,7 +197,6 @@ namespace Game
 	FVector2 m_LMouseCickPosition;
 	FVector2 m_RMouseCickPosition;
 	bool g_bMouseDragging = false;
-
 	double m_FPSPerformancetime = 0;
 
 	void PreInitialize()
@@ -203,6 +209,7 @@ namespace Game
 	void Initialize(HWND hwnd)
 	{
 		Renderer::Initialize(hwnd);
+		Input::Initialize(hwnd);
 		Time::Initialize();
 		Game::GetCurrentScene()->Initialize();
 		Game::GetCurrentScene()->LoadData();

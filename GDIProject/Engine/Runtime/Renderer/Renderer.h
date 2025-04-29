@@ -24,6 +24,7 @@ namespace Renderer
 	FVector2 GetResolution();
 	void SetResolution(const float& width, const float& height);
 	void SetMainCamera(const std::shared_ptr<ACameraActor> camera);
+	bool IsGdiValid();
 	std::shared_ptr<ACameraActor> GetMainCamera();
 
 	void RenderImage(Gdiplus::Bitmap* ImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size);

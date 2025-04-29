@@ -4,6 +4,8 @@
 #include <Runtime/Renderer/Renderer.h>
 #include "TurnGameState.h"
 #include "../Games.h"
+#include <Input/Input.h>
+#include <iostream>
 
 APlayerController::APlayerController() {}
 
@@ -16,16 +18,7 @@ void APlayerController::Initialize()
     ////auto Settler = std::make_shared<AUnit>(EUnitType::Settler, this);
     //Settler->SetActorLocation(FVector2(2, 2));
     //Units.push_back(Settler);
-    int type = static_cast<int>(EUnitType::Settler);
-    auto Unit = OwnerScene->NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
-    Unit->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
-    Unit->SetUnitType(type);
-    Unit->Initialize();
-    if (g_TurnGameStateInstanceIsValid)
-    {
-        Unit->SetActorLocation(g_TurnGameStateInstance->GetMainCamera().get()->GetActorLocation() + Renderer::GetResolution() / 2);
-    }
-    Units.push_back(Unit);
+    SpawnAtIndex(1, 2);
 }
 
 void APlayerController::UpdateTurn()
@@ -94,8 +87,52 @@ void APlayerController::BuildCityWithSelectedSettler()
     //}
 }
 
+void APlayerController::SpawnAtIndex(int row, int col)
+{
+    int type = static_cast<int>(EUnitType::Settler);
+    auto Unit = OwnerScene->NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
+    Unit->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
+    Unit->SetUnitType(type);
+    Unit->Initialize();
+    FVector2 pos = ATile::GetTilePositionAtIndex(row, col);
+    FVector2 size = Unit->GetActorSize();
+    std::cout << "setteler position : " << pos.x << "  " << pos.y << '\n';
+    std::cout << "setteler size : " << size.x << "  " << size.y << '\n';
+    Unit->SetActorLocation(pos - size / 2);
+    Units.push_back(Unit);
+}
+
+void APlayerController::SpawnAtPosition(FVector2 position)
+{
+    int type = static_cast<int>(EUnitType::Settler);
+    auto Unit = OwnerScene->NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
+    Unit->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
+    Unit->SetUnitType(type);
+    Unit->Initialize();
+    FVector2 CameraPosition = Game::GetGameState()->GetMainCamera().get()->GetActorLocation();
+    FVector2 index = ATile::GetIndexAtPosition(position + CameraPosition);
+    FVector2 pos = ATile::GetTilePositionAtIndex((int)index.x, (int)index.y);
+    FVector2 size = Unit->GetActorSize();
+    Unit->SetActorLocation(pos - size / 2);
+    Units.push_back(Unit);
+}
+
 void APlayerController::HandleInput()
 {
+    if (Input::IsKeyPressed(VK_K))
+    {
+        std::cout << "전체 삭제!";
+        for (const auto& Unit : Units)
+        {
+            OwnerScene->Destroy(Unit);
+        }
+    }
+
+    if (Input::IsKeyPressed(VK_LBUTTON))
+    {
+        std::cout << Input::GetMousePosition().x << ' ' << Input::GetMousePosition().y << '\n';
+        SpawnAtPosition(Input::GetMousePosition());
+    }
     //if (Input::IsMouseClick())
     //{
     //    FVector2 clickPos = Input::GetMouseWorldPosition();

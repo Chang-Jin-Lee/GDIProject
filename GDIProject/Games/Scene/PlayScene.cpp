@@ -31,7 +31,6 @@ UPlayScene::UPlayScene()
 	}
 
 	//m_fPlayerCharacter = NewObject<APlayerCharacter>(m_fPlayerCharacter->GetUnitTypeString(), ESCENELAYER::CHARACTER);
-	m_ScoreWidget = CreateWidget<UScoreWidget>(TEXT("ScoreWidget"));
 	m_PlayScene_Widget = CreateWidget<UPlayScene_Widget>(TEXT("PlaySceneWidget"), EUILAYER::BUTTON);
 	//m_PlayScene_Widget->m_spawnSettelerUnitButton->SetVoidDelegate([this]() { SpawnUnit(); });
 	m_PlayScene_Widget->m_spawnSettelerUnitButton->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Settler)); });
@@ -68,7 +67,6 @@ UPlayScene::~UPlayScene()
 		m_fPlayerCharacter.reset();
 	delete WorldBound;
 	delete quadTree;
-	m_ScoreWidget.reset();
 	m_PlayScene_Widget.reset();
 	for (int i = 0; i < TILE_COL_SIZE; i++)
 	{
@@ -83,9 +81,9 @@ void UPlayScene::Initialize()
 {
 	CharactersInitialize(); 
 	TimeInitialize();
-	UIInitialize();
 	TileInitilize();
 	TurnManagerInitilize();	
+	UIInitialize();
 }
 
 void UPlayScene::Update()
@@ -142,7 +140,6 @@ void UPlayScene::CharactersInitialize()
 
 void UPlayScene::UIInitialize()
 {
-	m_ScoreWidget->Initialize();
 	m_PlayScene_Widget->Initialize();
 }
 
@@ -173,6 +170,7 @@ void UPlayScene::TurnManagerInitilize()
 	//TurnMgr = std::make_shared<TurnManager>();
 	TurnMgr = NewObject<TurnManager>(TEXT("TurnMgr"));
 	TurnMgr->OwnerScene = shared_from_this();
+	TurnMgr->m_tiles = m_tiles;
 	TurnMgr->Initialize();
 	if (g_TurnGameStateInstanceIsValid)
 	{
@@ -223,13 +221,6 @@ void UPlayScene::UpdateCollisionDetection()
 							//m_objects[other.get()->]
 							//tother.reset();
 							//m_objects[other->RenderLayer].erase(other->GetName());
-
-							TurnGameState* g = dynamic_cast<TurnGameState*>(Game::GetGameState());
-							if (g)
-							{
-								g->m_gGameScore++;
-								m_ScoreWidget->m_scoreui->m_content = std::to_wstring(g->m_gGameScore);
-							}
 						}
 					}
 				}
@@ -251,16 +242,12 @@ void UPlayScene::UpdateTime()
 
 void UPlayScene::UpdateUI()
 {
-	if (m_fFPSTime >= m_fFPSLastTime)
-	{
-		m_PlayScene_Widget->m_remainTimeui->m_content = std::to_wstring(m_fFPSTime - m_fFPSLastTime);
-	}
-
 	if (m_PlayScene_Widget->m_popupText->m_bVisible)
 	{
 		if (Time::GetTotalTime() - m_PlayScene_Widget->m_currentTime > m_PlayScene_Widget->m_PopUpTextDelay)
 		{
 			m_PlayScene_Widget->m_popupText->m_bVisible = false;
+			m_PlayScene_Widget->m_popupRectangle->m_bVisible = false;
 		}
 	}
 }
@@ -278,7 +265,13 @@ void UPlayScene::NextTurn()
 
 
 
+		if (g_TurnGameStateInstanceIsValid)
+		{
+			m_PlayScene_Widget->m_remainTurnui->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
+		}
+		m_PlayScene_Widget->m_popupRectangle->m_brush->SetColor(Gdiplus::Color(10, 10, 222));
 		PopUpUI(L"다음 턴으로 넘어갑니다.");
+		ReadyForNextStage();
 	}
 }
 
@@ -308,6 +301,7 @@ bool UPlayScene::CheckUnitActionCount()
 	{
 		if (ch->ActionCount > 0)
 		{
+			m_PlayScene_Widget->m_popupRectangle->m_brush->SetColor(Gdiplus::Color(222,10,10));
 			PopUpUI(L"행동 수가 남아있습니다.");
 			return false;
 		}
@@ -375,4 +369,10 @@ void UPlayScene::PopUpUI(const std::wstring& str)
 	m_PlayScene_Widget->m_currentTime = Time::GetTotalTime();
 	m_PlayScene_Widget->m_popupText->m_content = str;
 	m_PlayScene_Widget->m_popupText->m_bVisible = true;
+	m_PlayScene_Widget->m_popupRectangle->m_bVisible = true;
+}
+
+void UPlayScene::ReadyForNextStage()
+{
+
 }

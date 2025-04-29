@@ -22,8 +22,11 @@ public:
     void MoveSelectedUnitTo(const FVector2& pos);
     void BuildCityWithSelectedSettler();
 
+    void SpawnAtIndex(int row, int col);
+    void SpawnAtPosition(FVector2 position);
 public:
     std::shared_ptr<UScene> OwnerScene;
+    std::vector<std::vector<std::shared_ptr<ATile>>> m_tiles;
 
 private:
     std::shared_ptr<APlayerCharacter> SelectedUnit;

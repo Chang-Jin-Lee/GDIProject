@@ -22,6 +22,7 @@ void TurnManager::Initialize()
     if (Player)
     {
         Player->OwnerScene = OwnerScene;
+        Player->m_tiles = m_tiles;
         Player->Initialize();
     }
 
@@ -31,6 +32,7 @@ void TurnManager::Initialize()
         if (AIPlayers[i])
         {
             AIPlayers[i]->OwnerScene = OwnerScene;
+            AIPlayers[i]->m_tiles = m_tiles;
             AIPlayers[i]->Initialize();
         }
     }

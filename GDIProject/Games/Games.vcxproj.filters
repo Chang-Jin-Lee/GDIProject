@@ -66,9 +66,6 @@
     <ClInclude Include="Tile\Tile.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="UI\ScoreWidget.h">
-      <Filter>헤더 파일\UI</Filter>
-    </ClInclude>
     <ClInclude Include="UI\PlayScene_Widget.h">
       <Filter>헤더 파일\UI</Filter>
     </ClInclude>
@@ -124,9 +121,6 @@
     </ClCompile>
     <ClCompile Include="Tile\Tile.cpp">
       <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\ScoreWidget.cpp">
-      <Filter>소스 파일\UI</Filter>
     </ClCompile>
     <ClCompile Include="UI\PlayScene_Widget.cpp">
       <Filter>소스 파일\UI</Filter>

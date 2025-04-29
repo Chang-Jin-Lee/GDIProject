@@ -25,6 +25,36 @@ public:
 
 	ETileType m_etileType = ETileType::Desert;
 
+	static FVector2 GetTilePositionAtIndex(int row, int col)
+	{
+		if (row % 2 == 0)
+		{
+			return FVector2(col * initialTileSizeX + initialTileSizeX / 2, row * ((initialTileSizeY * 2) / 3) + (initialTileSizeY / 2));
+		}
+		else
+		{
+			return FVector2(col * initialTileSizeX + initialTileSizeX, row * ((initialTileSizeY * 2) / 3) + (initialTileSizeY / 2));
+		}
+	}
+
+	static FVector2 GetIndexAtPosition(FVector2 position)
+	{
+		int row = (int)position.y / (int)((initialTileSizeY*2)/3);
+		int col = 0;
+		if (row % 2 == 0)
+		{
+			col = (int)position.x / initialTileSizeX;
+		}
+		else
+		{
+			col = ((int)position.x - initialTileSizeX/2) / initialTileSizeX;
+		}
+		
+		return FVector2(row, col);
+	}
+
 public:
 	FVector2 InitialTileSize = FVector2(98, 120);
+	static const int initialTileSizeX = 98;
+	static const int initialTileSizeY = 120;
 };

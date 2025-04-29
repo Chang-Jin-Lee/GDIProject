@@ -149,7 +149,6 @@
     <ClInclude Include="UI\EndScene_ScoreGuide.h" />
     <ClInclude Include="UI\MenuScene_StartGuide.h" />
     <ClInclude Include="UI\PlayScene_Widget.h" />
-    <ClInclude Include="UI\ScoreWidget.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Character\EnemyCharacter.cpp" />
@@ -169,7 +168,6 @@
     <ClCompile Include="UI\CharacterNameWidget.cpp" />
     <ClCompile Include="UI\MenuScene_StartGuide.cpp" />
     <ClCompile Include="UI\PlayScene_Widget.cpp" />
-    <ClCompile Include="UI\ScoreWidget.cpp" />
     <ClCompile Include="UI\EndScene_ScoreGuide.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -33,6 +33,7 @@ private:
 
 public:
     std::shared_ptr<UScene> OwnerScene;
+    std::vector<std::vector<std::shared_ptr<ATile>>> m_tiles;
 
 public:
     std::vector<std::shared_ptr<APlayerCharacter>> Units;

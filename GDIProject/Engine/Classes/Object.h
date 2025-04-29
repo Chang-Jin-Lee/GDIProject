@@ -11,36 +11,31 @@ public:
 	virtual void Release();
 	
 	template<class TReturnType>
-	std::shared_ptr<TReturnType> CreateDefaultSubobject(const std::wstring& SubobjectName)
+	std::shared_ptr<TReturnType> CreateDefaultSubobject(const std::wstring& SubobjectName, const int layer = 0)
 	{
 		std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
+		if (std::shared_ptr<UObject> object = std::dynamic_pointer_cast<UObject>(temp))	// ¸¸¾à ¾À¿¡¼­ »ý¼ºÇÒ¶§ À§Á¬ÀÌ ºÎÂøµÇ¾î ÀÖÀ¸¸é °Âµµ °ü¸®ÇØÁÜ.
+		{
+			object->SetEditorName(SubobjectName);
+			object->RenderLayer = layer;
+		}
 		m_components.insert(std::make_pair(SubobjectName, temp));
 		return temp;
-
-		//if (m_components.find(SubobjectName) != m_components.end())
-		//{
-		//	int i = 0;
-		//	std::wstring nextSubobjectName = SubobjectName + L"_" + std::to_wstring(i++);
-		//	while (m_components.find(nextSubobjectName) != m_components.end())
-		//	{
-		//		nextSubobjectName = SubobjectName + L"_" + std::to_wstring(i++);
-		//	}
-		//	std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
-		//	m_components.insert(std::make_pair(nextSubobjectName, temp));
-		//	return temp;
-		//}
-		//else
-		//{
-		//	std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
-		//	m_components.insert(std::make_pair(SubobjectName, temp));
-		//	return temp;
-		//}
 	}
 
 	void DestroyComponent(const std::wstring& name)
 	{
 		if(name.empty() == false)
 			m_components.erase(name);
+	}
+
+	void DestroyAllComponent()
+	{
+		for (auto& m_component : m_components)
+		{
+			m_component.second.reset();
+		}
+		m_components.clear();
 	}
 	
 	std::wstring GetName() { return Name; }

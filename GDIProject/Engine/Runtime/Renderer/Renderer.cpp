@@ -22,6 +22,7 @@ namespace Renderer
 
 	ULONG_PTR g_GdiPlusToken;
 	Gdiplus::Graphics* g_pBackBufferGraphics = nullptr;
+	bool IsGdiActive = false;
 
 	std::shared_ptr<ACameraActor> g_mainCamera;
 	std::vector<std::shared_ptr<UObject>> g_renderedObjs;
@@ -41,6 +42,7 @@ namespace Renderer
 
 		Gdiplus::GdiplusStartupInput gsi;
 		Gdiplus::GdiplusStartup(&g_GdiPlusToken, &gsi, nullptr);
+		IsGdiActive = true;
 
 		g_pBackBufferGraphics = Gdiplus::Graphics::FromHDC(g_BackBufferDC);
 		g_pBackBufferGraphics->SetCompositingMode(Gdiplus::CompositingModeSourceOver);
@@ -94,6 +96,7 @@ namespace Renderer
 		if (g_pBackBufferGraphics)
 			delete g_pBackBufferGraphics;
 
+		IsGdiActive = false;
 		Gdiplus::GdiplusShutdown(g_GdiPlusToken);
 	}
 
@@ -353,6 +356,11 @@ namespace Renderer
 	void SetMainCamera(const std::shared_ptr<ACameraActor> camera)
 	{
 		g_mainCamera = camera;
+	}
+
+	bool IsGdiValid()
+	{
+		return IsGdiActive;
 	}
 
 	std::shared_ptr<ACameraActor> GetMainCamera()

@@ -18,8 +18,8 @@ public:
 	double m_PopUpTextDelay = 2.0;
 
 public:
-	std::shared_ptr<SUITextComponent> m_remainTimeGuideui;
-	std::shared_ptr<SUITextComponent> m_remainTimeui;
+	std::shared_ptr<SUITextComponent> m_remainTurnGuideui;
+	std::shared_ptr<SUITextComponent> m_remainTurnui;
 
 	std::shared_ptr<SUIButtonComponent> m_spawnSettelerUnitButton;
 	std::shared_ptr<SUITextComponent> m_spawnSettelerUnitButtonText;
@@ -33,5 +33,6 @@ public:
 	std::shared_ptr<SUIButtonComponent> m_endGameButton;
 	std::shared_ptr<SUITextComponent> m_endGameButtonText;
 
+	std::shared_ptr<SUIButtonComponent> m_popupRectangle;
 	std::shared_ptr<SUITextComponent> m_popupText;
 };

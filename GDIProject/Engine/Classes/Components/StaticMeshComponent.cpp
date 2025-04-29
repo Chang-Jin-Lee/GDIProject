@@ -1,8 +1,10 @@
 #include "StaticMeshComponent.h"
 #include <iostream>
+#include "../../Runtime/Renderer/Renderer.h"
 
 UStaticMeshComponent::UStaticMeshComponent()
 {
+	m_fmeshSize = FVector2(-1, -1);
 	mesh = nullptr;
 }
 
@@ -16,7 +18,8 @@ UStaticMeshComponent::UStaticMeshComponent(std::wstring baseDir, std::wstring fi
 
 UStaticMeshComponent::~UStaticMeshComponent()
 {
-	delete mesh;
+	if(Renderer::IsGdiValid())
+		delete mesh;
 }
 
 void UStaticMeshComponent::LoadData(std::wstring baseDir, std::wstring fileName)
