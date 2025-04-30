@@ -21,6 +21,7 @@ public:
 	std::shared_ptr<SUITextComponent> m_remainTurnGuideui;
 	std::shared_ptr<SUITextComponent> m_remainTurnui;
 
+	// 스폰 버튼
 	std::shared_ptr<SUIButtonComponent> m_spawnSettelerUnitButton;
 	std::shared_ptr<SUITextComponent> m_spawnSettelerUnitButtonText;
 	std::shared_ptr<SUIButtonComponent> m_spawnWarriorUnitButton;
@@ -35,4 +36,9 @@ public:
 
 	std::shared_ptr<SUIButtonComponent> m_popupRectangle;
 	std::shared_ptr<SUITextComponent> m_popupText;
+
+	// 왼쪽아래 자세히보기 UI
+	std::shared_ptr<SUIButtonComponent> m_selectTileInfomationRectangle;
+	std::shared_ptr<SUITextComponent> m_selectTileName;
+	std::shared_ptr<SUITextComponent> m_selectTileActionCount;
 };

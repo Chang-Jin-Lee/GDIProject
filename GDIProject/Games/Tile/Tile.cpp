@@ -2,6 +2,7 @@
 #include "Tile.h"
 #include "../Games.h"
 #include "../Player/TurnGameState.h"
+#include "../Scene/PlayScene.h"
 
 ATile::ATile()
 {
@@ -54,4 +55,56 @@ void ATile::Update()
 void ATile::LoadData()
 {
 	__super::LoadData();
+}
+
+FVector2 ATile::GetTilePositionAtIndex(int row, int col)
+{
+	if (row < 0 || col < 0 || row >= TILE_ROW_SIZE || col >= TILE_COL_SIZE) return FVector2(0,0);
+	if (row % 2 == 0)
+	{
+		return FVector2(col * initialTileSizeX + initialTileSizeX / 2, row * ((initialTileSizeY * 2) / 3) + (initialTileSizeY / 2));
+	}
+	else
+	{
+		return FVector2(col * initialTileSizeX + initialTileSizeX, row * ((initialTileSizeY * 2) / 3) + (initialTileSizeY / 2));
+	}
+}
+
+FVector2 ATile::GetIndexAtPosition(FVector2 position)
+{
+	if (position.x < 0 || position.y < 0) return FVector2(0, 0);
+	int row = (int)position.y / (int)((initialTileSizeY * 2) / 3);
+	int col = 0;
+	if (row % 2 == 0)
+	{
+		col = (int)position.x / initialTileSizeX;
+	}
+	else
+	{
+		col = ((int)position.x - initialTileSizeX / 2) / initialTileSizeX;
+	}
+	
+	return FVector2(row, col);
+}
+
+std::wstring ATile::GetTileName()
+{
+	switch (m_etileType)
+	{
+	case ETileType::Desert:
+		return L"사막";
+	case ETileType::Grassland:
+		return L"초원";
+	case ETileType::Hills:
+		return L"언덕";
+	case ETileType::Plain:
+		return L"평지";
+	case ETileType::Mountain:
+		return L"산";
+	case ETileType::MAX:
+		return L"MAX";
+	default:
+		return L"default";
+	}
+
 }

@@ -6,6 +6,7 @@
 #include "../Games.h"
 #include <Input/Input.h>
 #include <iostream>
+#include "../Scene/PlayScene.h"
 
 APlayerController::APlayerController() {}
 
@@ -18,7 +19,7 @@ void APlayerController::Initialize()
     ////auto Settler = std::make_shared<AUnit>(EUnitType::Settler, this);
     //Settler->SetActorLocation(FVector2(2, 2));
     //Units.push_back(Settler);
-    SpawnAtIndex(1, 2);
+    SpawnAtIndex(3, 2);
 }
 
 void APlayerController::UpdateTurn()
@@ -89,34 +90,61 @@ void APlayerController::BuildCityWithSelectedSettler()
 
 void APlayerController::SpawnAtIndex(int row, int col)
 {
+    if (row < 0 || col < 0) return;
     int type = static_cast<int>(EUnitType::Settler);
     auto Unit = OwnerScene->NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
     Unit->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
     Unit->SetUnitType(type);
     Unit->Initialize();
-    FVector2 pos = ATile::GetTilePositionAtIndex(row, col);
+    FVector2 pos = ATile::GetTilePositionAtIndex(col, row);
     FVector2 size = Unit->GetActorSize();
-    std::cout << "setteler position : " << pos.x << "  " << pos.y << '\n';
-    std::cout << "setteler size : " << size.x << "  " << size.y << '\n';
+    Unit->row = row;
+    Unit->col = col;
+    m_tiles[Unit->col][Unit->row]->unit = Unit;
     Unit->SetActorLocation(pos - size / 2);
     Units.push_back(Unit);
 }
 
-void APlayerController::SpawnAtPosition(FVector2 position)
+void APlayerController::SpawnAtPosition(FVector2 position, EUnitType unitType)
 {
-    int type = static_cast<int>(EUnitType::Settler);
+    if (position.x < 0 || position.y < 0) return;
+    int type = static_cast<int>(unitType);
     auto Unit = OwnerScene->NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
     Unit->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
     Unit->SetUnitType(type);
     Unit->Initialize();
-    FVector2 CameraPosition = Game::GetGameState()->GetMainCamera().get()->GetActorLocation();
-    FVector2 index = ATile::GetIndexAtPosition(position + CameraPosition);
+    FVector2 index = ATile::GetIndexAtPosition(position);
     FVector2 pos = ATile::GetTilePositionAtIndex((int)index.x, (int)index.y);
     FVector2 size = Unit->GetActorSize();
+    Unit->row = (int)index.y;
+    Unit->col = (int)index.x;
+    m_tiles[Unit->col][Unit->row]->unit = Unit;
+    std::cout << "Spawn Position : " << pos.x << ' ' << pos.y << '\n';
     Unit->SetActorLocation(pos - size / 2);
     Units.push_back(Unit);
 }
 
+std::shared_ptr<APlayerCharacter> APlayerController::GetUnitRefAtPosition(FVector2 position)
+{
+    FVector2 index = ATile::GetIndexAtPosition(position);
+
+    int x = (int)index.x;
+    int y = (int)index.y;
+    if (x >= TILE_COL_SIZE || y >= TILE_ROW_SIZE) return nullptr;
+    if (m_tiles[x][y]->unit)
+        return m_tiles[x][y]->unit;
+    else
+        return nullptr;
+}
+
+std::shared_ptr<ATile> APlayerController::GetTileRefAtPosition(FVector2 position)
+{
+    FVector2 index = ATile::GetIndexAtPosition(position);
+
+    int x = (int)index.x;
+    int y = (int)index.y;
+    return m_tiles[x][y];
+}
 void APlayerController::HandleInput()
 {
     if (Input::IsKeyPressed(VK_K))
@@ -128,10 +156,33 @@ void APlayerController::HandleInput()
         }
     }
 
+    if (Input::IsKeyPressed(VK_RBUTTON))
+    {
+        FVector2 CameraPosition = Game::GetGameState()->GetMainCamera().get()->GetActorLocation();
+        SpawnAtPosition(Input::GetMousePosition()+ CameraPosition, EUnitType::Warrior);
+    }
+
     if (Input::IsKeyPressed(VK_LBUTTON))
     {
-        std::cout << Input::GetMousePosition().x << ' ' << Input::GetMousePosition().y << '\n';
-        SpawnAtPosition(Input::GetMousePosition());
+        FVector2 CameraPosition = Game::GetGameState()->GetMainCamera().get()->GetActorLocation();
+        std::shared_ptr<APlayerCharacter> ref = GetUnitRefAtPosition(Input::GetMousePosition()+ CameraPosition);
+        if (ref)
+        {
+            if (std::shared_ptr<UPlayScene> ps = std::dynamic_pointer_cast<UPlayScene>(OwnerScene))
+            {
+                ps->m_PlayScene_Widget->m_selectTileName->m_content = L"캐릭터 이름 : " + ref->GetName();
+                ps->m_PlayScene_Widget->m_selectTileActionCount->m_content = L"남은 행동 수 : " + std::to_wstring(ref->ActionCount);
+            }
+        }
+        else
+        {
+            if (std::shared_ptr<UPlayScene> ps = std::dynamic_pointer_cast<UPlayScene>(OwnerScene))
+            {
+                std::shared_ptr<ATile> t = GetTileRefAtPosition(Input::GetMousePosition());
+                ps->m_PlayScene_Widget->m_selectTileName->m_content = L"타일 이름 : " + t->GetTileName();
+                ps->m_PlayScene_Widget->m_selectTileActionCount->m_content = L"";
+            }
+        }
     }
     //if (Input::IsMouseClick())
     //{

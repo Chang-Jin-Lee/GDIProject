@@ -51,4 +51,8 @@ public:
 	int AttackRange = 1;
 	bool bIsDead = false;
 	int ActionCount = 0;
+
+	// Turn 게임에서의 Tile 좌표
+	int row = 0;
+	int col = 0;
 };

@@ -63,7 +63,7 @@ UPlayScene::~UPlayScene()
 		}
 	}
 	m_objects.clear();
-	if(m_fPlayerCharacter.get() != nullptr)
+	if (m_fPlayerCharacter.get() != nullptr)
 		m_fPlayerCharacter.reset();
 	delete WorldBound;
 	delete quadTree;
@@ -79,10 +79,10 @@ UPlayScene::~UPlayScene()
 
 void UPlayScene::Initialize()
 {
-	CharactersInitialize(); 
+	CharactersInitialize();
 	TimeInitialize();
 	TileInitilize();
-	TurnManagerInitilize();	
+	TurnManagerInitilize();
 	UIInitialize();
 }
 
@@ -115,6 +115,19 @@ void UPlayScene::UpdateInput()
 	if (Input::IsKeyPressed(VK_C))
 	{
 		UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
+	}
+
+	if (Input::IsKeyPressed(VK_LBUTTON))
+	{
+		if (Game::CheckWidgetPosition(Input::GetMousePosition()) == false)
+		{
+			FVector2 CameraPosition = Game::GetGameState()->GetMainCamera().get()->GetActorLocation();
+			FVector2 index = ATile::GetIndexAtPosition(MousePosition + CameraPosition);
+			MousePosition = Input::GetMousePosition() + CameraPosition;
+
+			std::cout << "Input::GetMousePosition() : " << MousePosition.x << ' ' << MousePosition.y << '\n';
+			std::cout << "Input::GetMousePosition() index : " << index.x << "  " << index.y << '\n';
+		}
 	}
 }
 
@@ -262,9 +275,6 @@ void UPlayScene::NextTurn()
 			return;
 		}
 		CheckVictoryConditions();
-
-
-
 		if (g_TurnGameStateInstanceIsValid)
 		{
 			m_PlayScene_Widget->m_remainTurnui->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
@@ -277,16 +287,16 @@ void UPlayScene::NextTurn()
 
 void UPlayScene::SpawnUnit(int type)
 {
-	printf("test\n");
-
-	m_fPlayerCharacter = NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
-	m_fPlayerCharacter->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
-	m_fPlayerCharacter->SetUnitType(type);
-	m_fPlayerCharacter->Initialize();
-	if (g_TurnGameStateInstanceIsValid)
-	{
-		m_fPlayerCharacter->SetActorLocation(g_TurnGameStateInstance->GetMainCamera().get()->GetActorLocation() + Renderer::GetResolution()/2);
-	}
+	std::cout << MousePosition.x << ' ' << MousePosition.y << " Spawend! " << '\n';
+	TurnMgr->GetPlayer()->SpawnAtPosition(MousePosition, static_cast<EUnitType>(type));
+	//m_fPlayerCharacter = NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
+	//m_fPlayerCharacter->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
+	//m_fPlayerCharacter->SetUnitType(type);
+	//m_fPlayerCharacter->Initialize();
+	//if (g_TurnGameStateInstanceIsValid)
+	//{
+	//	m_fPlayerCharacter->SetActorLocation(g_TurnGameStateInstance->GetMainCamera().get()->GetActorLocation() + Renderer::GetResolution() / 2);
+	//}
 }
 
 void UPlayScene::GoNextScene()
@@ -301,7 +311,7 @@ bool UPlayScene::CheckUnitActionCount()
 	{
 		if (ch->ActionCount > 0)
 		{
-			m_PlayScene_Widget->m_popupRectangle->m_brush->SetColor(Gdiplus::Color(222,10,10));
+			m_PlayScene_Widget->m_popupRectangle->m_brush->SetColor(Gdiplus::Color(222, 10, 10));
 			PopUpUI(L"행동 수가 남아있습니다.");
 			return false;
 		}

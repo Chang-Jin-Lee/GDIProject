@@ -21,6 +21,10 @@ UPlayScene_Widget::UPlayScene_Widget()
 	m_popupText->m_bVisible = false;
 	m_popupRectangle->m_bVisible = false;
 
+	m_selectTileInfomationRectangle = CreateDefaultSubobject<SUIButtonComponent>(TEXT("m_selectTileInfomationRectangle"));
+	m_selectTileName = CreateDefaultSubobject<SUITextComponent>(TEXT("m_selectTileName"));
+	m_selectTileActionCount = CreateDefaultSubobject<SUITextComponent>(TEXT("m_selectTileActionCount"));
+
 	WidgetComponents.push_back(m_remainTurnGuideui);
 	WidgetComponents.push_back(m_remainTurnui);
 	WidgetComponents.push_back(m_spawnSettelerUnitButton);
@@ -36,6 +40,9 @@ UPlayScene_Widget::UPlayScene_Widget()
 	WidgetComponents.push_back(m_endGameButtonText);
 	WidgetComponents.push_back(m_popupRectangle);
 	WidgetComponents.push_back(m_popupText);
+	WidgetComponents.push_back(m_selectTileInfomationRectangle);
+	WidgetComponents.push_back(m_selectTileName);
+	WidgetComponents.push_back(m_selectTileActionCount);
 }
 
 UPlayScene_Widget::~UPlayScene_Widget()
@@ -85,7 +92,7 @@ void UPlayScene_Widget::Initialize()
 	m_remainTurnui->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
 	
 
-	int x = int(Renderer::GetResolution().x * 0.2);
+	int x = int(Renderer::GetResolution().x * 0.4);
 	int y = int(Renderer::GetResolution().y * 0.8);
 	int width = 120;
 	int height = 60;
@@ -102,7 +109,7 @@ void UPlayScene_Widget::Initialize()
 	);
 	m_spawnSettelerUnitButtonText->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
 
-	x = int(Renderer::GetResolution().x * 0.5);
+	x = int(Renderer::GetResolution().x * 0.6);
 	y = int(Renderer::GetResolution().y * 0.8);
 	m_spawnWarriorUnitButton->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
 	m_spawnWarriorUnitButton->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
@@ -132,7 +139,11 @@ void UPlayScene_Widget::Initialize()
 	);
 	m_spawnArcherUnitButtonText->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
 
-	m_nextStageButton->Initialize(Gdiplus::Color(48, 50, 113), FVector2(int(Renderer::GetResolution().x * 0.8), int(Renderer::GetResolution().y * 0.5)), FVector2(120, 60), 10);
+	x = int(Renderer::GetResolution().x * 0.85);
+	y = int(Renderer::GetResolution().y * 0.4);
+	width = int(Renderer::GetResolution().x * 0.1);
+	height = int(Renderer::GetResolution().y * 0.1);
+	m_nextStageButton->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 10);
 	m_nextStageButton->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
 	m_nextStageButtonText->Initialize
 	(
@@ -140,8 +151,8 @@ void UPlayScene_Widget::Initialize()
 		10,
 		(wchar_t*)L"Verdana",
 		Gdiplus::Color(255, 255, 255),
-		FVector2(int(Renderer::GetResolution().x * 0.8), int(Renderer::GetResolution().y * 0.5)),
-		FVector2(120, 60)
+		FVector2(x,y),
+		FVector2(width, height)
 	);
 	m_nextStageButtonText->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
 
@@ -178,6 +189,34 @@ void UPlayScene_Widget::Initialize()
 		FVector2(width, height)
 	);
 	m_popupText->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
+
+	x = int(Renderer::GetResolution().x * 0.15);
+	y = int(Renderer::GetResolution().y * 0.85);
+	width = int(Renderer::GetResolution().x * 0.25);
+	height = int(Renderer::GetResolution().y * 0.25);
+	m_selectTileInfomationRectangle->Initialize(Gdiplus::Color(180, 180, 13), FVector2(x - width / 2, y - height / 2), FVector2(width, height), 10);
+	m_selectTileInfomationRectangle->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
+	m_selectTileName->Initialize
+	(
+		L"캐릭터 이름",
+		10,	
+		(wchar_t*)L"Verdana",
+		Gdiplus::Color(255, 255, 255),
+		FVector2(x - width / 2, y - (height * 2) / 3),
+		FVector2(width, height)
+	);
+	m_selectTileName->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
+
+	m_selectTileActionCount->Initialize
+	(
+		L"남은 행동 수",
+		10,
+		(wchar_t*)L"Verdana",
+		Gdiplus::Color(255, 255, 255),
+		FVector2(x - width / 2, y - height / 3),
+		FVector2(width, height)
+	);
+	m_selectTileActionCount->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
 }
 
 void UPlayScene_Widget::Update()

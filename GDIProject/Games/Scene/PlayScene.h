@@ -54,11 +54,14 @@ public:
 
 	void ReadyForNextStage();
 
+public:
+	std::vector<std::vector<std::shared_ptr<ATile>>> m_tiles;
+	std::shared_ptr<UPlayScene_Widget> m_PlayScene_Widget;
+	FVector2 MousePosition;
+
 private:
 	std::shared_ptr<APlayerCharacter> m_fPlayerCharacter;
 	std::shared_ptr<AEnemyCharacter> m_fEnemyCharacter;
-	std::shared_ptr<UPlayScene_Widget> m_PlayScene_Widget;
-	std::vector<std::vector<std::shared_ptr<ATile>>> m_tiles;
 
 	FAABBBox* WorldBound = nullptr;
 	FQuadTree* quadTree = nullptr;

@@ -75,7 +75,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_LBUTTONDOWN:
 		Game::SetLMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam)));
 		Game::SetMouseDragState(true);
-		Game::CheckWidgetClick(FVector2(LOWORD(lParam), HIWORD(lParam)));
+		Game::OnWidgetClick(FVector2(LOWORD(lParam), HIWORD(lParam)));
 		{
 			FVector2 CameraPosition = Game::GetGameState()->GetMainCamera().get()->GetActorLocation();
 			FVector2 index = ATile::GetIndexAtPosition(FVector2(LOWORD(lParam), HIWORD(lParam)) + CameraPosition);
@@ -95,6 +95,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			cameraPos += FVector2(-dif.x, -dif.y);
 			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
 			Game::SetLMouseClickPosition(currentPos);
+			std::cout << "WndProc currentPos : " << currentPos.x << ' ' << currentPos.y << '\n';
 		}
 		break;
 	case WM_LBUTTONUP:
@@ -258,7 +259,7 @@ namespace Game
 		g_currentScene->Release();
 	}
 
-	void CheckWidgetClick(const FVector2& clickPosition)
+	void OnWidgetClick(const FVector2& clickPosition)
 	{
 		std::vector<std::unordered_map<std::wstring, std::shared_ptr<UWidget>>>& Widgets = g_currentScene->GetWidgets();
 		for (auto& button : Widgets[static_cast<int>(EUILAYER::BUTTON)])
@@ -280,6 +281,28 @@ namespace Game
 				}
 			}
 		}
+	}
+
+	bool CheckWidgetPosition(const FVector2& clickPosition)
+	{
+		std::vector<std::unordered_map<std::wstring, std::shared_ptr<UWidget>>>& Widgets = g_currentScene->GetWidgets();
+		bool bWidgetExist = false;
+		for (auto& button : Widgets[static_cast<int>(EUILAYER::BUTTON)])
+		{
+			if (button.second->bVisible)
+			{
+				for (auto& component : button.second.get()->WidgetComponents)
+				{
+					if ((clickPosition.x < component.get()->m_Position.x ||
+						clickPosition.x > component.get()->m_Position.x + component.get()->m_Size.x ||
+						clickPosition.y < component.get()->m_Position.y ||
+						clickPosition.y > component.get()->m_Position.y + component.get()->m_Size.y) == false
+						)
+						bWidgetExist = true;
+				}
+			}
+		}
+		return bWidgetExist;
 	}
 
 	std::shared_ptr<UScene> GetCurrentScene()

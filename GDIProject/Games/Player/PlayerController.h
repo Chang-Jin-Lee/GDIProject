@@ -17,13 +17,17 @@ public:
     void Initialize();
     void UpdateTurn(); // 매 턴마다 호출
 
+
     void HandleInput(); // 사용자의 입력 받아 처리
     void SelectUnitAtPosition(const FVector2& pos);
     void MoveSelectedUnitTo(const FVector2& pos);
     void BuildCityWithSelectedSettler();
 
     void SpawnAtIndex(int row, int col);
-    void SpawnAtPosition(FVector2 position);
+    void SpawnAtPosition(FVector2 position, EUnitType unitType = EUnitType::Warrior);
+    std::shared_ptr<APlayerCharacter> GetUnitRefAtPosition(FVector2 position);
+    std::shared_ptr<ATile> GetTileRefAtPosition(FVector2 position);
+
 public:
     std::shared_ptr<UScene> OwnerScene;
     std::vector<std::vector<std::shared_ptr<ATile>>> m_tiles;
