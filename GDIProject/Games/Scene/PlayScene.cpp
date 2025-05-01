@@ -178,6 +178,20 @@ void UPlayScene::TileInitilize()
 	x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
 	m_tiles[x][y].get()->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
 	m_tiles[x][y].get()->Initialize();
+
+	x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
+	m_tiles[x][y].get()->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
+	m_tiles[x][y].get()->Initialize();
+
+	x = (int)TILE_ROW_SIZE * 0.8;
+	y = (int)FRandom::GetRandomInRange(0, TILE_COL_SIZE);
+	m_tiles[x][y].get()->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
+	m_tiles[x][y].get()->Initialize();
+
+	x = (int)TILE_ROW_SIZE * 0.8;
+	y = (int)FRandom::GetRandomInRange(0, TILE_COL_SIZE);
+	m_tiles[x][y].get()->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
+	m_tiles[x][y].get()->Initialize();
 }
 
 void UPlayScene::TurnManagerInitilize()

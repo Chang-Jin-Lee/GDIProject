@@ -250,9 +250,9 @@ int ATile::GetTileMoveCost()
 	case ETileType::Hills: 
 		return 2;
 	case ETileType::Mountain: 
-		return 3;
+		return 4;
 	case ETileType::Desert:
-		return 2;
+		return 3;
 	case ETileType::Grassland: 
 		return 1;
 	case ETileType::Capital: 
