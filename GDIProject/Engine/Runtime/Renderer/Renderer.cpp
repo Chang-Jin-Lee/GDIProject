@@ -29,7 +29,7 @@ namespace Renderer
 
 	const Gdiplus::Pen* m_redPen = nullptr;
 	const Gdiplus::Pen* m_BluePen = nullptr;
-
+	const Gdiplus::SolidBrush* m_redBrush = nullptr;
 	void Initialize(HWND hwnd)
 	{
 		g_hWnd = hwnd;
@@ -51,6 +51,7 @@ namespace Renderer
 
 		if (!m_redPen) m_redPen = new Gdiplus::Pen(Color(255, 0, 0), 1.0f);
 		if (!m_BluePen) m_BluePen = new Gdiplus::Pen(Color(0, 0, 255), 1.0f);
+		if (!m_redBrush) m_redBrush = new Gdiplus::SolidBrush(Gdiplus::Color(255, 0, 0));
 	}
 
 	void BeginDraw()
@@ -111,7 +112,7 @@ namespace Renderer
 			}
 			else if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(object))
 			{
-				RenderMesh(actor.get()->SceneComponent, actor.get()->StaticMeshComponent);
+				RenderMesh(actor.get()->SceneComponent, actor.get()->StaticMeshComponent, actor->bSelected);
 			}
 			else if (std::shared_ptr<UWidget> widget = std::dynamic_pointer_cast<UWidget>(object))
 			{
@@ -145,7 +146,7 @@ namespace Renderer
 		}
 	}
 
-	void RenderImage(Gdiplus::Bitmap* pImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size)
+	void RenderImage(Gdiplus::Bitmap* pImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size, const bool& bSelected)
 	{
 		if (position.x < g_mainCamera->GetCameraLocation().x - g_resolution.x * 0.2f ||
 			position.x > g_mainCamera->GetCameraLocation().x + g_resolution.x * 1.2f ||
@@ -163,6 +164,19 @@ namespace Renderer
 
 		//g_pBackBufferGraphics->DrawImage(pImageBitmap, (int)finalPos.x, (int)finalPos.y, (int)size.x, (int)size.y);
 		g_pBackBufferGraphics->DrawImage(pImageBitmap, (int)finalPos.x, (int)finalPos.y, (int)size.x, (int)size.y);
+
+		if (bSelected)
+		{
+			int circleRadius = 12;
+			Gdiplus::Rect ellipseRect(
+				(int)(finalPos.x + (size.x / 2) - circleRadius),
+				(int)(finalPos.y + (size.y / 2) - circleRadius),
+				circleRadius * 2,
+				circleRadius * 2
+			);
+			g_pBackBufferGraphics->FillEllipse(m_redBrush, ellipseRect);
+		}
+
 
 		//if (pImageBitmap && g_pBackBufferGraphics)
 		//{
@@ -199,7 +213,7 @@ namespace Renderer
 		if (g_mainCamera)
 			finalPos = position - g_mainCamera->GetCameraLocation();
 
-		RenderRectRed(finalPos.x, finalPos.y, (int)size.x, (int)size.y);
+		//RenderRectRed(finalPos.x, finalPos.y, (int)size.x, (int)size.y);
 		Gdiplus::RectF rect(finalPos.x, finalPos.y, size.x, size.y);
 		g_pBackBufferGraphics->DrawString(content, (INT)wcslen(content), &font, rect, &stringFormat, &brush);
 
@@ -311,7 +325,7 @@ namespace Renderer
 		const float rotation = character->GetActorRotation();
 		const FVector2 scale = character->GetActorScale();
 		const FVector2 size = FVector2(pImageBitmap->GetWidth(), pImageBitmap->GetHeight());
-		RenderImage(pImageBitmap, position, rotation, scale, size);
+		RenderImage(pImageBitmap, position, rotation, scale, size, character->bSelected);
 	}
 
 	void RenderTextUI(std::shared_ptr<SUITextComponent>& textui, int parentX, int parentY)
@@ -332,14 +346,14 @@ namespace Renderer
 		}
 	}
 
-	void RenderMesh(std::shared_ptr<USceneComponent>& sceneComponent, std::shared_ptr<UStaticMeshComponent>& staticMesh)
+	void RenderMesh(std::shared_ptr<USceneComponent>& sceneComponent, std::shared_ptr<UStaticMeshComponent>& staticMesh, const bool& bSelected)
 	{
 		Gdiplus::Bitmap*&& pImageBitmap = std::move(staticMesh->GetMesh());
 		FVector2 position = sceneComponent->GetSceneComponentLocation();
 		const float rotation = sceneComponent->GetSceneComponentRotation();
 		const FVector2 scale = sceneComponent->GetSceneComponentScale();
 		const FVector2 size = staticMesh->GetMeshSize();
-		RenderImage(pImageBitmap, position, rotation, scale, size);
+		RenderImage(pImageBitmap, position, rotation, scale, size, bSelected);
 	}
 
 	void SetResolution(const float& width, const float& height)

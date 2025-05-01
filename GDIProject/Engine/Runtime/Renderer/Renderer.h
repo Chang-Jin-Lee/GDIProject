@@ -27,14 +27,14 @@ namespace Renderer
 	bool IsGdiValid();
 	std::shared_ptr<ACameraActor> GetMainCamera();
 
-	void RenderImage(Gdiplus::Bitmap* ImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size);
+	void RenderImage(Gdiplus::Bitmap* ImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size, const bool& bSelected);
 	void RenderText(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush);
 	void RenderRectRed(int x, int y, int width, int height);
 	void RenderRectBlue(int x, int y, int width, int height);
 	void RenderRectFill(SolidBrush& brush, FVector2& position, const FVector2& size, int radius = 5);
 	void RenderRectWithRounded(SolidBrush* brush, FVector2& position, const FVector2& size, int radius = 5);
 
-	void RenderMesh(std::shared_ptr<USceneComponent>& sceneComponent, std::shared_ptr<UStaticMeshComponent>& staticMesh);	// 액터 그리기 함수
+	void RenderMesh(std::shared_ptr<USceneComponent>& sceneComponent, std::shared_ptr<UStaticMeshComponent>& staticMesh, const bool& bSelected);	// 액터 그리기 함수
 	void RenderCharacterAnimation(ACharacter::FAnimationBundle& animationBundle, ACharacter* character); 	// 애니메이션을 위한 함수. 
 
 	// UI 관련

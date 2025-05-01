@@ -41,4 +41,5 @@ public:
 	std::shared_ptr<UStaticMeshComponent> StaticMeshComponent;
 	FAABBBox boundBox;
 	std::vector<std::shared_ptr<UWidget>> attachedWidgets;
+	bool bSelected = false;
 };
