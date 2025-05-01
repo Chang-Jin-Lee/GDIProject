@@ -75,6 +75,8 @@ void APlayerCharacter::Initialize()
 	// UI ÃÊ±âÈ­
 	m_nameWidget->m_nameUI->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
 	m_nameWidget->m_nameUI->AttachedUIToActor(this);
+
+	ReadyForNextTurn();
 }
 
 void APlayerCharacter::Update()
@@ -113,6 +115,11 @@ void APlayerCharacter::Update()
 void APlayerCharacter::Release()
 {
 	__super::Release();
+}
+
+void APlayerCharacter::ReadyForNextTurn()
+{
+	ActionRemainCount = ActionMaxCount;
 }
 
 void APlayerCharacter::Input()
@@ -204,20 +211,20 @@ void APlayerCharacter::SetUnitType(EUnitType Type)
 		Health = 50;
 		AttackDamage = 0;
 		MoveRange = 2;
-		ActionCount = 1;
+		ActionMaxCount = 4;
 		break;
 	case EUnitType::Warrior:
 		Health = 100;
 		AttackDamage = 20;
 		MoveRange = 1;
-		ActionCount = 3;
+		ActionMaxCount = 3;
 		break;
 	case EUnitType::Archer:
 		Health = 70;
 		AttackDamage = 15;
 		MoveRange = 1;
 		AttackRange = 2;
-		ActionCount = 4;
+		ActionMaxCount = 4;
 		break;
 	default:
 		break;
@@ -235,20 +242,20 @@ void APlayerCharacter::SetUnitType(int value)
 		Health = 50;
 		AttackDamage = 0;
 		MoveRange = 2;
-		ActionCount = 1;
+		ActionMaxCount = 4;
 		break;
 	case EUnitType::Warrior:
 		Health = 100;
 		AttackDamage = 20;
 		MoveRange = 1;
-		ActionCount = 3;
+		ActionMaxCount = 3;
 		break;
 	case EUnitType::Archer:
 		Health = 70;
 		AttackDamage = 15;
 		MoveRange = 1;
 		AttackRange = 2;
-		ActionCount = 4;
+		ActionMaxCount = 4;
 		break;
 	default:
 		break;

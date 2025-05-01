@@ -23,6 +23,8 @@ public:
 	virtual void Update() override;
 	virtual void Release() override;
 
+	void ReadyForNextTurn();
+
 	void Input();
 
 	void LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, DirState dirState, AnimationState animState, int pixelformat);
@@ -50,7 +52,8 @@ public:
 	int MoveRange = 1;
 	int AttackRange = 1;
 	bool bIsDead = false;
-	int ActionCount = 0;
+	int ActionMaxCount = 0;		// 한 턴에 최대로 이동 가능한 수
+	int ActionRemainCount = 0;	// 현재 남은 이동 횟수
 
 	// Turn 게임에서의 Tile 좌표
 	int row = 0;
