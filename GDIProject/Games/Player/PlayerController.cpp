@@ -59,8 +59,47 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 {
 	if (SelectedUnit)
 	{
-		SelectedUnit->MoveTo(pos);
-		printf("유닛 이동!\n");
+		FVector2 unitIndex = ATile::GetIndexAtPosition(SelectedUnit->GetActorLocation());
+		if (unitIndex.x == -1 || unitIndex.y == -1) return;
+		FVector2 index = ATile::GetIndexAtPosition(pos);
+		FVector2 pos = ATile::GetTilePositionAtIndex((int)index.x, (int)index.y);
+		if (pos.x == -1 || pos.y == -1) return;
+
+		int x = (int)index.x;
+		int y = (int)index.y;
+		std::cout << "이동하려는 위치 x,y : " << x << ' ' << y << '\n';
+
+		int distance = ATile::SearchCost(int(unitIndex.x), int(unitIndex.y), x, y, m_tiles);
+
+		if (distance == -1)
+		{
+			printf("해당 칸으로 이동할 수 없습니다.\n");
+			return;
+		}
+		else
+		{
+			if (distance <= SelectedUnit->ActionRemainCount)
+			{
+				m_tiles[(int)unitIndex.x][(int)unitIndex.y]->unit = nullptr;
+				SelectedUnit->ActionRemainCount -= distance;
+				m_tiles[x][y]->unit = SelectedUnit;
+				SelectedUnit->SetActorLocation(pos);
+				SelectedUnit = nullptr;
+				printf("유닛 이동!\n");
+				for (auto& tiles : m_tiles)
+				{
+					for (auto& tile : tiles)
+					{
+						tile->SetHighlight(false);
+					}
+				}
+			}
+			else
+			{
+				printf("해당 칸으로 이동할 수 없습니다.\n");
+			}
+
+		}
 	}
 }
 
@@ -164,22 +203,66 @@ void APlayerController::HandleInput()
 
 	if (Input::IsKeyPressed(VK_RBUTTON))
 	{
-		SpawnAtPosition(Input::GetMouseWorldPosition(Game::GetGameState()->GetMainCamera()), EUnitType::Warrior);
+		//SpawnAtPosition(Input::GetMouseWorldPosition(Game::GetGameState()->GetMainCamera()), EUnitType::Warrior);
+		if (SelectedUnit)
+		{
+			MoveSelectedUnitTo(Input::GetMouseWorldPosition(Game::GetGameState()->GetMainCamera()));
+		}
 	}
 
 	if (Input::IsKeyPressed(VK_LBUTTON))
 	{
-		std::shared_ptr<APlayerCharacter> ref = GetUnitRefAtPosition(Input::GetMouseWorldPosition(Game::GetGameState()->GetMainCamera()));
-		if (ref)
+		SelectedUnit = GetUnitRefAtPosition(Input::GetMouseWorldPosition(Game::GetGameState()->GetMainCamera()));
+		if (SelectedUnit)
 		{
 			if (std::shared_ptr<UPlayScene> ps = std::dynamic_pointer_cast<UPlayScene>(OwnerScene))
 			{
-				ps->m_PlayScene_Widget->m_selectTileName->m_content = L"캐릭터 이름 : " + ref->GetName();
-				ps->m_PlayScene_Widget->m_selectTileActionCount->m_content = L"남은 행동 수 : " + std::to_wstring(ref->ActionCount);
+				ps->m_PlayScene_Widget->m_selectTileName->m_content = L"캐릭터 이름 : " + SelectedUnit->GetName();
+				ps->m_PlayScene_Widget->m_selectTileActionCount->m_content = L"남은 행동 수 : " + std::to_wstring(SelectedUnit->ActionMaxCount);
+
+				// 미리보기
+				FVector2 unitIndex = ATile::GetIndexAtPosition(SelectedUnit->GetActorLocation());
+				std::vector<std::pair<int, int>> reachable;
+				ATile::GetReachableTiles(int(unitIndex.x), int(unitIndex.y), SelectedUnit->ActionRemainCount, m_tiles, reachable);
+				if (reachable.empty())
+				{
+					printf("해당 칸으로 이동할 수 없습니다.\n");
+					for (auto& tiles : m_tiles)
+					{
+						for (auto& tile : tiles)
+						{
+							tile->SetHighlight(false);
+						}
+					}
+					return;
+				}
+				else
+				{
+					for (auto& tiles : m_tiles)
+					{
+						for (auto& tile : tiles)
+						{
+							tile->SetHighlight(false);
+						}
+					}
+					for (auto& tile : reachable)
+					{
+						int r = tile.first;
+						int c = tile.second;
+						m_tiles[r][c]->SetHighlight(true); // 미리보기 표시
+					}
+				}
 			}
 		}
 		else
 		{
+			for (auto& tiles : m_tiles)
+			{
+				for (auto& tile : tiles)
+				{
+					tile->SetHighlight(false);
+				}
+			}
 			if (std::shared_ptr<UPlayScene> ps = std::dynamic_pointer_cast<UPlayScene>(OwnerScene))
 			{
 				std::shared_ptr<ATile> t = GetTileRefAtPosition(Input::GetMouseWorldPosition(Game::GetGameState()->GetMainCamera()));
