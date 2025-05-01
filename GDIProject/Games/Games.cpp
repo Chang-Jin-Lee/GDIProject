@@ -80,8 +80,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			FVector2 CameraPosition = Game::GetGameState()->GetMainCamera().get()->GetActorLocation();
 			FVector2 index = ATile::GetIndexAtPosition(FVector2(LOWORD(lParam), HIWORD(lParam)) + CameraPosition);
 			FVector2 pos = ATile::GetTilePositionAtIndex(index.x, index.y);
-			std::cout << "index : " << index.x << "  " << index.y << '\n';
-			std::cout << "position : " << pos.x << ' ' << pos.y << '\n';
+			std::cout << "WndProc index : " << index.x << "  " << index.y << '\n';
+			std::cout << "WndProc position : " << pos.x << ' ' << pos.y << '\n';
 		}
 		break;
 	case WM_MOUSEMOVE:
@@ -95,7 +95,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			cameraPos += FVector2(-dif.x, -dif.y);
 			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
 			Game::SetLMouseClickPosition(currentPos);
-			std::cout << "WndProc currentPos : " << currentPos.x << ' ' << currentPos.y << '\n';
+			//std::cout << "WndProc currentPos : " << currentPos.x << ' ' << currentPos.y << '\n';
 		}
 		break;
 	case WM_LBUTTONUP:
@@ -262,7 +262,7 @@ namespace Game
 	void OnWidgetClick(const FVector2& clickPosition)
 	{
 		std::vector<std::unordered_map<std::wstring, std::shared_ptr<UWidget>>>& Widgets = g_currentScene->GetWidgets();
-		for (auto& button : Widgets[static_cast<int>(EUILAYER::BUTTON)])
+		for (auto& button : Widgets[static_cast<int>(EUILAYER::HUD)])
 		{
 			if (button.second->bVisible)
 			{
@@ -287,7 +287,7 @@ namespace Game
 	{
 		std::vector<std::unordered_map<std::wstring, std::shared_ptr<UWidget>>>& Widgets = g_currentScene->GetWidgets();
 		bool bWidgetExist = false;
-		for (auto& button : Widgets[static_cast<int>(EUILAYER::BUTTON)])
+		for (auto& button : Widgets[static_cast<int>(EUILAYER::HUD)])
 		{
 			if (button.second->bVisible)
 			{
@@ -298,6 +298,7 @@ namespace Game
 						clickPosition.y < component.get()->m_Position.y ||
 						clickPosition.y > component.get()->m_Position.y + component.get()->m_Size.y) == false
 						)
+					if(component->m_bVisible == true)
 						bWidgetExist = true;
 				}
 			}

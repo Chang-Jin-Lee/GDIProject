@@ -8,7 +8,7 @@
 UMenuScene::UMenuScene()
 {
 	m_image = NewObject<ABackGroundImage>(TEXT("m_image"));
-	m_MenuSceneWidget = CreateWidget<UMenuscene_StartGuide>(TEXT("m_MenuSceneWidget"), EUILAYER::BUTTON);
+	m_MenuSceneWidget = CreateWidget<UMenuscene_StartGuide>(TEXT("m_MenuSceneWidget"), EUILAYER::HUD);
 
 	m_MenuSceneWidget->m_startGameButton->SetVoidDelegate([this]() { StartGame(); });
 	m_MenuSceneWidget->m_endGameButton->SetVoidDelegate([this]() { EndGame(); });

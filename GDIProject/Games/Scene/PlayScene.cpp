@@ -31,7 +31,7 @@ UPlayScene::UPlayScene()
 	}
 
 	//m_fPlayerCharacter = NewObject<APlayerCharacter>(m_fPlayerCharacter->GetUnitTypeString(), ESCENELAYER::CHARACTER);
-	m_PlayScene_Widget = CreateWidget<UPlayScene_Widget>(TEXT("PlaySceneWidget"), EUILAYER::BUTTON);
+	m_PlayScene_Widget = CreateWidget<UPlayScene_Widget>(TEXT("PlaySceneWidget"), EUILAYER::HUD);
 	//m_PlayScene_Widget->m_spawnSettelerUnitButton->SetVoidDelegate([this]() { SpawnUnit(); });
 	m_PlayScene_Widget->m_spawnSettelerUnitButton->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Settler)); });
 	m_PlayScene_Widget->m_spawnWarriorUnitButton->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Warrior)); });
@@ -41,12 +41,12 @@ UPlayScene::UPlayScene()
 	//m_PlayScene_Widget->m_Button->SetVoidDelegate(UPlayScene::printTest);
 	//m_PlayScene_Widget->m_Button = UPlayScene::printTest;
 
-	m_tiles.assign(TILE_COL_SIZE, std::vector<std::shared_ptr<ATile>>());
-	for (int i = 0; i < TILE_COL_SIZE; i++)
+	m_tiles.assign(TILE_ROW_SIZE, std::vector<std::shared_ptr<ATile>>());
+	for (int i = 0; i < TILE_ROW_SIZE; i++)
 	{
-		for (int j = 0; j < TILE_ROW_SIZE; j++)
+		for (int j = 0; j < TILE_COL_SIZE; j++)
 		{
-			std::wstring str = TEXT("tile") + std::to_wstring(TILE_ROW_SIZE * i + j);
+			std::wstring str = TEXT("tile") + std::to_wstring(TILE_COL_SIZE * i + j);
 			m_tiles[i].push_back(NewObject<ATile>(str, ESCENELAYER::GROUND));
 			m_tiles[i][j].get()->SetName(str);
 		}
@@ -158,9 +158,9 @@ void UPlayScene::UIInitialize()
 
 void UPlayScene::TileInitilize()
 {
-	for (int i = 0; i < TILE_COL_SIZE; i++)
+	for (int i = 0; i < TILE_ROW_SIZE; i++)
 	{
-		for (int j = 0; j < TILE_ROW_SIZE; j++)
+		for (int j = 0; j < TILE_COL_SIZE; j++)
 		{
 			m_tiles[i][j].get()->m_etileType = static_cast<ETileType>((int)FRandom::GetRandomInRange(0, static_cast<int>(ETileType::MAX)));
 			//m_tiles[i][j].get()->m_etileType = ETileType::Plain;

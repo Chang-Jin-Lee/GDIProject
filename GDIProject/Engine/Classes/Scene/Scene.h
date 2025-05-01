@@ -17,6 +17,7 @@ enum class EUILAYER
 {
 	BUTTON,
 	TEXT,
+	HUD,
 	MAX
 };
 

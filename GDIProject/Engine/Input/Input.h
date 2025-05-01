@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include "../Math/Math.h"
+#include "../Classes/Camera/CameraActor.h"
 
 #define VK_A 0x41  // 'A'
 #define VK_B 0x42  // 'B'
@@ -50,6 +51,7 @@ namespace Input
     bool IsKeyPressed(int vKey);
     bool IsKeyReleased(int vKey);
     FVector2 GetMousePosition();
+    FVector2 GetMouseWorldPosition(std::shared_ptr<ACameraActor> camera);
 }
 
 

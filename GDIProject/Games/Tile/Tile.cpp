@@ -59,7 +59,7 @@ void ATile::LoadData()
 
 FVector2 ATile::GetTilePositionAtIndex(int row, int col)
 {
-	if (row < 0 || col < 0 || row >= TILE_ROW_SIZE || col >= TILE_COL_SIZE) return FVector2(0,0);
+	if (row < 0 || col < 0 || row >= TILE_ROW_SIZE || col >= TILE_COL_SIZE) return FVector2(-1, -1);
 	if (row % 2 == 0)
 	{
 		return FVector2(col * initialTileSizeX + initialTileSizeX / 2, row * ((initialTileSizeY * 2) / 3) + (initialTileSizeY / 2));
@@ -72,7 +72,7 @@ FVector2 ATile::GetTilePositionAtIndex(int row, int col)
 
 FVector2 ATile::GetIndexAtPosition(FVector2 position)
 {
-	if (position.x < 0 || position.y < 0) return FVector2(0, 0);
+	if (position.x < 0 || position.y < 0) return FVector2(-1, -1);
 	int row = (int)position.y / (int)((initialTileSizeY * 2) / 3);
 	int col = 0;
 	if (row % 2 == 0)
@@ -83,7 +83,8 @@ FVector2 ATile::GetIndexAtPosition(FVector2 position)
 	{
 		col = ((int)position.x - initialTileSizeX / 2) / initialTileSizeX;
 	}
-	
+	if (row >= TILE_ROW_SIZE || col >= TILE_COL_SIZE) return FVector2(-1, -1);
+
 	return FVector2(row, col);
 }
 
