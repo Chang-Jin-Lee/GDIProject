@@ -25,11 +25,6 @@ UPlayScene::UPlayScene()
 	WorldBound = new FAABBBox(0.0f, 0.0f, Renderer::GetResolution().x, Renderer::GetResolution().y);
 	quadTree = new FQuadTree(0, WorldBound);
 
-	if (g_TurnGameStateInstanceIsValid)
-	{
-		g_TurnGameStateInstance->m_gGameScore = 0;
-	}
-
 	//m_fPlayerCharacter = NewObject<APlayerCharacter>(m_fPlayerCharacter->GetUnitTypeString(), ESCENELAYER::CHARACTER);
 	m_PlayScene_Widget = CreateWidget<UPlayScene_Widget>(TEXT("PlaySceneWidget"), EUILAYER::HUD);
 	//m_PlayScene_Widget->m_spawnSettelerUnitButton->SetVoidDelegate([this]() { SpawnUnit(); });
@@ -124,7 +119,6 @@ void UPlayScene::UpdateInput()
 			FVector2 CameraPosition = Game::GetGameState()->GetMainCamera().get()->GetActorLocation();
 			FVector2 index = ATile::GetIndexAtPosition(MousePosition + CameraPosition);
 			MousePosition = Input::GetMousePosition() + CameraPosition;
-
 			std::cout << "Input::GetMousePosition() : " << MousePosition.x << ' ' << MousePosition.y << '\n';
 			std::cout << "Input::GetMousePosition() index : " << index.x << "  " << index.y << '\n';
 		}
@@ -162,10 +156,8 @@ void UPlayScene::TileInitilize()
 	{
 		for (int j = 0; j < TILE_COL_SIZE; j++)
 		{
-			m_tiles[i][j].get()->m_etileType = static_cast<ETileType>((int)FRandom::GetRandomInRange(0, static_cast<int>(ETileType::MAX)));
+			m_tiles[i][j].get()->m_etileType = static_cast<ETileType>((int)FRandom::GetRandomInRange(0, static_cast<int>(ETileType::Capital)));
 			//m_tiles[i][j].get()->m_etileType = ETileType::Plain;
-			m_tiles[i][j].get()->Initialize();
-			FVector2 size = m_tiles[i][j].get()->GetActorSize();
 			if (i % 2 == 0)
 			{
 				m_tiles[i][j].get()->SetActorLocation(j * m_tiles[i][j].get()->InitialTileSize.x, -i * m_tiles[i][j].get()->InitialTileSize.y / 3 + i * m_tiles[i][j].get()->InitialTileSize.y);
@@ -174,8 +166,18 @@ void UPlayScene::TileInitilize()
 			{
 				m_tiles[i][j].get()->SetActorLocation(m_tiles[i][j].get()->InitialTileSize.x * 0.5f + j * m_tiles[i][j].get()->InitialTileSize.x, -i * m_tiles[i][j].get()->InitialTileSize.y / 3 + i * m_tiles[i][j].get()->InitialTileSize.y);
 			}
+			m_tiles[i][j].get()->Initialize();
 		}
 	}
+
+	int x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
+	int y = (int)TILE_COL_SIZE * 0.8;
+	m_tiles[x][y].get()->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
+	m_tiles[x][y].get()->Initialize();
+
+	x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
+	m_tiles[x][y].get()->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
+	m_tiles[x][y].get()->Initialize();
 }
 
 void UPlayScene::TurnManagerInitilize()
@@ -191,6 +193,7 @@ void UPlayScene::TurnManagerInitilize()
 		g_TurnGameStateInstance->m_iTurnCount = 0;
 		g_TurnGameStateInstance->m_iTurnMax = m_iMaxTurn;
 		g_TurnGameStateInstance->m_bPlayerWin = false;
+		g_TurnGameStateInstance->m_gGameScore = 0;
 	}
 }
 
@@ -270,15 +273,17 @@ void UPlayScene::NextTurn()
 	if (TurnMgr->GetCurrentTurn() == ETurnState::PlayerTurn)
 	{
 		printf("nextTurn! ");
-		if (CheckUnitActionCount() == false)
-		{
-			return;
-		}
+		//if (CheckUnitActionCount() == false)
+		//{
+		//	return;
+		//}
 		CheckVictoryConditions();
 		if (g_TurnGameStateInstanceIsValid)
 		{
+			g_TurnGameStateInstance->m_iTurnCount++;
 			m_PlayScene_Widget->m_remainTurnui->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
 		}
+
 		m_PlayScene_Widget->m_popupRectangle->m_brush->SetColor(Gdiplus::Color(10, 10, 222));
 		PopUpUI(L"다음 턴으로 넘어갑니다.");
 		ReadyForNextStage();
@@ -309,7 +314,7 @@ bool UPlayScene::CheckUnitActionCount()
 {
 	for (const auto& ch : TurnMgr->GetPlayer()->Units)
 	{
-		if (ch->ActionCount > 0)
+		if (ch->ActionMaxCount > 0)
 		{
 			m_PlayScene_Widget->m_popupRectangle->m_brush->SetColor(Gdiplus::Color(222, 10, 10));
 			PopUpUI(L"행동 수가 남아있습니다.");
@@ -321,57 +326,81 @@ bool UPlayScene::CheckUnitActionCount()
 
 void UPlayScene::CheckVictoryConditions()
 {
-	if (g_TurnGameStateInstanceIsValid)
+	bool bVictory = true;
+	for (const auto& ch : TurnMgr->GetPlayer()->Units)
 	{
-		g_TurnGameStateInstance->m_iTurnCount++;
-
-		// 1. 턴 수 제한
+		FVector2 Index = ATile::GetIndexAtPosition(ch->GetActorLocation());
+		int y = (int)Index.y;
+		int x = (int)Index.x;
+		if (m_tiles[x][y]->m_etileType != ETileType::Capital)
+		{
+			bVictory = false;
+		}
+		ch->ReadyForNextTurn();
+	}
+	if (bVictory)
+	{
+		UScene::ChangeScene<UWinScene>(Game::GetNextScenePtr());
+	}
+	else
+	{
 		if (g_TurnGameStateInstance->m_iTurnCount >= g_TurnGameStateInstance->m_iTurnMax)
 		{
-			printf("턴 제한 도달! 승패 자동 판정!\n");
-			g_TurnGameStateInstance->m_bGameOver = true;
-			// 점수 높은 쪽 승리 처리 가능
-			if (g_TurnGameStateInstance->m_bPlayerWin)
-			{
-				Game::SetMouseDragState(false);
-				UScene::ChangeScene<UWinScene>(Game::GetNextScenePtr());
-			}
-			else
-			{
-				Game::SetMouseDragState(false);
-				UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
-			}
-			return;
-		}
-
-		// 2. AI 모두 도시 없음 → 플레이어 승리
-		bool bAllAIKilled = true;
-		for (auto& ai : TurnMgr->GetAIPlayers())
-		{
-			if (!ai->Cities.empty())
-			{
-				bAllAIKilled = false;
-				break;
-			}
-		}
-
-		if (bAllAIKilled)
-		{
-			printf("🎉 플레이어 승리!\n");
-			g_TurnGameStateInstance->m_bGameOver = true;
-			g_TurnGameStateInstance->m_bPlayerWin = true;
-			return;
-		}
-
-		// 3. 플레이어 도시 모두 파괴 → 플레이어 패배
-		if (TurnMgr->GetPlayer()->Cities.empty())
-		{
-			printf("💀 플레이어 패배!\n");
-			g_TurnGameStateInstance->m_bGameOver = true;
-			g_TurnGameStateInstance->m_bPlayerWin = false;
-			return;
+			UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
 		}
 	}
+
+	//if (g_TurnGameStateInstanceIsValid)
+	//{
+	//	g_TurnGameStateInstance->m_iTurnCount++;
+
+	//	// 1. 턴 수 제한
+	//	if (g_TurnGameStateInstance->m_iTurnCount >= g_TurnGameStateInstance->m_iTurnMax)
+	//	{
+	//		printf("턴 제한 도달! 승패 자동 판정!\n");
+	//		g_TurnGameStateInstance->m_bGameOver = true;
+	//		// 점수 높은 쪽 승리 처리 가능
+	//		if (g_TurnGameStateInstance->m_bPlayerWin)
+	//		{
+	//			Game::SetMouseDragState(false);
+	//			UScene::ChangeScene<UWinScene>(Game::GetNextScenePtr());
+	//		}
+	//		else
+	//		{
+	//			Game::SetMouseDragState(false);
+	//			UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
+	//		}
+	//		return;
+	//	}
+
+	//	// 2. AI 모두 도시 없음 → 플레이어 승리
+	//	bool bAllAIKilled = true;
+	//	for (auto& ai : TurnMgr->GetAIPlayers())
+	//	{
+	//		if (!ai->Cities.empty())
+	//		{
+	//			bAllAIKilled = false;
+	//			break;
+	//		}
+	//	}
+
+	//	if (bAllAIKilled)
+	//	{
+	//		printf("🎉 플레이어 승리!\n");
+	//		g_TurnGameStateInstance->m_bGameOver = true;
+	//		g_TurnGameStateInstance->m_bPlayerWin = true;
+	//		return;
+	//	}
+
+	//	// 3. 플레이어 도시 모두 파괴 → 플레이어 패배
+	//	if (TurnMgr->GetPlayer()->Cities.empty())
+	//	{
+	//		printf("💀 플레이어 패배!\n");
+	//		g_TurnGameStateInstance->m_bGameOver = true;
+	//		g_TurnGameStateInstance->m_bPlayerWin = false;
+	//		return;
+	//	}
+	//}
 }
 
 void UPlayScene::PopUpUI(const std::wstring& str)
@@ -384,5 +413,8 @@ void UPlayScene::PopUpUI(const std::wstring& str)
 
 void UPlayScene::ReadyForNextStage()
 {
-
+	for (const auto& ch : TurnMgr->GetPlayer()->Units)
+	{
+		ch->ReadyForNextTurn();
+	}
 }

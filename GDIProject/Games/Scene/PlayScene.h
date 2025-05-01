@@ -12,8 +12,8 @@
 #include "../Manager/TurnManager.h"
 
 
-#define TILE_ROW_SIZE 20
-#define TILE_COL_SIZE 30
+#define TILE_ROW_SIZE 10
+#define TILE_COL_SIZE 15
 
 using FQuadTree = TQuadTree<std::shared_ptr<UObject>, 4>;
 class SUITextComponent;
