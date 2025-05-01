@@ -1,6 +1,7 @@
 #include "EndScene_ScoreGuide.h"
 #include <Runtime/Renderer/Renderer.h>
 #include "../Games.h"
+#include "../Player/TurnGameState.h"
 
 UEndScene_Widget::UEndScene_Widget()
 {
@@ -24,27 +25,6 @@ void UEndScene_Widget::Initialize()
 {
 	__super::Initialize();
 
-	m_scoreui->Initialize
-	(
-		L"",
-		18,
-		(wchar_t*)L"Verdana",
-		Gdiplus::Color(255, 255, 255),
-		FVector2(int(Renderer::GetResolution().x * 0.4), int(Renderer::GetResolution().y * 0.5)),
-		FVector2(60, 30)
-	);
-	m_scoreui->m_content = _wcsdup(std::to_wstring(10.0f).c_str());
-
-	m_scoreGuideui->Initialize
-	(
-		L"최종 점수 : ",
-		24,
-		(wchar_t*)L"Verdana",
-		Gdiplus::Color(255, 255, 255),
-		FVector2(int(Renderer::GetResolution().x * 0.2), int(Renderer::GetResolution().y * 0.5)),
-		FVector2(250, 50)
-	);
-
 	int x = int(Renderer::GetResolution().x * 0.2);
 	int y = int(Renderer::GetResolution().y * 0.6);
 	int width = 120;
@@ -61,6 +41,42 @@ void UEndScene_Widget::Initialize()
 		FVector2(width, height)
 	);
 	m_startGameButtonText->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
+
+	x = int(Renderer::GetResolution().x * 0.4);
+	y = int(Renderer::GetResolution().y * 0.6);
+	width = 250;
+	height = 50;
+
+	m_scoreGuideui->Initialize
+	(
+		L"턴 수 : ",
+		24,
+		(wchar_t*)L"Verdana",
+		Gdiplus::Color(255, 255, 255),
+		FVector2(x, y),
+		FVector2(width, height)
+	);
+
+	x = int(Renderer::GetResolution().x * 0.65);
+	y = int(Renderer::GetResolution().y * 0.6);
+	width = 60;
+	height = 50;
+	std::wstring content = L"";
+	if (g_TurnGameStateInstanceIsValid)
+	{
+		content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
+	}
+
+	m_scoreui->Initialize
+	(
+		content,
+		18,
+		(wchar_t*)L"Verdana",
+		Gdiplus::Color(255, 255, 255),
+		FVector2(x, y),
+		FVector2(width, height)
+	);
+	m_scoreui->m_content = _wcsdup(std::to_wstring(10.0f).c_str());
 }
 
 void UEndScene_Widget::Update()

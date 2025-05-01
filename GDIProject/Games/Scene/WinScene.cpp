@@ -12,7 +12,7 @@
 UWinScene::UWinScene()
 {
 	m_image = NewObject<ABackGroundImage>(TEXT("m_image"));
-	m_Widget = CreateWidget<UEndScene_Widget>(TEXT("scoreGuide"), EUILAYER::BUTTON);
+	m_Widget = CreateWidget<UEndScene_Widget>(TEXT("scoreGuide"), EUILAYER::HUD);
 
 	m_Widget->m_startGameButton->SetVoidDelegate([this]() { StartGame(); });
 }
@@ -57,8 +57,8 @@ void UWinScene::UIInitialize()
 	m_Widget->Initialize();
 	if (g_TurnGameStateInstanceIsValid)
 	{
-		m_Widget->m_scoreui->m_content = std::to_wstring(g_TurnGameStateInstance->m_gGameScore);
-		std::cout << g_TurnGameStateInstance->m_gGameScore << '\n';
+		m_Widget->m_scoreui->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
+		std::cout << g_TurnGameStateInstance->m_iTurnCount << '\n';
 	}
 }
 

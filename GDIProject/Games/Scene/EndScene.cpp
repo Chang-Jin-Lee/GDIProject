@@ -55,11 +55,11 @@ void UEndScene::DeleteNullObjects()
 void UEndScene::UIInitialize()
 {
 	m_Widget->Initialize();
-	TurnGameState* g = dynamic_cast<TurnGameState*>(Game::GetGameState());
-	if (g)
+	
+	if (g_TurnGameStateInstanceIsValid)
 	{
-		m_Widget->m_scoreui->m_content = std::to_wstring(g->m_gGameScore);
-		std::cout << g->m_gGameScore << '\n';
+		m_Widget->m_scoreui->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
+		std::cout << g_TurnGameStateInstance->m_iTurnCount << '\n';
 	}
 }
 

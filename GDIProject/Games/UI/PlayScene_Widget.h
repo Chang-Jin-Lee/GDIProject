@@ -15,7 +15,7 @@ public:
 
 	bool m_bPopUpText = false;
 	double m_currentTime = 0;
-	double m_PopUpTextDelay = 2.0;
+	double m_PopUpTextDelay = 1.3;
 
 public:
 	std::shared_ptr<SUITextComponent> m_remainTurnGuideui;
