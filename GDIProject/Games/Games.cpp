@@ -102,7 +102,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		Game::SetMouseDragState(false);
 		ReleaseCapture(); // 마우스 캡처 해제
 		break;
-
 	case WM_RBUTTONDOWN:
 		Game::SetRMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam))); // 마우스 왼쪽 버튼 더블 클릭
 		break;
@@ -244,8 +243,8 @@ namespace Game
 			printf("%f\n", 1 / Time::GetElapsedTime());
 			m_FPSPerformancetime = Time::GetTotalTime();
 		}
-		Renderer::RenderRectRed(int(m_LMouseCickPosition.x - 10), int(m_LMouseCickPosition.y - 10), 20, 20);
-		Renderer::RenderRectBlue(int(m_RMouseCickPosition.x - 10), int(m_RMouseCickPosition.y - 10), 20, 20);
+		//Renderer::RenderRectRed(int(m_LMouseCickPosition.x - 10), int(m_LMouseCickPosition.y - 10), 20, 20);
+		//Renderer::RenderRectBlue(int(m_RMouseCickPosition.x - 10), int(m_RMouseCickPosition.y - 10), 20, 20);
 
 		// Renderer::EndDraw
 		Renderer::EndDraw();
@@ -335,6 +334,8 @@ namespace Game
 	{
 		if (g_currentScene != g_nextScene)
 		{
+			Game::SetMouseDragState(false);
+			ReleaseCapture();
 			g_currentScene->Release();
 			g_currentScene.reset();
 			g_currentScene = g_nextScene;
