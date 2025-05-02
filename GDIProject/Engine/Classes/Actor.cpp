@@ -12,6 +12,14 @@ AActor::AActor()
 
 AActor::~AActor()
 {
+	if (SceneComponent)
+	{
+		SceneComponent->Release();
+	}
+	if (StaticMeshComponent)
+	{
+		StaticMeshComponent->Release();
+	}
 	SceneComponent.reset();
 	StaticMeshComponent.reset();
 }
@@ -43,6 +51,16 @@ void AActor::Update()
 void AActor::Release()
 {
 	__super::Release();
+	if (SceneComponent)
+	{
+		SceneComponent->Release();
+	}
+	if (StaticMeshComponent)
+	{
+		StaticMeshComponent->Release();
+	}
+	SceneComponent.reset();
+	StaticMeshComponent.reset();
 }
 
 void AActor::LoadData()

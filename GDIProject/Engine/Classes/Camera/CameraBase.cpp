@@ -23,5 +23,6 @@ void UCamaraBase::Update()
 void UCamaraBase::Release()
 {
 	__super::Release();
+	SceneComponent.reset();
 }
 

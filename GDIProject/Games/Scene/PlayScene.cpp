@@ -19,22 +19,12 @@ UPlayScene::UPlayScene()
 	{
 		objectMap.clear();
 	}
-
-	//m_fPlayerCharacter.reset();
-	//m_fPlayerCharacter = nullptr;
-	WorldBound = new FAABBBox(0.0f, 0.0f, Renderer::GetResolution().x, Renderer::GetResolution().y);
-	quadTree = new FQuadTree(0, WorldBound);
-
-	//m_fPlayerCharacter = NewObject<APlayerCharacter>(m_fPlayerCharacter->GetUnitTypeString(), ESCENELAYER::CHARACTER);
 	m_PlayScene_Widget = CreateWidget<UPlayScene_Widget>(TEXT("PlaySceneWidget"), EUILAYER::HUD);
-	//m_PlayScene_Widget->m_spawnSettelerUnitButton->SetVoidDelegate([this]() { SpawnUnit(); });
 	m_PlayScene_Widget->m_spawnSettelerUnitButton->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Settler)); });
 	m_PlayScene_Widget->m_spawnWarriorUnitButton->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Warrior)); });
 	m_PlayScene_Widget->m_spawnArcherUnitButton->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Archer)); });
 	m_PlayScene_Widget->m_endGameButton->SetVoidDelegate([this]() { GoNextScene(); });
 	m_PlayScene_Widget->m_nextStageButton->SetVoidDelegate([this]() { NextTurn(); });
-	//m_PlayScene_Widget->m_Button->SetVoidDelegate(UPlayScene::printTest);
-	//m_PlayScene_Widget->m_Button = UPlayScene::printTest;
 
 	m_tiles.assign(TILE_ROW_SIZE, std::vector<std::shared_ptr<ATile>>());
 	for (int i = 0; i < TILE_ROW_SIZE; i++)
@@ -54,28 +44,28 @@ UPlayScene::~UPlayScene()
 	{
 		for (auto object : objectMap)
 		{
-			if (std::shared_ptr<UObject> _objet = std::dynamic_pointer_cast<UObject>(object.second)) _objet.reset();
+			if (std::shared_ptr<UObject> _objet = std::dynamic_pointer_cast<UObject>(object.second))
+			{
+				_objet.reset();
+			}
 		}
 	}
 	m_objects.clear();
-	if (m_fPlayerCharacter.get() != nullptr)
-		m_fPlayerCharacter.reset();
-	delete WorldBound;
-	delete quadTree;
 	m_PlayScene_Widget.reset();
-	for (int i = 0; i < TILE_COL_SIZE; i++)
+	for (int i = 0; i < TILE_ROW_SIZE; i++)
 	{
-		for (int j = 0; j < TILE_ROW_SIZE; j++)
+		for (int j = 0; j < TILE_COL_SIZE; j++)
 		{
 			m_tiles[i][j].reset();
 		}
 	}
+	TurnMgr.reset();
+
+	m_objects.clear();
 }
 
 void UPlayScene::Initialize()
 {
-	CharactersInitialize();
-	TimeInitialize();
 	TileInitilize();
 	TurnManagerInitilize();
 	UIInitialize();
@@ -84,8 +74,7 @@ void UPlayScene::Initialize()
 void UPlayScene::Update()
 {
 	__super::Update();
-	UpdateCollisionDetection();
-	UpdateTime();
+	//UpdateCollisionDetection();
 	UpdateUI();
 	UpdateInput();
 }
@@ -97,7 +86,33 @@ void UPlayScene::LoadData()
 
 void UPlayScene::Release()
 {
+	for (auto objectMap : m_objects)
+	{
+		for (auto object : objectMap)
+		{
+			if (std::shared_ptr<UObject> _objet = std::dynamic_pointer_cast<UObject>(object.second))
+			{
+				std::cout << "_objet : " << _objet.use_count() << '\n';
+				_objet.reset();
+			}
+		}
+	}
 	m_objects.clear();
+	m_PlayScene_Widget.reset();
+	for (int i = 0; i < TILE_ROW_SIZE; i++)
+	{
+		for (int j = 0; j < TILE_COL_SIZE; j++)
+		{
+			std::cout << "m_tiles" << i << ' ' << j << " : " << m_tiles[i][j].use_count() << '\n';
+			while (m_tiles[i][j].use_count() > 0)
+			{
+				m_tiles[i][j].reset();
+			}
+			m_tiles[i][j].reset();
+		}
+	}
+	std::cout << "TurnMgr : " << TurnMgr.use_count() << '\n';
+	TurnMgr.reset();
 }
 
 void UPlayScene::DeleteNullObjects()
@@ -119,30 +134,8 @@ void UPlayScene::UpdateInput()
 			FVector2 CameraPosition = Game::GetGameState()->GetMainCamera().get()->GetActorLocation();
 			FVector2 index = ATile::GetIndexAtPosition(MousePosition + CameraPosition);
 			MousePosition = Input::GetMousePosition() + CameraPosition;
-			std::cout << "Input::GetMousePosition() : " << MousePosition.x << ' ' << MousePosition.y << '\n';
-			std::cout << "Input::GetMousePosition() index : " << index.x << "  " << index.y << '\n';
 		}
 	}
-}
-
-void UPlayScene::TimeInitialize()
-{
-	m_fFPSLastTime = Time::GetTotalTime();
-	m_fcountOneSecond = Time::GetTotalTime();
-}
-
-void UPlayScene::CharactersInitialize()
-{
-	//m_fPlayerCharacter->SetName(PlayerName.c_str());
-	//m_fPlayerCharacter->Initialize();
-
-	//for (int i = 0; i < m_enemyMaxSize; i++)
-	//{
-	//	std::wstring str = EnemyName + std::to_wstring(i);
-	//	m_fEnemyCharacter = NewObject<AEnemyCharacter>(str, ESCENELAYER::CHARACTER);
-	//	m_fEnemyCharacter->SetName(str);
-	//	m_fEnemyCharacter->Initialize();
-	//}
 }
 
 void UPlayScene::UIInitialize()
@@ -157,7 +150,6 @@ void UPlayScene::TileInitilize()
 		for (int j = 0; j < TILE_COL_SIZE; j++)
 		{
 			m_tiles[i][j].get()->m_etileType = static_cast<ETileType>((int)FRandom::GetRandomInRange(0, static_cast<int>(ETileType::Capital)));
-			//m_tiles[i][j].get()->m_etileType = ETileType::Plain;
 			if (i % 2 == 0)
 			{
 				m_tiles[i][j].get()->SetActorLocation(j * m_tiles[i][j].get()->InitialTileSize.x, -i * m_tiles[i][j].get()->InitialTileSize.y / 3 + i * m_tiles[i][j].get()->InitialTileSize.y);
@@ -196,7 +188,6 @@ void UPlayScene::TileInitilize()
 
 void UPlayScene::TurnManagerInitilize()
 {
-	//TurnMgr = std::make_shared<TurnManager>();
 	TurnMgr = NewObject<TurnManager>(TEXT("TurnMgr"));
 	TurnMgr->OwnerScene = shared_from_this();
 	TurnMgr->m_tiles = m_tiles;
@@ -213,61 +204,47 @@ void UPlayScene::TurnManagerInitilize()
 
 void UPlayScene::UpdateCollisionDetection()
 {
-	quadTree->Clear();
-	for (const auto& objectMap : m_objects)
-	{
-		for (const auto& objectPair : objectMap)
-		{
-			if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(objectPair.second))
-			{
-				quadTree->Insert(actor, *actor->GetBoundBox());
-			}
-		}
-	}
-
-	for (auto& objectMap : m_objects)
-	{
-		for (auto& objectPair : objectMap)
-		{
-			std::shared_ptr<UObject> object = objectPair.second;
-			// only collision detect Player to Enemy
-			if (std::shared_ptr<APlayerCharacter> actor = std::dynamic_pointer_cast<APlayerCharacter>(object))
-			{
-				FAABBBox boundA = *actor->GetBoundBox();
-				std::vector<std::shared_ptr<UObject>> TargetObject;
-				quadTree->GetElements(boundA, TargetObject);
-				if (boundA.IsValid() == false) continue;
-				for (auto& tother : TargetObject)
-				{
-					if (std::shared_ptr<AEnemyCharacter> other = std::dynamic_pointer_cast<AEnemyCharacter>(tother))
-					{
-						FAABBBox boundB = *other->GetBoundBox();
-						if (boundB.IsValid() == false) continue;
-						if (Experiment::FCollisionDetector::AABBCollisionCheck(boundA, boundB))
-						{
-							// 원소 지우기
-							std::wstring dd = other->GetName();
-							objectMap.erase(other->GetName());
-							//m_objects[other.get()->]
-							//tother.reset();
-							//m_objects[other->RenderLayer].erase(other->GetName());
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-void UPlayScene::UpdateTime()
-{
-	// 10초 뒤에 씬 전환
-	m_fFPSLastTime = Time::GetTotalTime() - m_fcountOneSecond;
-	if (m_fFPSLastTime >= m_fFPSTime)	// 10 초 지나면 넘어감.
-	{
-		//UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
-		m_fcountOneSecond = Time::GetTotalTime();
-	}
+	//quadTree->Clear();
+	//for (const auto& objectMap : m_objects)
+	//{
+	//	for (const auto& objectPair : objectMap)
+	//	{
+	//		if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(objectPair.second))
+	//		{
+	//			quadTree->Insert(actor, *actor->GetBoundBox());
+	//		}
+	//	}
+	//}
+	//
+	//for (auto& objectMap : m_objects)
+	//{
+	//	for (auto& objectPair : objectMap)
+	//	{
+	//		std::shared_ptr<UObject> object = objectPair.second;
+	//		// only collision detect Player to Enemy
+	//		if (std::shared_ptr<APlayerCharacter> actor = std::dynamic_pointer_cast<APlayerCharacter>(object))
+	//		{
+	//			FAABBBox boundA = *actor->GetBoundBox();
+	//			std::vector<std::shared_ptr<UObject>> TargetObject;
+	//			quadTree->GetElements(boundA, TargetObject);
+	//			if (boundA.IsValid() == false) continue;
+	//			for (auto& tother : TargetObject)
+	//			{
+	//				if (std::shared_ptr<AEnemyCharacter> other = std::dynamic_pointer_cast<AEnemyCharacter>(tother))
+	//				{
+	//					FAABBBox boundB = *other->GetBoundBox();
+	//					if (boundB.IsValid() == false) continue;
+	//					if (Experiment::FCollisionDetector::AABBCollisionCheck(boundA, boundB))
+	//					{
+	//						// 원소 지우기
+	//						std::wstring dd = other->GetName();
+	//						objectMap.erase(other->GetName());
+	//					}
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 void UPlayScene::UpdateUI()
@@ -286,11 +263,6 @@ void UPlayScene::NextTurn()
 {
 	if (TurnMgr->GetCurrentTurn() == ETurnState::PlayerTurn)
 	{
-		printf("nextTurn! ");
-		//if (CheckUnitActionCount() == false)
-		//{
-		//	return;
-		//}
 		CheckVictoryConditions();
 
 		if (g_TurnGameStateInstanceIsValid)
@@ -307,16 +279,7 @@ void UPlayScene::NextTurn()
 
 void UPlayScene::SpawnUnit(int type)
 {
-	std::cout << MousePosition.x << ' ' << MousePosition.y << " Spawend! " << '\n';
 	TurnMgr->GetPlayer()->SpawnAtPosition(MousePosition, static_cast<EUnitType>(type));
-	//m_fPlayerCharacter = NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
-	//m_fPlayerCharacter->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
-	//m_fPlayerCharacter->SetUnitType(type);
-	//m_fPlayerCharacter->Initialize();
-	//if (g_TurnGameStateInstanceIsValid)
-	//{
-	//	m_fPlayerCharacter->SetActorLocation(g_TurnGameStateInstance->GetMainCamera().get()->GetActorLocation() + Renderer::GetResolution() / 2);
-	//}
 }
 
 void UPlayScene::GoNextScene()
@@ -364,58 +327,6 @@ void UPlayScene::CheckVictoryConditions()
 			UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
 		}
 	}
-
-	//if (g_TurnGameStateInstanceIsValid)
-	//{
-	//	g_TurnGameStateInstance->m_iTurnCount++;
-
-	//	// 1. 턴 수 제한
-	//	if (g_TurnGameStateInstance->m_iTurnCount >= g_TurnGameStateInstance->m_iTurnMax)
-	//	{
-	//		printf("턴 제한 도달! 승패 자동 판정!\n");
-	//		g_TurnGameStateInstance->m_bGameOver = true;
-	//		// 점수 높은 쪽 승리 처리 가능
-	//		if (g_TurnGameStateInstance->m_bPlayerWin)
-	//		{
-	//			Game::SetMouseDragState(false);
-	//			UScene::ChangeScene<UWinScene>(Game::GetNextScenePtr());
-	//		}
-	//		else
-	//		{
-	//			Game::SetMouseDragState(false);
-	//			UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
-	//		}
-	//		return;
-	//	}
-
-	//	// 2. AI 모두 도시 없음 → 플레이어 승리
-	//	bool bAllAIKilled = true;
-	//	for (auto& ai : TurnMgr->GetAIPlayers())
-	//	{
-	//		if (!ai->Cities.empty())
-	//		{
-	//			bAllAIKilled = false;
-	//			break;
-	//		}
-	//	}
-
-	//	if (bAllAIKilled)
-	//	{
-	//		printf("🎉 플레이어 승리!\n");
-	//		g_TurnGameStateInstance->m_bGameOver = true;
-	//		g_TurnGameStateInstance->m_bPlayerWin = true;
-	//		return;
-	//	}
-
-	//	// 3. 플레이어 도시 모두 파괴 → 플레이어 패배
-	//	if (TurnMgr->GetPlayer()->Cities.empty())
-	//	{
-	//		printf("💀 플레이어 패배!\n");
-	//		g_TurnGameStateInstance->m_bGameOver = true;
-	//		g_TurnGameStateInstance->m_bPlayerWin = false;
-	//		return;
-	//	}
-	//}
 }
 
 void UPlayScene::PopUpUI(const std::wstring& str)

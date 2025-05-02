@@ -1,11 +1,12 @@
 #pragma once
 #include "ObjectBase.h"
+#include <iostream>
 
 class UObject : public UObjectBase
 {
 public:
 	UObject();
-	virtual ~UObject() {}
+	virtual ~UObject();
 	virtual void Initialize();
 	virtual void Update();
 	virtual void Release();
@@ -33,7 +34,12 @@ public:
 	{
 		for (auto& m_component : m_components)
 		{
-			m_component.second.reset();
+			std::cout << "이전 m_component.second.use_count() : " << m_component.second.use_count() << '\n';
+			while (m_component.second.use_count() > 0)
+			{
+				m_component.second.reset();
+			}
+			std::cout << "이후 m_component.second.use_count() : " << m_component.second.use_count() << '\n';
 		}
 		m_components.clear();
 	}

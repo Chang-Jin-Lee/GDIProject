@@ -47,6 +47,27 @@ UPlayScene_Widget::UPlayScene_Widget()
 
 UPlayScene_Widget::~UPlayScene_Widget()
 {
+	m_remainTurnGuideui.reset();
+	m_remainTurnui.reset();
+
+	m_spawnSettelerUnitButton.reset();
+	m_spawnSettelerUnitButtonText.reset();
+	m_spawnWarriorUnitButton.reset();
+	m_spawnWarriorUnitButtonText.reset();
+	m_spawnArcherUnitButton.reset();
+	m_spawnArcherUnitButtonText.reset();
+	m_nextStageButton.reset();
+	m_nextStageButtonText.reset();
+
+	m_endGameButton.reset();
+	m_endGameButtonText.reset();
+
+	m_popupRectangle.reset();
+	m_popupText.reset();
+
+	m_selectTileInfomationRectangle.reset();
+	m_selectTileName.reset();
+	m_selectTileActionCount.reset();
 }
 
 void UPlayScene_Widget::Initialize()
@@ -227,4 +248,26 @@ void UPlayScene_Widget::Update()
 void UPlayScene_Widget::Release()
 {
 	__super::Release();
+
+	m_remainTurnGuideui.reset();
+	m_remainTurnui.reset();
+
+	m_spawnSettelerUnitButton.reset();
+	m_spawnSettelerUnitButtonText.reset();
+	m_spawnWarriorUnitButton.reset();
+	m_spawnWarriorUnitButtonText.reset();
+	m_spawnArcherUnitButton.reset();
+	m_spawnArcherUnitButtonText.reset();
+	m_nextStageButton.reset();
+	m_nextStageButtonText.reset();
+
+	m_endGameButton.reset();
+	m_endGameButtonText.reset();
+
+	m_popupRectangle.reset();
+	m_popupText.reset();
+
+	m_selectTileInfomationRectangle.reset();
+	m_selectTileName.reset();
+	m_selectTileActionCount.reset();
 }

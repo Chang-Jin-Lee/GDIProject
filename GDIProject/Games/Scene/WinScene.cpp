@@ -58,7 +58,6 @@ void UWinScene::UIInitialize()
 	if (g_TurnGameStateInstanceIsValid)
 	{
 		m_Widget->m_scoreui->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
-		std::cout << g_TurnGameStateInstance->m_iTurnCount << '\n';
 	}
 }
 
@@ -72,6 +71,5 @@ void UWinScene::UpdateInput()
 
 void UWinScene::StartGame()
 {
-	printf("Go UMenuScene");
 	UScene::ChangeScene<UMenuScene>(Game::GetNextScenePtr());
 }

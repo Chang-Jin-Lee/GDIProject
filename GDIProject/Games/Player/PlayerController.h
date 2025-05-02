@@ -15,13 +15,9 @@ public:
     ~APlayerController();
 
     void Initialize();
-    void UpdateTurn(); // 매 턴마다 호출
-
-
     void HandleInput(); // 사용자의 입력 받아 처리
-    void SelectUnitAtPosition(const FVector2& pos);
     void MoveSelectedUnitTo(const FVector2& pos);
-    void BuildCityWithSelectedSettler();
+    void Release();
 
     void SpawnAtIndex(int row, int col);
     void SpawnAtPosition(FVector2 position, EUnitType unitType = EUnitType::Warrior);

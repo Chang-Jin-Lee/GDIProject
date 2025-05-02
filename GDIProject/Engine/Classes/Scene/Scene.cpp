@@ -90,7 +90,37 @@ void UScene::LoadData()
 
 void UScene::Release()
 {
+	for (auto& m_object : m_objects)
+	{
+		for (auto& object : m_object)
+		{
+			std::cout << "이전 m_component.second.use_count() : " << object.second.use_count() << '\n';
+			while (object.second.use_count() > 0)
+			{
+				object.second.reset();
+			}
+			std::cout << "이전 m_component.second.use_count() : " << object.second.use_count() << '\n';
+			//object.second.reset();
+		}
+		m_object.clear();
+	}
+	m_objects.clear();
 
+	for (auto& m_widget : m_widgets)
+	{
+		for (auto& widget : m_widget)
+		{
+			std::cout << "이전 m_component.second.use_count() : " << widget.second.use_count() << '\n';
+			while (widget.second.use_count() > 0)
+			{
+				widget.second.reset();
+			}
+			std::cout << "이전 m_component.second.use_count() : " << widget.second.use_count() << '\n';
+			//widget.second.reset();
+		}
+		m_widget.clear();
+	}
+	m_widgets.clear();
 }
 
 void UScene::DeleteNullObjects()

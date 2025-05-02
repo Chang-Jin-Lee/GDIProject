@@ -27,8 +27,6 @@ void InitConsole()
 	FILE* fp;
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 	SetConsoleTitle(L"윈도우 메시지 콘솔 로그");
-
-	printf("콘솔 로그 시작...\n\n");
 }
 
 void UninitConsole()
@@ -80,8 +78,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			FVector2 CameraPosition = Game::GetGameState()->GetMainCamera().get()->GetActorLocation();
 			FVector2 index = ATile::GetIndexAtPosition(FVector2(LOWORD(lParam), HIWORD(lParam)) + CameraPosition);
 			FVector2 pos = ATile::GetTilePositionAtIndex(index.x, index.y);
-			std::cout << "WndProc index : " << index.x << "  " << index.y << '\n';
-			std::cout << "WndProc position : " << pos.x << ' ' << pos.y << '\n';
 		}
 		break;
 	case WM_MOUSEMOVE:
@@ -95,7 +91,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			cameraPos += FVector2(-dif.x, -dif.y);
 			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
 			Game::SetLMouseClickPosition(currentPos);
-			//std::cout << "WndProc currentPos : " << currentPos.x << ' ' << currentPos.y << '\n';
 		}
 		break;
 	case WM_LBUTTONUP:
@@ -336,7 +331,8 @@ namespace Game
 		{
 			Game::SetMouseDragState(false);
 			ReleaseCapture();
-			g_currentScene->Release();
+			if (g_currentScene)
+				g_currentScene->Release();
 			g_currentScene.reset();
 			g_currentScene = g_nextScene;
 		}

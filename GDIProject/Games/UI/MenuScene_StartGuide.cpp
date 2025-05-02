@@ -17,7 +17,10 @@ UMenuscene_StartGuide::UMenuscene_StartGuide()
 
 UMenuscene_StartGuide::~UMenuscene_StartGuide()
 {
-
+	m_startGameButton.reset();
+	m_startGameButtonText.reset();
+	m_endGameButton.reset();
+	m_endGameButtonText.reset();
 }
 
 void UMenuscene_StartGuide::Initialize()
@@ -67,4 +70,8 @@ void UMenuscene_StartGuide::Update()
 void UMenuscene_StartGuide::Release()
 {
 	__super::Release();
+	m_startGameButton.reset();
+	m_startGameButtonText.reset();
+	m_endGameButton.reset();
+	m_endGameButtonText.reset();
 }

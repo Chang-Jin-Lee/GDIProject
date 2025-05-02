@@ -37,14 +37,6 @@ APlayerCharacter::APlayerCharacter(EUnitType Type)
 
 APlayerCharacter::~APlayerCharacter()
 {
-	for (int i = 0; i < static_cast<int>(DirState::Max); i++)
-	{
-		for (int j = 0; j < static_cast<int>(AnimationState::Max); j++)
-		{
-			delete AnimationBundle.animationComponent[i][j];
-		}
-		//delete AnimationBundle.baseImages[i];
-	}
 	m_nameWidget.reset();
 }
 
@@ -67,8 +59,12 @@ void APlayerCharacter::Initialize()
 	//FVector2 Size = FVector2(13.0f, 20.0f);
 	//FVector2 Scale = FVector2(1.5f, 1.5f);
 	SetActorLocation(Location.x, Location.y);
-	if (AnimationBundle.animationComponent && AnimationBundle.animationComponent[0] && AnimationBundle.animationComponent[0][0]->m_frames)
-		SetActorSize(AnimationBundle.animationComponent[0][0]->m_frames[0]->m_frame->GetWidth(), AnimationBundle.animationComponent[0][0]->m_frames[0]->m_frame->GetHeight());
+	auto* anim = AnimationBundle.animationComponent[0][0];
+	if (anim && !anim->m_frames.empty() && !anim->m_frames[0].empty() && anim->m_frames[0][0].m_frame)
+	{
+		Gdiplus::Bitmap* frame = anim->m_frames[0][0].m_frame;
+		SetActorSize(frame->GetWidth(), frame->GetHeight());
+	}
 	//SetActorSize(Size.x, Size.y);
 	//SetActorScale(Scale.x, Scale.y);
 
@@ -82,22 +78,6 @@ void APlayerCharacter::Initialize()
 void APlayerCharacter::Update()
 {
 	__super::Update();
-	//FVector2 mouseclick = Game::GetLMouseClickPosition();
-	//if (mouseclick.IsZero() == false)
-	//{
-	//	FVector2 dir = (mouseclick - GetActorLocation()).Normalize();
-	//	if ((mouseclick - GetActorLocation()).Length() > 0.1f)
-	//	{
-	//		FVector2 location = GetActorLocation();
-	//		FVector2 updateLocation = location + dir * MoveSpeed * Time::GetElapsedTime();
-	//		SetActorLocation(updateLocation.x, updateLocation.y);
-	//	}
-	//	else
-	//	{
-	//		Game::SetLMouseClickPosition(FVector2(0, 0));
-	//	}
-	//}
-
 	if (AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationClip == AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationMaxSize - 1)
 	{
 		if (animstate == ACharacter::AnimationState::Attack)
@@ -115,6 +95,7 @@ void APlayerCharacter::Update()
 void APlayerCharacter::Release()
 {
 	__super::Release();
+	m_nameWidget.reset();
 }
 
 void APlayerCharacter::ReadyForNextTurn()

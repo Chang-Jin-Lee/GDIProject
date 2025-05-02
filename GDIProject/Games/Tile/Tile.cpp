@@ -59,7 +59,6 @@ void ATile::InitializeImage()
 				int height = bottom - top;
 
 				StaticMeshComponent->SetMeshSize(width, height);
-				//InitialTileSize = FVector2(width, height);
 				StaticMeshComponent->mesh = baseImage->Clone(left, top, width, height, PixelFormat32bppARGB);
 			}
 		}
@@ -105,9 +104,6 @@ int ATile::SearchCost(const int& startRow, const int& startCol, const int& targe
 		for (int j = 0; j < TILE_COL_SIZE; ++j)
 			cost[i][j] = INF;
 
-	//std::cout << "시작 row, col " << startRow << ' ' << startCol << '\n';
-	//std::cout << "타겟 row, col " << targetRow << ' ' << targetCol << '\n';
-
 	std::priority_queue<std::tuple<int, int, int>, std::vector<std::tuple<int, int, int>>, std::greater<>> pq;
 
 	cost[startRow][startCol] = 0;
@@ -120,8 +116,6 @@ int ATile::SearchCost(const int& startRow, const int& startCol, const int& targe
 		int col = std::get<2>(pq.top());
 		pq.pop();
 
-		//std::cout << "거쳐간 row, col " << row << ' ' << col << '\n';
-
 		if (row == targetRow && col == targetCol)
 			return currCost;
 
@@ -133,7 +127,6 @@ int ATile::SearchCost(const int& startRow, const int& startCol, const int& targe
 			int newRow = row + dy[d];
 			int newCol = col + dx[d];
 
-			//std::cout << "6방향 이동 newRow, newCol " << newRow << ' ' << newCol << '\n';
 			if (!IsValidIndex(newRow, newCol)) continue;
 			if (!map[newRow][newCol]->bVisible) continue;
 			if (map[newRow][newCol]->unit != nullptr) continue;
@@ -141,11 +134,9 @@ int ATile::SearchCost(const int& startRow, const int& startCol, const int& targe
 			int tileCost = map[newRow][newCol]->GetTileMoveCost();
 			if (tileCost == -1) continue; // 물 등 이동 불가
 
-			//std::cout << "tile cost : " << tileCost << '\n';
 			if (cost[newRow][newCol] > currCost + tileCost)
 			{
 				cost[newRow][newCol] = currCost + tileCost;
-				//std::cout << "cost[newRow][newCol] : " << cost[newRow][newCol] << '\n';
 				pq.push({ cost[newRow][newCol], newRow, newCol });
 			}
 		}

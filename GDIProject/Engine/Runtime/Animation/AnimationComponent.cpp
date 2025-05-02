@@ -1,53 +1,68 @@
-#include "AnimationComponent.h"
+﻿#include "AnimationComponent.h"
+#include "../Renderer/Renderer.h"
 
 
 UAnimationComponent::UAnimationComponent(int rowSize, int colSize)
 {
-	m_frames = (FFrame**)malloc(sizeof(FFrame*) * rowSize);
-	for (int i = 0; i < rowSize; i++)
-	{
-		m_frames[i] = (FFrame*)malloc(sizeof(FFrame) * colSize);
-	}
+	Initialize(rowSize, colSize);
 }
 
 UAnimationComponent::~UAnimationComponent()
 {
-	for (unsigned int i = 0; i < m_irowSize; i++)
-	{
-		for (unsigned int j = 0; j < m_icolSize; j++)
-		{
-			delete m_frames[i][j].m_frame;
-		}
-	}
+	Release();
 }
 
 void UAnimationComponent::Initialize(int rowSize, int colSize)
 {
+	Release(); // 기존 데이터 해제
 	m_ianimationMaxSize = rowSize;
-	m_frames = (FFrame**)malloc(sizeof(FFrame*) * rowSize);
-	for (int i = 0; i < rowSize; i++)
+
+	m_frames.resize(rowSize);
+	for (int i = 0; i < rowSize; ++i)
 	{
-		m_frames[i] = (FFrame*)malloc(sizeof(FFrame) * colSize);
+		m_frames[i].resize(colSize);
 	}
 }
 
 void UAnimationComponent::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, int pixelformat)
 {
-	//mesh = baseBitMap;
-	if (cloneInfo)
-	{
-		for (int i = 0; i < rowSize; i++)
-		{
-			if (cloneInfo[i] && colSize > 3)
-			{
-				int left = cloneInfo[i][0], top = cloneInfo[i][1], right = cloneInfo[i][2], bottom = cloneInfo[i][3];
-				int width = right - left;
-				int height = bottom - top;
+	if (!cloneInfo || m_frames.empty()) return;
 
-				m_frames[i]->m_frameSize.x = width;
-				m_frames[i]->m_frameSize.y = height;
-				m_frames[i]->m_frame = baseImage->Clone(left, top, width, height, pixelformat);
+	for (int i = 0; i < rowSize && i < m_frames.size(); ++i)
+	{
+		if (!cloneInfo[i] || colSize <= 3) continue;
+
+		int left = cloneInfo[i][0], top = cloneInfo[i][1], right = cloneInfo[i][2], bottom = cloneInfo[i][3];
+		int width = right - left;
+		int height = bottom - top;
+
+		FFrame& frame = m_frames[i][0];
+
+		if (frame.m_frame)
+		{
+			delete frame.m_frame;
+			frame.m_frame = nullptr;
+		}
+
+		frame.m_frameSize = FVector2((float)width, (float)height);
+		frame.m_frame = baseImage->Clone(left, top, width, height, pixelformat);
+	}
+}
+
+void UAnimationComponent::Release()
+{
+	for (auto& row : m_frames)
+	{
+		for (auto& frame : row)
+		{
+			if (Renderer::IsGdiValid() && frame.m_frame)
+			{
+				delete frame.m_frame;
+				frame.m_frame = nullptr;
 			}
 		}
 	}
+	m_frames.clear();
+	m_ianimationMaxSize = 0;
+	m_ianimationClip = 0;
 }

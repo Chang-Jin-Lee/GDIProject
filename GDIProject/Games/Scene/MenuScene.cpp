@@ -42,7 +42,9 @@ void UMenuScene::LoadData()
 
 void UMenuScene::Release()
 {
-
+	__super::Release();
+	m_image.reset();
+	m_MenuSceneWidget.reset();
 }
 
 void UMenuScene::DeleteNullObjects()
@@ -71,12 +73,10 @@ void UMenuScene::UpdateInput()
 
 void UMenuScene::StartGame()
 {
-	printf("StartGame");
 	UScene::ChangeScene<UPlayScene>(Game::GetNextScenePtr());
 }
 
 void UMenuScene::EndGame()
 {
-	printf("EndGame");
 	PostQuitMessage(0);
 }

@@ -7,10 +7,6 @@ AAIPlayer::~AAIPlayer() {}
 void AAIPlayer::Initialize()
 {
     // 초기 개척자 한 명 소환
-    //auto Settler = std::make_shared<APlayerCharacter>(EUnitType::Settler, this);
-    //auto Settler = std::make_shared<APlayerCharacter>(EUnitType::Settler);
-    //Settler->SetActorLocation(FVector2(5, 5)); // 시작 위치
-    //Units.push_back(Settler);
 }
 
 void AAIPlayer::UpdateTurn()

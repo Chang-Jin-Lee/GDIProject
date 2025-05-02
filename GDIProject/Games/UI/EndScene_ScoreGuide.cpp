@@ -19,6 +19,10 @@ UEndScene_Widget::UEndScene_Widget()
 
 UEndScene_Widget::~UEndScene_Widget()
 {
+	m_scoreui.reset();
+	m_scoreGuideui.reset();
+	m_startGameButton.reset();
+	m_startGameButtonText.reset();
 }
 
 void UEndScene_Widget::Initialize()
@@ -87,4 +91,8 @@ void UEndScene_Widget::Update()
 void UEndScene_Widget::Release()
 {
 	__super::Release();
+	m_scoreui.reset();
+	m_scoreGuideui.reset();
+	m_startGameButton.reset();
+	m_startGameButtonText.reset();
 }

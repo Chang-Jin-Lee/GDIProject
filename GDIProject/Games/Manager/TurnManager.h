@@ -21,11 +21,10 @@ public:
 
     void Initialize();
     void Update();
-    void EndTurn(); // "턴 끝내기" 버튼에서 호출
+    void Release();
 
     inline  ETurnState GetCurrentTurn() const { return CurrentTurn; }
     inline std::shared_ptr<APlayerController> GetPlayer() { return Player; }
-    inline std::vector<std::shared_ptr<AAIPlayer>>& GetAIPlayers() { return AIPlayers; }
 
 public:
     std::shared_ptr<UScene> OwnerScene;
@@ -33,5 +32,4 @@ public:
 private:
     ETurnState CurrentTurn;
     std::shared_ptr<APlayerController> Player;
-    std::vector<std::shared_ptr<AAIPlayer>> AIPlayers;
 };

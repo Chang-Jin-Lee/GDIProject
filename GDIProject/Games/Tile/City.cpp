@@ -17,10 +17,8 @@ void ACity::Initialize()
 		int cloneInfoColsize = gs->m_TileCloneInfoColsize;
 		Gdiplus::Bitmap* baseImage = gs->m_baseTileImage;
 
-		//mesh = baseBitMap;
 		if (cloneInfo)
 		{
-			//int Type = static_cast<int>(ETileType::Capital);
 			int Type = static_cast<int>(ETileType::Grassland);
 			if (cloneInfo[Type] && cloneInfoColsize > 3)
 			{
@@ -29,12 +27,10 @@ void ACity::Initialize()
 				int height = bottom - top;
 
 				StaticMeshComponent->SetMeshSize(width, height);
-				//InitialTileSize = FVector2(width, height);
 				StaticMeshComponent->mesh = baseImage->Clone(left, top, width, height, PixelFormat32bppARGB);
 			}
 		}
 	}
-	//StaticMeshComponent->SetMeshSize(InitialTileSize.x, InitialTileSize.y);
 }
 
 void ACity::Update()

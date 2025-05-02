@@ -145,6 +145,7 @@ namespace Renderer
 				}
 			}
 		}
+		g_renderedObjs.clear();
 	}
 
 	void RenderImage(Gdiplus::Bitmap* pImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size, const bool& bSelected)
@@ -177,28 +178,6 @@ namespace Renderer
 			);
 			g_pBackBufferGraphics->FillEllipse(m_redBrush, ellipseRect);
 		}
-
-
-		//if (pImageBitmap && g_pBackBufferGraphics)
-		//{
-		//	// 회전 0, 스케일 1이면 Transform 안하고 바로 Draw
-		//	if (rotation == 0.0f && scale.x == 1.0f && scale.y == 1.0f)
-		//	{
-		//		g_pBackBufferGraphics->DrawImage(pImageBitmap, (int)finalPos.x, (int)finalPos.y, (int)size.x, (int)size.y);
-		//	}
-		//	else
-		//	{
-		//		// 변형이 필요한 경우만 Transform 적용
-		//		//Gdiplus::PointF center = Gdiplus::PointF(float(size.x / 2), float(size.y / 2));
-		//		//Gdiplus::Matrix matrix;
-		//		//matrix.Translate((float)finalPos.x, (float)finalPos.y);
-		//		//matrix.Scale(scale.x, scale.y);
-		//		//matrix.RotateAt(rotation, center);
-		//		//g_pBackBufferGraphics->SetTransform(&matrix);
-		//		//g_pBackBufferGraphics->DrawImage(pImageBitmap, 0, 0, (int)size.x, (int)size.y);
-		//		//g_pBackBufferGraphics->ResetTransform();
-		//	}
-		//}
 	}
 
 	void RenderText(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush)
@@ -214,19 +193,8 @@ namespace Renderer
 		if (g_mainCamera)
 			finalPos = position - g_mainCamera->GetCameraLocation();
 
-		//RenderRectRed(finalPos.x, finalPos.y, (int)size.x, (int)size.y);
 		Gdiplus::RectF rect(finalPos.x, finalPos.y, size.x, size.y);
 		g_pBackBufferGraphics->DrawString(content, (INT)wcslen(content), &font, rect, &stringFormat, &brush);
-
-		//Gdiplus::PointF center = Gdiplus::PointF(float(size.x / 2), float(size.y / 2));
-		//Gdiplus::Matrix matrix;
-		//matrix.Translate(finalPos.x, finalPos.y);
-		//matrix.Scale(1.0f, 1.0f);
-		//matrix.RotateAt(0, center);
-		//g_pBackBufferGraphics->SetTransform(&matrix); // 매트릭스 적용.
-		//RenderRectRed(0, 0, (int)size.x, (int)size.y);
-		//g_pBackBufferGraphics->DrawString(content, (INT)wcslen(content), &font, Gdiplus::RectF(0, 0, size.x, size.y), &stringFormat, &brush);
-		//g_pBackBufferGraphics->ResetTransform();
 	}
 
 	void RenderRectRed(int x, int y, int width, int height)
@@ -243,7 +211,6 @@ namespace Renderer
 
 	void RenderRectFill(SolidBrush& brush, FVector2& position, const FVector2& size, int radius)
 	{
-		//Gdiplus::SolidBrush brush(Gdiplus::Color(180, 200, 220));
 		if (position.x < g_mainCamera->GetCameraLocation().x - g_resolution.x * 0.2f ||
 			position.x > g_mainCamera->GetCameraLocation().x + g_resolution.x * 1.2f ||
 			position.y < g_mainCamera->GetCameraLocation().y - g_resolution.x * 0.2f ||
@@ -313,19 +280,42 @@ namespace Renderer
 	// 애니메이션을 할때는 비트맵을 한장씩 넘기기
 	void RenderCharacterAnimation(ACharacter::FAnimationBundle& animationBundle, ACharacter* character)
 	{
-		if (character == nullptr || animationBundle.animationComponent[(int)character->dirState][(int)character->animstate]->m_frames == nullptr)
+		if (!character)
 		{
-			printf("RenderCharacterAnimation Error!!!");
+			printf("RenderCharacterAnimation Error: character is null\n");
 			return;
 		}
-		Gdiplus::Bitmap*& pImageBitmap = animationBundle.animationComponent[(int)character->dirState][(int)character->animstate]
-			->m_frames[animationBundle.animationComponent[(int)character->dirState][(int)character->animstate]->m_ianimationClip]
-			->m_frame;
+
+		auto animComp = animationBundle.animationComponent[(int)character->dirState][(int)character->animstate];
+		if (!animComp || animComp->m_frames.empty())
+		{
+			printf("RenderCharacterAnimation Error: animation component or frames are null\n");
+			return;
+		}
+
+		const int clipIndex = animComp->m_ianimationClip;
+		const int rowIndex = clipIndex;
+
+		// 프레임 존재 여부 확인
+		if (rowIndex >= animComp->m_frames.size() || animComp->m_frames[rowIndex].empty())
+		{
+			printf("RenderCharacterAnimation Error: frame index out of bounds\n");
+			return;
+		}
+
+		Gdiplus::Bitmap* pImageBitmap = animComp->m_frames[rowIndex][0].m_frame;
+
+		if (!pImageBitmap)
+		{
+			printf("RenderCharacterAnimation Error: frame image is null\n");
+			return;
+		}
 
 		FVector2 position = character->GetActorLocation();
 		const float rotation = character->GetActorRotation();
 		const FVector2 scale = character->GetActorScale();
 		const FVector2 size = FVector2(pImageBitmap->GetWidth(), pImageBitmap->GetHeight());
+
 		RenderImage(pImageBitmap, position, rotation, scale, size, character->bSelected);
 	}
 

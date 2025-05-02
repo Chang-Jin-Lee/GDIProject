@@ -6,6 +6,11 @@ UObject::UObject()
 	Name = L"DefaultObject";
 }
 
+UObject::~UObject()
+{
+	DestroyAllComponent();
+}
+
 void UObject::Initialize()
 {
 	//UObjectManager<UObject>::Get();
@@ -24,7 +29,7 @@ void UObject::Update()
 
 void UObject::Release()
 {
-
+	DestroyAllComponent();
 }
 
 void UObject::SetName(const std::wstring& value)

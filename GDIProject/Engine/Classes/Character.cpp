@@ -10,6 +10,7 @@ ACharacter::ACharacter()
 
 ACharacter::~ACharacter()
 {
+	Release();
 }
 
 void ACharacter::Initialize()
@@ -48,6 +49,29 @@ void ACharacter::Update()
 void ACharacter::Release()
 {
 	__super::Release();
+
+	for (int dir = 0; dir < static_cast<int>(DirState::Max); ++dir)
+	{
+		for (int state = 0; state < static_cast<int>(AnimationState::Max); ++state)
+		{
+			UAnimationComponent*& anim = AnimationBundle.animationComponent[dir][state];
+			if (anim)
+			{
+				delete anim;
+				anim = nullptr;
+			}
+		}
+	}
+
+	for (int state = 0; state < static_cast<int>(AnimationState::Max); ++state)
+	{
+		UStaticMeshComponent*& mesh = AnimationBundle.baseImages[state];
+		if (mesh)
+		{
+			delete mesh;
+			mesh = nullptr;
+		}
+	}
 }
 
 void ACharacter::LoadAnimationData(const wchar_t* baseDir, const wchar_t* baseSate, const wchar_t delimeter, AnimationState animState, DirState dirState)

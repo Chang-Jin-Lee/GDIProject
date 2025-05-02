@@ -27,5 +27,4 @@ public:
 
 	std::shared_ptr<ABackGroundImage> m_image;
 	std::shared_ptr<UMenuscene_StartGuide> m_MenuSceneWidget;
-	//SUIButton* m_button; 버튼은 아직 실험단계
 };

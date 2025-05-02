@@ -31,14 +31,11 @@ public:
 
 	virtual void DeleteNullObjects() override;
 
-	void TimeInitialize();
-	void CharactersInitialize();
 	void UIInitialize();
 	void TileInitilize();
 	void TurnManagerInitilize();
 
 	void UpdateCollisionDetection();
-	void UpdateTime();
 	void UpdateInput();
 	void UpdateUI();
 
@@ -60,28 +57,12 @@ public:
 	FVector2 MousePosition;
 
 private:
-	std::shared_ptr<APlayerCharacter> m_fPlayerCharacter;
-	std::shared_ptr<AEnemyCharacter> m_fEnemyCharacter;
-
-	FAABBBox* WorldBound = nullptr;
-	FQuadTree* quadTree = nullptr;
-
-	float m_fFPSTime = 10.0f;
-	float m_fFPSLastTime = 0;
-	float m_fcountOneSecond = 0;
 	int m_enemyMaxSize = 15;
 
 	std::wstring EnemyName = L"적 캐릭터";
 
 	// 턴제 게임 관련
 	int m_iMaxTurn = 30;
-	//void GameManager::Update()
-	//{
-	//	if (bIsGameOver)
-	//		return;
-
-	//	TurnMgr->Update();
-	//}
 	std::shared_ptr<TurnManager> TurnMgr;	// Scene에서 Update() 해줘야함.
 	
 };

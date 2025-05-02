@@ -44,7 +44,9 @@ void UEndScene::LoadData()
 
 void UEndScene::Release()
 {
-
+	__super::Release();
+	m_image.reset();
+	m_Widget.reset();
 }
 
 void UEndScene::DeleteNullObjects()
@@ -73,6 +75,5 @@ void UEndScene::UpdateInput()
 
 void UEndScene::StartGame()
 {
-	printf("Go UMenuScene");
 	UScene::ChangeScene<UMenuScene>(Game::GetNextScenePtr());
 }

@@ -31,3 +31,5 @@ public:
 };
 #define g_TurnGameStateInstance (dynamic_cast<TurnGameState*>(Game::GetGameState()))
 #define g_TurnGameStateInstanceIsValid (g_TurnGameStateInstance != nullptr)
+#define IsValid(ptr) ((ptr) != nullptr)
+#define IsValidCast(ptr, Type) ((ptr) != nullptr && dynamic_cast<Type*>(ptr) != nullptr)
