@@ -112,7 +112,8 @@ namespace Renderer
 			}
 			else if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(object))
 			{
-				RenderMesh(actor.get()->SceneComponent, actor.get()->StaticMeshComponent, actor->bSelected);
+				if(actor->bVisible)
+					RenderMesh(actor.get()->SceneComponent, actor.get()->StaticMeshComponent, actor->bSelected);
 			}
 			else if (std::shared_ptr<UWidget> widget = std::dynamic_pointer_cast<UWidget>(object))
 			{

@@ -292,6 +292,7 @@ void UPlayScene::NextTurn()
 		//	return;
 		//}
 		CheckVictoryConditions();
+
 		if (g_TurnGameStateInstanceIsValid)
 		{
 			g_TurnGameStateInstance->m_iTurnCount++;
@@ -430,5 +431,19 @@ void UPlayScene::ReadyForNextStage()
 	for (const auto& ch : TurnMgr->GetPlayer()->Units)
 	{
 		ch->ReadyForNextTurn();
+	}
+
+	// 5개의 타일이 랜덤하게 삭제.
+	for (int i = 0; i < 5; i++)
+	{
+		int x = FRandom::GetRandomInRange(0, int(TILE_ROW_SIZE));
+		int y = FRandom::GetRandomInRange(0, int(TILE_COL_SIZE));
+		
+		while (m_tiles[x][y]->bVisible == false || m_tiles[x][y]->unit != nullptr)
+		{
+			x = FRandom::GetRandomInRange(0, int(TILE_ROW_SIZE));
+			y = FRandom::GetRandomInRange(0, int(TILE_COL_SIZE));
+		}
+		m_tiles[x][y]->bVisible = false;
 	}
 }

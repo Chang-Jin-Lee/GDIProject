@@ -135,11 +135,13 @@ int ATile::SearchCost(const int& startRow, const int& startCol, const int& targe
 
 			//std::cout << "6방향 이동 newRow, newCol " << newRow << ' ' << newCol << '\n';
 			if (!IsValidIndex(newRow, newCol)) continue;
+			if (!map[newRow][newCol]->bVisible) continue;
+			if (map[newRow][newCol]->unit != nullptr) continue;
+
 			int tileCost = map[newRow][newCol]->GetTileMoveCost();
 			if (tileCost == -1) continue; // 물 등 이동 불가
 
 			//std::cout << "tile cost : " << tileCost << '\n';
-
 			if (cost[newRow][newCol] > currCost + tileCost)
 			{
 				cost[newRow][newCol] = currCost + tileCost;
@@ -196,6 +198,8 @@ void ATile::GetReachableTiles(const int& startRow, const int& startCol, int maxC
 			int newCol = col + dx[d];
 
 			if (!IsValidIndex(newRow, newCol)) continue;
+			if (!map[newRow][newCol]->bVisible) continue;
+			if (map[newRow][newCol]->unit != nullptr) continue;
 
 			int tileCost = map[newRow][newCol]->GetTileMoveCost();
 			if (tileCost == -1) continue;
