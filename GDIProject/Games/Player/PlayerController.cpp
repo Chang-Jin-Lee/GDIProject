@@ -218,7 +218,7 @@ void APlayerController::HandleInput()
 			if (std::shared_ptr<UPlayScene> ps = std::dynamic_pointer_cast<UPlayScene>(OwnerScene))
 			{
 				ps->m_PlayScene_Widget->m_selectTileName->m_content = L"캐릭터 이름 : " + SelectedUnit->GetName();
-				ps->m_PlayScene_Widget->m_selectTileActionCount->m_content = L"남은 행동 수 : " + std::to_wstring(SelectedUnit->ActionMaxCount);
+				ps->m_PlayScene_Widget->m_selectTileActionCount->m_content = L"남은 행동 수 : " + std::to_wstring(SelectedUnit->ActionRemainCount);
 
 				// 미리보기
 				FVector2 unitIndex = ATile::GetIndexAtPosition(SelectedUnit->GetActorLocation());
