@@ -42,9 +42,9 @@ public:
 	// static 함수
 	static FVector2 GetTilePositionAtIndex(int row, int col);
 	static FVector2 GetIndexAtPosition(FVector2 position);
-	static int SearchCost(const int& startRow, const int& startCol, const int& targetRow, const int& targetCol, std::vector<std::vector<std::shared_ptr<ATile>>> map);
+	static int SearchCost(const int& startRow, const int& startCol, const int& targetRow, const int& targetCol, std::vector<std::vector<std::weak_ptr<ATile>>> map);
 	static void GetReachableTiles(const int& startRow, const int& startCol, int maxCost,
-		std::vector<std::vector<std::shared_ptr<ATile>>>& map,
+		std::vector<std::vector<std::weak_ptr<ATile>>>& map,
 		std::vector<std::pair<int, int>>& outReachableTiles);
 	static bool IsValidIndex(int row, int col);
 
@@ -54,5 +54,5 @@ public:
 	static const int initialTileSizeY = 120;
 
 	// 이 타일 위에 있는 유닛.
-	std::shared_ptr<APlayerCharacter> unit = nullptr;
+	std::weak_ptr<APlayerCharacter> unit;
 };

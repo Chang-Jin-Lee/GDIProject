@@ -13,5 +13,5 @@ public:
 	virtual void Release() override;
 
 public:
-	std::shared_ptr<SUITextComponent> m_nameUI;
+	std::weak_ptr<SUITextComponent> m_nameUI;
 };

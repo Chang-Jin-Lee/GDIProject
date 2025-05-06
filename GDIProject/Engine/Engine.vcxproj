@@ -70,6 +70,13 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PublicIncludeDirectories>
+    </PublicIncludeDirectories>
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <PublicModuleDirectories>
+    </PublicModuleDirectories>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -155,6 +162,7 @@
     <ClInclude Include="Experiment\CollistionDetection.h" />
     <ClInclude Include="Experiment\Platform.h" />
     <ClInclude Include="Experiment\QuadTree.h" />
+    <ClInclude Include="Experiment\SmartCast.h" />
     <ClInclude Include="Experiment\StateOption.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Input\Input.h" />

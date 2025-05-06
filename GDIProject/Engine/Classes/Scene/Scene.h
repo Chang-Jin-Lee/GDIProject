@@ -26,7 +26,7 @@ class GarbageUpdate
 	virtual void DeleteNullObjects() = 0;
 };
 
-class UScene : public UObject, public GarbageUpdate, public std::enable_shared_from_this<UScene>
+class UScene : public UObject, public GarbageUpdate
 {
 public:
 	UScene();
@@ -39,15 +39,16 @@ public:
 	virtual void DeleteNullObjects();
 
 	template<typename T>
-	void ChangeScene(std::shared_ptr<UScene>* curScene)
+	void ChangeScene(std::shared_ptr<UScene>& nextSceneShared, std::weak_ptr<UScene>& nextSceneWeak)
 	{
-		*curScene = std::make_shared<T>();
-		(*curScene)->Initialize();
-		(*curScene)->LoadData();
+		nextSceneShared = std::make_shared<T>();
+		nextSceneShared->Initialize();
+		nextSceneShared->LoadData();
+		nextSceneWeak = nextSceneShared;
 	}
 
 	template<typename TReturnType>
-	std::shared_ptr<TReturnType> NewObject(const std::wstring& NewobjectName, ESCENELAYER layer = ESCENELAYER::CHARACTER)
+	std::weak_ptr<TReturnType> NewObject(const std::wstring& NewobjectName, ESCENELAYER layer = ESCENELAYER::CHARACTER)
 	{
 		int intLayer = static_cast<int>(layer);
 		std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
@@ -55,31 +56,46 @@ public:
 		{
 			object->SetEditorName(NewobjectName);
 			object->RenderLayer = intLayer;
+
 			if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(object))
 			{
-				for (std::shared_ptr<UWidget>& widget : actor->attachedWidgets)
+				for (const auto& widgetWeak : actor->attachedWidgets)
 				{
-					m_widgets[widget.get()->RenderLayer].insert({ widget->GetName(), widget });
+					if (auto widgetShared = widgetWeak.lock())
+					{
+						m_widgets[widgetShared->RenderLayer].emplace(widgetShared->GetName(), std::move(widgetShared));
+					}
 				}
 			}
 		}
-		m_objects[intLayer].insert({ NewobjectName, temp });
-		return temp;
+
+		auto result = m_objects[intLayer].emplace(NewobjectName, std::move(temp));
+		auto iter = result.first;
+		return std::dynamic_pointer_cast<TReturnType>(iter->second);
 	}
 
-	void Destroy(std::shared_ptr<AActor> actor)
+	void Destroy(std::weak_ptr<AActor> actor)
 	{
-		for (std::shared_ptr<UWidget>& widget : actor->attachedWidgets)
+		if (auto actorRef = actor.lock())
 		{
-			Destroy<UWidget>(widget.get()->RenderLayer, widget->GetEditorName());
+			for (std::weak_ptr<UWidget> widget : actorRef->attachedWidgets)
+			{
+				if (auto widgetRef = widget.lock())
+				{
+					Destroy<UWidget>(widgetRef->RenderLayer, widgetRef->GetEditorName());
+				}
+			}
+			actorRef->DestroyAllComponent();
+			Destroy<AActor>(actorRef->RenderLayer, actorRef->GetEditorName());
 		}
-		actor->DestroyAllComponent();
-		Destroy<AActor>(actor->RenderLayer, actor->GetEditorName());
 	}
 
-	void Destroy(std::shared_ptr<UWidget> widget)
+	void Destroy(std::weak_ptr<UWidget> widget)
 	{
-		Destroy<UWidget>(widget->RenderLayer, widget->GetEditorName());
+		if (auto shared = widget.lock())
+		{
+			Destroy<UWidget>(shared->RenderLayer, shared->GetEditorName());
+		}
 	}
 
 	template<typename TargetType>
@@ -96,7 +112,7 @@ public:
 	}
 
 	template<typename TReturnType>
-	std::shared_ptr<TReturnType> CreateWidget(const std::wstring& NewWidgetName, EUILAYER layer = EUILAYER::TEXT)
+	std::weak_ptr<TReturnType> CreateWidget(const std::wstring& NewWidgetName, EUILAYER layer = EUILAYER::TEXT)
 	{
 		int intLayer = static_cast<int>(layer);
 		std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
@@ -105,8 +121,10 @@ public:
 			object->SetEditorName(NewWidgetName);
 			object->RenderLayer = intLayer;
 		}
-		m_widgets[intLayer].insert({ NewWidgetName, temp });
-		return temp;
+
+		auto result = m_widgets[intLayer].emplace(NewWidgetName, std::move(temp));
+		auto iter = result.first;
+		return std::dynamic_pointer_cast<TReturnType>(iter->second);
 	}
 
 	inline wchar_t* GetSceneName() { return m_sceneName; }

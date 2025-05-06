@@ -12,6 +12,7 @@
 #include "../Character/EnemyCharacter.h"
 #include "../Player/TurnGameState.h"
 #include "../Player/PlayerController.h"
+#include <Experiment/SmartCast.h>
 
 UPlayScene::UPlayScene()
 {
@@ -20,20 +21,41 @@ UPlayScene::UPlayScene()
 		objectMap.clear();
 	}
 	m_PlayScene_Widget = CreateWidget<UPlayScene_Widget>(TEXT("PlaySceneWidget"), EUILAYER::HUD);
-	m_PlayScene_Widget->m_spawnSettelerUnitButton->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Settler)); });
-	m_PlayScene_Widget->m_spawnWarriorUnitButton->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Warrior)); });
-	m_PlayScene_Widget->m_spawnArcherUnitButton->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Archer)); });
-	m_PlayScene_Widget->m_endGameButton->SetVoidDelegate([this]() { GoNextScene(); });
-	m_PlayScene_Widget->m_nextStageButton->SetVoidDelegate([this]() { NextTurn(); });
+	if (const auto ref = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
+	{
+		if (const auto btn = Cast<SUIButtonComponent>(ref->m_spawnSettelerUnitButton))
+		{
+			btn->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Settler)); });
+		}
+		if (const auto btn = Cast<SUIButtonComponent>(ref->m_spawnWarriorUnitButton))
+		{
+			btn->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Warrior)); });
+		}
+		if (const auto btn = Cast<SUIButtonComponent>(ref->m_spawnArcherUnitButton))
+		{
+			btn->SetVoidDelegate([this]() { SpawnUnit(static_cast<int>(EUnitType::Archer)); });
+		}
+		if (const auto btn = Cast<SUIButtonComponent>(ref->m_endGameButton))
+		{
+			btn->SetVoidDelegate([this]() { GoNextScene(); });
+		}
+		if (const auto btn = Cast<SUIButtonComponent>(ref->m_nextStageButton))
+		{
+			btn->SetVoidDelegate([this]() { NextTurn(); });
+		}
+	}
 
-	m_tiles.assign(TILE_ROW_SIZE, std::vector<std::shared_ptr<ATile>>());
+	m_tiles.assign(TILE_ROW_SIZE, std::vector<std::weak_ptr<ATile>>());
 	for (int i = 0; i < TILE_ROW_SIZE; i++)
 	{
 		for (int j = 0; j < TILE_COL_SIZE; j++)
 		{
 			std::wstring str = TEXT("tile") + std::to_wstring(TILE_COL_SIZE * i + j);
 			m_tiles[i].push_back(NewObject<ATile>(str, ESCENELAYER::GROUND));
-			m_tiles[i][j].get()->SetName(str);
+			if (const auto tile = Cast<ATile>(m_tiles[i][j]))
+			{
+				tile->SetName(str);
+			}
 		}
 	}
 }
@@ -124,23 +146,29 @@ void UPlayScene::UpdateInput()
 {
 	if (Input::IsKeyPressed(VK_C))
 	{
-		UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
+		UScene::ChangeScene<UEndScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 	}
 
 	if (Input::IsKeyPressed(VK_LBUTTON))
 	{
 		if (Game::CheckWidgetPosition(Input::GetMousePosition()) == false)
 		{
-			FVector2 CameraPosition = Game::GetGameState()->GetMainCamera().get()->GetActorLocation();
-			FVector2 index = ATile::GetIndexAtPosition(MousePosition + CameraPosition);
-			MousePosition = Input::GetMousePosition() + CameraPosition;
+			if (const auto cameraRef = Game::GetGameState()->GetMainCamera().lock())
+			{
+				FVector2 CameraPosition = cameraRef->GetActorLocation();
+				FVector2 index = ATile::GetIndexAtPosition(MousePosition + CameraPosition);
+				MousePosition = Input::GetMousePosition() + CameraPosition;
+			}
 		}
 	}
 }
 
 void UPlayScene::UIInitialize()
 {
-	m_PlayScene_Widget->Initialize();
+	if (const auto widget = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
+	{
+		widget->Initialize();
+	}
 }
 
 void UPlayScene::TileInitilize()
@@ -149,49 +177,72 @@ void UPlayScene::TileInitilize()
 	{
 		for (int j = 0; j < TILE_COL_SIZE; j++)
 		{
-			m_tiles[i][j].get()->m_etileType = static_cast<ETileType>((int)FRandom::GetRandomInRange(0, static_cast<int>(ETileType::Capital)));
-			if (i % 2 == 0)
+			if (const auto tile = Cast<ATile>(m_tiles[i][j]))
 			{
-				m_tiles[i][j].get()->SetActorLocation(j * m_tiles[i][j].get()->InitialTileSize.x, -i * m_tiles[i][j].get()->InitialTileSize.y / 3 + i * m_tiles[i][j].get()->InitialTileSize.y);
+				tile->m_etileType = static_cast<ETileType>((int)FRandom::GetRandomInRange(0, static_cast<int>(ETileType::Capital)));
+				if (i % 2 == 0)
+				{
+					tile->SetActorLocation(j * tile->InitialTileSize.x, -i * tile->InitialTileSize.y / 3 + i * tile->InitialTileSize.y);
+				}
+				else
+				{
+					tile->SetActorLocation(tile->InitialTileSize.x * 0.5f + j * tile->InitialTileSize.x, -i * tile->InitialTileSize.y / 3 + i * tile->InitialTileSize.y);
+				}
+				tile->Initialize();
 			}
-			else
-			{
-				m_tiles[i][j].get()->SetActorLocation(m_tiles[i][j].get()->InitialTileSize.x * 0.5f + j * m_tiles[i][j].get()->InitialTileSize.x, -i * m_tiles[i][j].get()->InitialTileSize.y / 3 + i * m_tiles[i][j].get()->InitialTileSize.y);
-			}
-			m_tiles[i][j].get()->Initialize();
+			
 		}
 	}
 
 	int x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
 	int y = (int)TILE_COL_SIZE * 0.8;
-	m_tiles[x][y].get()->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
-	m_tiles[x][y].get()->Initialize();
+	if (const auto tile = Cast<ATile>(m_tiles[x][y]))
+	{
+		tile->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
+		tile->Initialize();
+	}
 
 	x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
-	m_tiles[x][y].get()->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
-	m_tiles[x][y].get()->Initialize();
+	if (const auto tile = Cast<ATile>(m_tiles[x][y]))
+	{
+		tile->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
+		tile->Initialize();
+	}
 
 	x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
-	m_tiles[x][y].get()->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
-	m_tiles[x][y].get()->Initialize();
+	if (const auto tile = Cast<ATile>(m_tiles[x][y]))
+	{
+		tile->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
+		tile->Initialize();
+	}
 
 	x = (int)TILE_ROW_SIZE * 0.8;
 	y = (int)FRandom::GetRandomInRange(0, TILE_COL_SIZE);
-	m_tiles[x][y].get()->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
-	m_tiles[x][y].get()->Initialize();
+	if (const auto tile = Cast<ATile>(m_tiles[x][y]))
+	{
+		tile->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
+		tile->Initialize();
+	}
 
 	x = (int)TILE_ROW_SIZE * 0.8;
 	y = (int)FRandom::GetRandomInRange(0, TILE_COL_SIZE);
-	m_tiles[x][y].get()->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
-	m_tiles[x][y].get()->Initialize();
+	if (const auto tile = Cast<ATile>(m_tiles[x][y]))
+	{
+		tile->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
+		tile->Initialize();
+	}
 }
 
 void UPlayScene::TurnManagerInitilize()
 {
 	TurnMgr = NewObject<TurnManager>(TEXT("TurnMgr"));
-	TurnMgr->OwnerScene = shared_from_this();
-	TurnMgr->m_tiles = m_tiles;
-	TurnMgr->Initialize();
+	if (const auto ref = TurnMgr.lock())
+	{
+		ref->OwnerScene = weak_from_this();
+		ref->m_tiles = m_tiles;
+		ref->Initialize();
+	}
+
 	if (g_TurnGameStateInstanceIsValid)
 	{
 		g_TurnGameStateInstance->m_bGameOver = false;
@@ -249,54 +300,99 @@ void UPlayScene::UpdateCollisionDetection()
 
 void UPlayScene::UpdateUI()
 {
-	if (m_PlayScene_Widget->m_popupText->m_bVisible)
+	if (const auto ref = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
 	{
-		if (Time::GetTotalTime() - m_PlayScene_Widget->m_currentTime > m_PlayScene_Widget->m_PopUpTextDelay)
+		if (const auto popupText = Cast<SUITextComponent>(ref->m_popupText))
 		{
-			m_PlayScene_Widget->m_popupText->m_bVisible = false;
-			m_PlayScene_Widget->m_popupRectangle->m_bVisible = false;
+			if (popupText->m_bVisible)
+			{
+				if (Time::GetTotalTime() - ref->m_currentTime > ref->m_PopUpTextDelay)
+				{
+					popupText->m_bVisible = false;
+					if (const auto popupRectangle = Cast<SUIButtonComponent>(ref->m_popupRectangle))
+					{
+						popupRectangle->m_bVisible = false;
+					}
+				}
+			}
 		}
+		
 	}
 }
 
 void UPlayScene::NextTurn()
 {
-	if (TurnMgr->GetCurrentTurn() == ETurnState::PlayerTurn)
+	if (const auto ref = Cast<TurnManager>(TurnMgr))
 	{
-		CheckVictoryConditions();
-
-		if (g_TurnGameStateInstanceIsValid)
+		if (ref->GetCurrentTurn() == ETurnState::PlayerTurn)
 		{
-			g_TurnGameStateInstance->m_iTurnCount++;
-			m_PlayScene_Widget->m_remainTurnui->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
-		}
+			CheckVictoryConditions();
 
-		m_PlayScene_Widget->m_popupRectangle->m_brush->SetColor(Gdiplus::Color(10, 10, 222));
-		PopUpUI(L"다음 턴으로 넘어갑니다.");
-		ReadyForNextStage();
+			if (const auto PlayScene_Widget_Ref = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
+			{
+				if (g_TurnGameStateInstanceIsValid)
+				{
+					g_TurnGameStateInstance->m_iTurnCount++;
+
+					if (auto remainui = Cast<SUITextComponent>(PlayScene_Widget_Ref->m_remainTurnui))
+					{
+						remainui->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
+					}
+				}
+				if (auto popupRectangle = Cast<SUIButtonComponent>(PlayScene_Widget_Ref->m_popupRectangle))
+				{
+					popupRectangle->m_brush->SetColor(Gdiplus::Color(10, 10, 222));
+				}
+			}
+			PopUpUI(L"다음 턴으로 넘어갑니다.");
+			ReadyForNextStage();
+		}
 	}
+	
 }
 
 void UPlayScene::SpawnUnit(int type)
 {
-	TurnMgr->GetPlayer()->SpawnAtPosition(MousePosition, static_cast<EUnitType>(type));
+	if (const auto ref = Cast<TurnManager>(TurnMgr))
+	{
+		if (auto player = Cast<APlayerController>(ref->GetPlayer()))
+		{
+			player->SpawnAtPosition(MousePosition, static_cast<EUnitType>(type));
+		}
+	}
 }
 
 void UPlayScene::GoNextScene()
 {
 	Game::SetMouseDragState(false);
-	UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
+	UScene::ChangeScene<UEndScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 }
 
 bool UPlayScene::CheckUnitActionCount()
 {
-	for (const auto& ch : TurnMgr->GetPlayer()->Units)
+	if (const auto turnRef = Cast<TurnManager>(TurnMgr))
 	{
-		if (ch->ActionMaxCount > 0)
+		if (auto player = Cast<APlayerController>(turnRef->GetPlayer()))
 		{
-			m_PlayScene_Widget->m_popupRectangle->m_brush->SetColor(Gdiplus::Color(222, 10, 10));
-			PopUpUI(L"행동 수가 남아있습니다.");
-			return false;
+			for (const auto ch : player->Units)
+			{
+				if (auto chRef = Cast<APlayerCharacter>(ch))
+				{
+					if (chRef->ActionMaxCount > 0)
+					{
+						if (const auto PlayScene_Widget_Ref = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
+						{
+							if (auto popupRectangle = Cast<SUIButtonComponent>(PlayScene_Widget_Ref->m_popupRectangle))
+							{
+								popupRectangle->m_brush->SetColor(Gdiplus::Color(222, 10, 10));
+							}
+						}
+						PopUpUI(L"행동 수가 남아있습니다.");
+						return false;
+					}
+				}
+				
+			}
 		}
 	}
 	return true;
@@ -305,56 +401,100 @@ bool UPlayScene::CheckUnitActionCount()
 void UPlayScene::CheckVictoryConditions()
 {
 	bool bVictory = true;
-	for (const auto& ch : TurnMgr->GetPlayer()->Units)
+
+	if (auto TurnMgrRef = Cast<TurnManager>(TurnMgr))
 	{
-		FVector2 Index = ATile::GetIndexAtPosition(ch->GetActorLocation());
-		int y = (int)Index.y;
-		int x = (int)Index.x;
-		if (m_tiles[x][y]->m_etileType != ETileType::Capital)
+		if (auto playerRef = Cast<APlayerController>(TurnMgrRef->GetPlayer()))
 		{
-			bVictory = false;
+			for (const auto ch : playerRef->Units)
+			{
+				if (auto chRef = Cast<APlayerCharacter>(ch))
+				{
+
+					FVector2 Index = ATile::GetIndexAtPosition(chRef->GetActorLocation());
+					int y = (int)Index.y;
+					int x = (int)Index.x;
+					if (auto tile = Cast<ATile>(m_tiles[x][y]))
+					{
+						if (tile->m_etileType != ETileType::Capital)
+						{
+							bVictory = false;
+						}
+					}
+					chRef->ReadyForNextTurn();
+				}
+			}
 		}
-		ch->ReadyForNextTurn();
+		
 	}
 	if (bVictory)
 	{
-		UScene::ChangeScene<UWinScene>(Game::GetNextScenePtr());
+		UScene::ChangeScene<UWinScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 	}
 	else
 	{
 		if (g_TurnGameStateInstance->m_iTurnCount >= g_TurnGameStateInstance->m_iTurnMax)
 		{
-			UScene::ChangeScene<UEndScene>(Game::GetNextScenePtr());
+			UScene::ChangeScene<UEndScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 		}
 	}
 }
 
 void UPlayScene::PopUpUI(const std::wstring& str)
 {
-	m_PlayScene_Widget->m_currentTime = Time::GetTotalTime();
-	m_PlayScene_Widget->m_popupText->m_content = str;
-	m_PlayScene_Widget->m_popupText->m_bVisible = true;
-	m_PlayScene_Widget->m_popupRectangle->m_bVisible = true;
+	if (auto ref = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
+	{
+		ref->m_currentTime = Time::GetTotalTime();
+		if (const auto text = Cast<SUITextComponent>(ref->m_popupText))
+		{
+			text->m_content = str;
+			text->m_bVisible = true;
+		}
+		if (const auto btn = Cast<SUIButtonComponent>(ref->m_popupRectangle))
+		{
+			btn->m_bVisible = true;
+		}
+	}
 }
 
 void UPlayScene::ReadyForNextStage()
 {
-	for (const auto& ch : TurnMgr->GetPlayer()->Units)
+	if (const auto& turnRef = Cast<TurnManager>(TurnMgr))
 	{
-		ch->ReadyForNextTurn();
+		if (const auto& player = Cast<APlayerController>(turnRef->GetPlayer()))
+		{
+			for (const auto& ch : player->Units)
+			{
+				if (const auto& chRef = Cast<APlayerCharacter>(ch))
+				{
+					chRef->ReadyForNextTurn();
+				}
+			}
+		}
 	}
 
 	// 5개의 타일이 랜덤하게 삭제.
 	for (int i = 0; i < 5; i++)
 	{
+		if (g_TurnGameStateInstanceIsValid)
+		{
+			if (g_TurnGameStateInstance->m_iTurnCount > 25)
+			{
+				return;
+			}
+		}
 		int x = FRandom::GetRandomInRange(0, int(TILE_ROW_SIZE));
 		int y = FRandom::GetRandomInRange(0, int(TILE_COL_SIZE));
 		
-		while (m_tiles[x][y]->bVisible == false || m_tiles[x][y]->unit != nullptr)
+		if (auto tile = Cast<ATile>(m_tiles[x][y]))
 		{
-			x = FRandom::GetRandomInRange(0, int(TILE_ROW_SIZE));
-			y = FRandom::GetRandomInRange(0, int(TILE_COL_SIZE));
+			while (tile->bVisible == false || tile->unit.expired() == false)
+			{
+				x = FRandom::GetRandomInRange(0, int(TILE_ROW_SIZE));
+				y = FRandom::GetRandomInRange(0, int(TILE_COL_SIZE));
+				tile = Cast<ATile>(m_tiles[x][y]);
+			}
+			tile->bVisible = false;
 		}
-		m_tiles[x][y]->bVisible = false;
 	}
 }

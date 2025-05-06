@@ -25,6 +25,6 @@ public:
 	void StartGame();
 	void EndGame();
 
-	std::shared_ptr<ABackGroundImage> m_image;
-	std::shared_ptr<UMenuscene_StartGuide> m_MenuSceneWidget;
+	std::weak_ptr<ABackGroundImage> m_image;
+	std::weak_ptr<UMenuscene_StartGuide> m_MenuSceneWidget;
 };

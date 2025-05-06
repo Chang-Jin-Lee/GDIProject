@@ -42,9 +42,9 @@ void APlayerController::Initialize()
 
 void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 {
-	if (SelectedUnit)
+	if (const auto& SelectedUnitRef = SelectedUnit.lock())
 	{
-		FVector2 unitIndex = ATile::GetIndexAtPosition(SelectedUnit->GetActorLocation());
+		FVector2 unitIndex = ATile::GetIndexAtPosition(SelectedUnitRef->GetActorLocation());
 		if (unitIndex.x == -1 || unitIndex.y == -1) return;
 		FVector2 index = ATile::GetIndexAtPosition(pos);
 		FVector2 pos = ATile::GetTilePositionAtIndex((int)index.x, (int)index.y);
@@ -60,22 +60,31 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 		}
 		else
 		{
-			if (distance <= SelectedUnit->ActionRemainCount)
+			if (distance <= SelectedUnitRef->ActionRemainCount)
 			{
-				m_tiles[(int)unitIndex.x][(int)unitIndex.y]->unit = nullptr;
-				SelectedUnit->ActionRemainCount -= distance;
-				m_tiles[x][y]->unit = SelectedUnit;
-				SelectedUnit->SetActorLocation(pos);
-				SelectedUnit = nullptr;
-				for (auto& tiles : m_tiles)
+				if (const auto tile = m_tiles[x][y].lock())
 				{
-					for (auto& tile : tiles)
+					tile->unit = SelectedUnit;
+				}
+
+				if (const auto tile = m_tiles[(int)unitIndex.x][(int)unitIndex.y].lock())
+				{
+					tile->unit.reset();
+					SelectedUnitRef->ActionRemainCount -= distance;
+					SelectedUnitRef->SetActorLocation(pos);
+
+					for (auto& tiles : m_tiles)
 					{
-						tile->SetHighlight(false);
+						for (auto& tile : tiles)
+						{
+							if (const auto tileRef = tile.lock())
+							{
+								tileRef->SetHighlight(false);
+							}
+						}
 					}
 				}
 			}
-
 		}
 	}
 }
@@ -105,17 +114,26 @@ void APlayerController::SpawnAtIndex(int row, int col)
 {
 	if (row < 0 || col < 0) return;
 	int type = static_cast<int>(EUnitType::Settler);
-	auto Unit = OwnerScene->NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
-	Unit->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
-	Unit->SetUnitType(type);
-	Unit->Initialize();
-	FVector2 pos = ATile::GetTilePositionAtIndex(col, row);
-	FVector2 size = Unit->GetActorSize();
-	Unit->row = row;
-	Unit->col = col;
-	m_tiles[Unit->col][Unit->row]->unit = Unit;
-	Unit->SetActorLocation(pos - size / 2);
-	Units.push_back(Unit);
+	if (auto OwnerSceneRef = std::dynamic_pointer_cast<UScene>(OwnerScene.lock()))
+	{
+		auto Unit = OwnerSceneRef->NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
+		if (auto UnitRef = Unit.lock())
+		{
+			UnitRef->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
+			UnitRef->SetUnitType(type);
+			UnitRef->Initialize();
+			FVector2 pos = ATile::GetTilePositionAtIndex(col, row);
+			FVector2 size = UnitRef->GetActorSize();
+			UnitRef->row = row;
+			UnitRef->col = col;
+			if (const auto tile = m_tiles[col][row].lock())
+			{
+				tile->unit = UnitRef;
+			}
+			UnitRef->SetActorLocation(pos - size / 2);
+			Units.push_back(UnitRef);
+		}
+	}	
 }
 
 void APlayerController::SpawnAtPosition(FVector2 position, EUnitType unitType)
@@ -126,56 +144,69 @@ void APlayerController::SpawnAtPosition(FVector2 position, EUnitType unitType)
 	FVector2 pos = ATile::GetTilePositionAtIndex((int)index.x, (int)index.y);
 	if (pos.x == -1 || pos.y == -1) return;
 
-	auto Unit = OwnerScene->NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
-	Unit->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
-	Unit->SetUnitType(type);
-	Unit->Initialize();
-	FVector2 size = Unit->GetActorSize();
-	Unit->row = (int)index.y;
-	Unit->col = (int)index.x;
-	m_tiles[Unit->col][Unit->row]->unit = Unit;
-	Unit->SetActorLocation(pos - size / 2);
-	Units.push_back(Unit);
+	if (auto OwnerSceneRef = std::dynamic_pointer_cast<UScene>(OwnerScene.lock()))
+	{
+		auto Unit = OwnerSceneRef->NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
+		if (auto UnitRef = Unit.lock())
+		{
+			UnitRef->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
+			UnitRef->SetUnitType(type);
+			UnitRef->Initialize();
+			FVector2 size = UnitRef->GetActorSize();
+			UnitRef->row = (int)index.y;
+			UnitRef->col = (int)index.x;
+			if (const auto tile = m_tiles[UnitRef->col][UnitRef->row].lock())
+			{
+				tile->unit = UnitRef;
+			}
+			UnitRef->SetActorLocation(pos - size / 2);
+			Units.push_back(UnitRef);
+		}
+	}
 }
 
-std::shared_ptr<APlayerCharacter> APlayerController::GetUnitRefAtPosition(FVector2 position)
+std::weak_ptr<APlayerCharacter> APlayerController::GetUnitRefAtPosition(FVector2 position)
 {
 	FVector2 index = ATile::GetIndexAtPosition(position);
 
 	int x = (int)index.x;
 	int y = (int)index.y;
 
-	if (x == -1 || y == -1) return nullptr;
+	if (x == -1 || y == -1) return std::weak_ptr<APlayerCharacter>();
 
-	if (m_tiles[x][y]->unit)
-		return m_tiles[x][y]->unit;
+	if (m_tiles[x][y].expired() == false)
+		return m_tiles[x][y].lock()->unit;
 	else
-		return nullptr;
+		return std::weak_ptr<APlayerCharacter>();
 }
 
-std::shared_ptr<ATile> APlayerController::GetTileRefAtPosition(FVector2 position)
+std::weak_ptr<ATile> APlayerController::GetTileRefAtPosition(FVector2 position)
 {
 	FVector2 index = ATile::GetIndexAtPosition(position);
 
-	if (index.x == -1 || index.y == -1) return nullptr;
+	if (index.x == -1 || index.y == -1) return std::weak_ptr<ATile>();
 
 	int x = (int)index.x;
 	int y = (int)index.y;
 	return m_tiles[x][y];
 }
+
 void APlayerController::HandleInput()
 {
 	if (Input::IsKeyPressed(VK_K))
 	{
 		for (const auto& Unit : Units)
 		{
-			OwnerScene->Destroy(Unit);
+			if (auto OwnerSceneRef = std::dynamic_pointer_cast<UScene>(OwnerScene.lock()))
+			{
+				OwnerSceneRef->Destroy(Unit);
+			}
 		}
 	}
 
 	if (Input::IsKeyPressed(VK_RBUTTON))
 	{
-		if (SelectedUnit)
+		if (SelectedUnit.expired() == false)
 		{
 			MoveSelectedUnitTo(Input::GetMouseWorldPosition(Game::GetGameState()->GetMainCamera()));
 		}
@@ -184,24 +215,43 @@ void APlayerController::HandleInput()
 	if (Input::IsKeyPressed(VK_LBUTTON))
 	{
 		SelectedUnit = GetUnitRefAtPosition(Input::GetMouseWorldPosition(Game::GetGameState()->GetMainCamera()));
-		if (SelectedUnit)
+		if (const auto SelectedUnitRef = SelectedUnit.lock())	// 선택한 블록이 캐릭터가 있다면
 		{
-			if (std::shared_ptr<UPlayScene> ps = std::dynamic_pointer_cast<UPlayScene>(OwnerScene))
+			if (const auto OwnerSceneRef = OwnerScene.lock())
 			{
-				ps->m_PlayScene_Widget->m_selectTileName->m_content = L"캐릭터 이름 : " + SelectedUnit->GetName();
-				ps->m_PlayScene_Widget->m_selectTileActionCount->m_content = L"남은 행동 수 : " + std::to_wstring(SelectedUnit->ActionRemainCount);
+				std::shared_ptr<UPlayScene> ps = std::dynamic_pointer_cast<UPlayScene>(OwnerSceneRef);
+
+				if (auto widget = ps->m_PlayScene_Widget.lock())
+				{
+					if (auto text = widget->m_selectTileName.lock())
+					{
+						text->m_content = L"캐릭터 이름 : " + SelectedUnitRef->GetName();
+					}
+				}
+				
+				if (auto widget = ps->m_PlayScene_Widget.lock())
+				{
+					if (auto text = widget->m_selectTileActionCount.lock())
+					{
+						text->m_content = L"남은 행동 수 : " + std::to_wstring(SelectedUnitRef->ActionRemainCount);
+					}
+				}
 
 				// 미리보기
-				FVector2 unitIndex = ATile::GetIndexAtPosition(SelectedUnit->GetActorLocation());
+				FVector2 unitIndex = ATile::GetIndexAtPosition(SelectedUnitRef->GetActorLocation());
 				std::vector<std::pair<int, int>> reachable;
-				ATile::GetReachableTiles(int(unitIndex.x), int(unitIndex.y), SelectedUnit->ActionRemainCount, m_tiles, reachable);
+				ATile::GetReachableTiles(int(unitIndex.x), int(unitIndex.y), SelectedUnitRef->ActionRemainCount, m_tiles, reachable);
 				if (reachable.empty())
 				{
 					for (auto& tiles : m_tiles)
 					{
 						for (auto& tile : tiles)
 						{
-							tile->SetHighlight(false);
+							if (const auto tileRef = tile.lock())
+							{
+								tileRef->SetHighlight(false);
+							}
+							
 						}
 					}
 					return;
@@ -212,40 +262,76 @@ void APlayerController::HandleInput()
 					{
 						for (auto& tile : tiles)
 						{
-							tile->SetHighlight(false);
+							if (const auto tileRef = tile.lock())
+							{
+								tileRef->SetHighlight(false);
+							}
 						}
 					}
 					for (auto& tile : reachable)
 					{
 						int r = tile.first;
 						int c = tile.second;
-						m_tiles[r][c]->SetHighlight(true); // 미리보기 표시
+						if (const auto tileRef = m_tiles[r][c].lock())
+						{
+							tileRef->SetHighlight(true); // 미리보기 표시
+						}
 					}
 				}
 			}
 		}
-		else
+		else// 선택한 블록이 캐릭터가 없다면
 		{
 			for (auto& tiles : m_tiles)
 			{
 				for (auto& tile : tiles)
 				{
-					tile->SetHighlight(false);
+					if (const auto tileRef = tile.lock())
+					{
+						tileRef->SetHighlight(false);
+					}
 				}
 			}
-			if (std::shared_ptr<UPlayScene> ps = std::dynamic_pointer_cast<UPlayScene>(OwnerScene))
+			if (const auto OwnerSceneRef = OwnerScene.lock())
 			{
-				std::shared_ptr<ATile> t = GetTileRefAtPosition(Input::GetMouseWorldPosition(Game::GetGameState()->GetMainCamera()));
-				if (t)
+				std::shared_ptr<UPlayScene> ps = std::dynamic_pointer_cast<UPlayScene>(OwnerSceneRef);
+
+				std::weak_ptr<ATile> t = GetTileRefAtPosition(Input::GetMouseWorldPosition(Game::GetGameState()->GetMainCamera()));
+
+				if (t.expired() == false)
 				{
-					ps->m_PlayScene_Widget->m_selectTileName->m_content = L"타일 이름 : " + t->GetTileName();
-					ps->m_PlayScene_Widget->m_selectTileActionCount->m_content = L"";
+
+					if (auto widget = ps->m_PlayScene_Widget.lock())
+					{
+						if (auto text = widget->m_selectTileName.lock())
+						{
+							text->m_content = L"타일 이름 : " + t.lock()->GetTileName();
+						}
+					}
+					if (auto widget = ps->m_PlayScene_Widget.lock())
+					{
+						if (auto text = widget->m_selectTileActionCount.lock())
+						{
+							text->m_content = L"";
+						}
+					}
 				}
 				else
 				{
-					ps->m_PlayScene_Widget->m_selectTileName->m_content = L"타일 이름 : ";
-					ps->m_PlayScene_Widget->m_selectTileActionCount->m_content = L"";
-
+					if (auto widget = ps->m_PlayScene_Widget.lock())
+					{
+						if (auto text = widget->m_selectTileName.lock())
+						{
+							text->m_content = L"타일 이름 : ";
+						}
+					}
+					if (auto widget = ps->m_PlayScene_Widget.lock())
+					{
+						if (auto text = widget->m_selectTileActionCount.lock())
+						{
+							text->m_content = L"";
+						}
+					}
 				}
 			}
 		}

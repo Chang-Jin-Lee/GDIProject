@@ -4,14 +4,24 @@
 #include "../Games.h"
 #include <Classes/Scene/Scene.h>
 #include "PlayScene.h"
+#include <Experiment/SmartCast.h>
 
 UMenuScene::UMenuScene()
 {
 	m_image = NewObject<ABackGroundImage>(TEXT("m_image"));
 	m_MenuSceneWidget = CreateWidget<UMenuscene_StartGuide>(TEXT("m_MenuSceneWidget"), EUILAYER::HUD);
 
-	m_MenuSceneWidget->m_startGameButton->SetVoidDelegate([this]() { StartGame(); });
-	m_MenuSceneWidget->m_endGameButton->SetVoidDelegate([this]() { EndGame(); });
+	if (const auto widgetRef = Cast<UMenuscene_StartGuide>(m_MenuSceneWidget))
+	{
+		if (auto btn = Cast<SUIButtonComponent>(widgetRef->m_startGameButton))
+		{
+			btn->SetVoidDelegate([this]() { StartGame(); });
+		}
+		if (auto btn = Cast<SUIButtonComponent>(widgetRef->m_endGameButton))
+		{
+			btn->SetVoidDelegate([this]() { EndGame(); });
+		}
+	}
 }
 
 UMenuScene::~UMenuScene()
@@ -23,7 +33,10 @@ UMenuScene::~UMenuScene()
 void UMenuScene::Initialize()
 {
 	__super::Initialize();
-	Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(FVector2(0,0));
+	if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera()))
+	{
+		cameraRef->SetCameraLocation(FVector2(0, 0));
+	}
 	UIInitialize();
 }
 
@@ -36,8 +49,11 @@ void UMenuScene::Update()
 void UMenuScene::LoadData()
 {
 	__super::LoadData();
-	m_image->LoadData(L"Image", L"TitleImage.png");
-	m_image->SetActorSize(Renderer::GetResolution().x, Renderer::GetResolution().y);
+	if (auto imageRef = Cast<ABackGroundImage>(m_image))
+	{
+		imageRef->LoadData(L"Image", L"TitleImage.png");
+		imageRef->SetActorSize(Renderer::GetResolution().x, Renderer::GetResolution().y);
+	}
 }
 
 void UMenuScene::Release()
@@ -54,26 +70,32 @@ void UMenuScene::DeleteNullObjects()
 
 void UMenuScene::UIInitialize()
 {
-	m_MenuSceneWidget->Initialize();
+	if (auto widgetRef = Cast<UMenuscene_StartGuide>(m_MenuSceneWidget))
+	{
+		widgetRef->Initialize();
+	}
 }
 
 void UMenuScene::UpdateInput()
 {
 	if (Input::IsKeyPressed(VK_C))
 	{
-		UScene::ChangeScene<UPlayScene>(Game::GetNextScenePtr());
+		UScene::ChangeScene<UPlayScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 	}
 
 	if (Input::IsKeyDown(VK_R))
 	{
-		float rotation = m_image->GetActorRotation();
-		m_image->SetActorRotation(rotation + Time::GetElapsedTime() * 20);
+		if (auto imageRef = Cast<ABackGroundImage>(m_image))
+		{
+			const float& rotation = imageRef->GetActorRotation();
+			imageRef->SetActorRotation(rotation + Time::GetElapsedTime() * 20);
+		}
 	}
 }
 
 void UMenuScene::StartGame()
 {
-	UScene::ChangeScene<UPlayScene>(Game::GetNextScenePtr());
+	UScene::ChangeScene<UPlayScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 }
 
 void UMenuScene::EndGame()

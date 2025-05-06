@@ -51,7 +51,7 @@ namespace Input
     bool IsKeyPressed(int vKey);
     bool IsKeyReleased(int vKey);
     FVector2 GetMousePosition();
-    FVector2 GetMouseWorldPosition(std::shared_ptr<ACameraActor> camera);
+    FVector2 GetMouseWorldPosition(std::weak_ptr<ACameraActor> camera);
 }
 
 

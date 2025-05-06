@@ -52,8 +52,8 @@ public:
 	void ReadyForNextStage();
 
 public:
-	std::vector<std::vector<std::shared_ptr<ATile>>> m_tiles;
-	std::shared_ptr<UPlayScene_Widget> m_PlayScene_Widget;
+	std::vector<std::vector<std::weak_ptr<ATile>>> m_tiles;
+	std::weak_ptr<UPlayScene_Widget> m_PlayScene_Widget;
 	FVector2 MousePosition;
 
 private:
@@ -63,6 +63,5 @@ private:
 
 	// 턴제 게임 관련
 	int m_iMaxTurn = 30;
-	std::shared_ptr<TurnManager> TurnMgr;	// Scene에서 Update() 해줘야함.
-	
+	std::weak_ptr<TurnManager> TurnMgr;	// Scene에서 Update() 해줘야함.
 };

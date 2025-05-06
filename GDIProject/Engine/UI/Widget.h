@@ -16,7 +16,7 @@ public:
 
 
 public:
-	std::vector<std::shared_ptr<UWidgetComponent>> WidgetComponents;
+	std::vector<std::weak_ptr<UWidgetComponent>> WidgetComponents;
 	bool bAttached = false;
 	bool bVisible = true;
 };

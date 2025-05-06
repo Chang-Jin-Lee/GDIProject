@@ -26,7 +26,8 @@ APlayerCharacter::APlayerCharacter()
 	animstate = AnimationState::Idle;
 	std::wstring Name = TEXT("nameWidget") + std::to_wstring(Time::GetElapsedTime());
 	m_nameWidget = CreateDefaultSubobject<UCharacterNameWidget>(Name);
-	m_nameWidget->SetName(Name);
+	if(auto m_nameWidgetRef = m_nameWidget.lock())
+		m_nameWidgetRef->SetName(Name);
 	attachedWidgets.push_back(m_nameWidget);
 }
 
@@ -69,8 +70,14 @@ void APlayerCharacter::Initialize()
 	//SetActorScale(Scale.x, Scale.y);
 
 	// UI ÃÊ±âÈ­
-	m_nameWidget->m_nameUI->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
-	m_nameWidget->m_nameUI->AttachedUIToActor(this);
+	if (auto m_nameWidgetRef = m_nameWidget.lock())
+	{
+		if (auto text = m_nameWidgetRef->m_nameUI.lock())
+		{
+			text->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
+			text->AttachedUIToActor(weak_from_this());
+		}
+	}
 
 	ReadyForNextTurn();
 }

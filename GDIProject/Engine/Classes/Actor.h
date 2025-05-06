@@ -21,12 +21,12 @@ public:
 
 	//std::vector<std::function<UObject>()> functions;
 
-	Gdiplus::Bitmap* GetBitmap() { return StaticMeshComponent->mesh; }
+	Gdiplus::Bitmap* GetBitmap() { return Cast<UStaticMeshComponent>(StaticMeshComponent)->mesh; }
 
-	FVector2 GetActorLocation() const { return SceneComponent->GetSceneComponentLocation(); }
-	FVector2 GetActorSize() { return StaticMeshComponent->GetMeshSize();}
-	FVector2 GetActorScale() { return SceneComponent->GetSceneComponentScale(); }
-	float GetActorRotation() { return SceneComponent->GetSceneComponentRotation(); }
+	FVector2 GetActorLocation() const { return Cast<USceneComponent>(SceneComponent)->GetSceneComponentLocation(); }
+	FVector2 GetActorSize() { return Cast<UStaticMeshComponent>(StaticMeshComponent)->GetMeshSize();}
+	FVector2 GetActorScale() { return Cast<USceneComponent>(SceneComponent)->GetSceneComponentScale(); }
+	float GetActorRotation() { return Cast<USceneComponent>(SceneComponent)->GetSceneComponentRotation(); }
 
 	FAABBBox* GetBoundBox() { return &boundBox; }
 	
@@ -37,10 +37,10 @@ public:
 	void SetActorRotation(float value);
 	
 public:
-	std::shared_ptr<USceneComponent> SceneComponent;
-	std::shared_ptr<UStaticMeshComponent> StaticMeshComponent;
+	std::weak_ptr<USceneComponent> SceneComponent;
+	std::weak_ptr<UStaticMeshComponent> StaticMeshComponent;
 	FAABBBox boundBox;
-	std::vector<std::shared_ptr<UWidget>> attachedWidgets;
+	std::vector<std::weak_ptr<UWidget>> attachedWidgets;
 	bool bSelected = false;
 	bool bVisible = true;
 };

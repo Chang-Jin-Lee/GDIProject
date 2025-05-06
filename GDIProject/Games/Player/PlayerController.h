@@ -21,17 +21,17 @@ public:
 
     void SpawnAtIndex(int row, int col);
     void SpawnAtPosition(FVector2 position, EUnitType unitType = EUnitType::Warrior);
-    std::shared_ptr<APlayerCharacter> GetUnitRefAtPosition(FVector2 position);
-    std::shared_ptr<ATile> GetTileRefAtPosition(FVector2 position);
+    std::weak_ptr<APlayerCharacter> GetUnitRefAtPosition(FVector2 position);
+    std::weak_ptr<ATile> GetTileRefAtPosition(FVector2 position);
 
 public:
-    std::shared_ptr<UScene> OwnerScene;
-    std::vector<std::vector<std::shared_ptr<ATile>>> m_tiles;
+    std::weak_ptr<UObject> OwnerScene;
+    std::vector<std::vector<std::weak_ptr<ATile>>> m_tiles;
 
 private:
-    std::shared_ptr<APlayerCharacter> SelectedUnit;
+    std::weak_ptr<APlayerCharacter> SelectedUnit;
 
 public:
-    std::vector<std::shared_ptr<APlayerCharacter>> Units;
-    std::vector<std::shared_ptr<ACity>> Cities;
+    std::vector<std::weak_ptr<APlayerCharacter>> Units;
+    std::vector<std::weak_ptr<ACity>> Cities;
 };

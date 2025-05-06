@@ -26,8 +26,11 @@ void ACity::Initialize()
 				int width = right - left;
 				int height = bottom - top;
 
-				StaticMeshComponent->SetMeshSize(width, height);
-				StaticMeshComponent->mesh = baseImage->Clone(left, top, width, height, PixelFormat32bppARGB);
+				if (auto StaticMeshComponentRef = StaticMeshComponent.lock())
+				{
+					StaticMeshComponentRef->SetMeshSize(width, height);
+					StaticMeshComponentRef->mesh = baseImage->Clone(left, top, width, height, PixelFormat32bppARGB);
+				}
 			}
 		}
 	}

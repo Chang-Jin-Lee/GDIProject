@@ -14,7 +14,13 @@ UWinScene::UWinScene()
 	m_image = NewObject<ABackGroundImage>(TEXT("m_image"));
 	m_Widget = CreateWidget<UEndScene_Widget>(TEXT("scoreGuide"), EUILAYER::HUD);
 
-	m_Widget->m_startGameButton->SetVoidDelegate([this]() { StartGame(); });
+	if (auto widget = Cast<UEndScene_Widget>(m_Widget))
+	{
+		if (auto btn = Cast<SUIButtonComponent>(widget->m_startGameButton))
+		{
+			btn->SetVoidDelegate([this]() { StartGame(); });
+		}
+	}
 }
 
 UWinScene::~UWinScene()
@@ -26,7 +32,10 @@ UWinScene::~UWinScene()
 void UWinScene::Initialize()
 {
 	__super::Initialize();
-	Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(FVector2(0, 0));
+	if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera()))
+	{
+		cameraRef->SetCameraLocation(FVector2(0, 0));
+	}
 	UIInitialize();
 }
 
@@ -38,8 +47,11 @@ void UWinScene::Update()
 void UWinScene::LoadData()
 {
 	__super::LoadData();
-	m_image->LoadData(L"Image", L"WinImage.png");
-	m_image->SetActorSize(Renderer::GetResolution().x, Renderer::GetResolution().y);
+	if (auto imageRef = Cast<ABackGroundImage>(m_image))
+	{
+		imageRef->LoadData(L"Image", L"WinImage.png");
+		imageRef->SetActorSize(Renderer::GetResolution().x, Renderer::GetResolution().y);
+	}
 }
 
 void UWinScene::Release()
@@ -54,22 +66,29 @@ void UWinScene::DeleteNullObjects()
 
 void UWinScene::UIInitialize()
 {
-	m_Widget->Initialize();
-	if (g_TurnGameStateInstanceIsValid)
+	if (auto widget = Cast<UEndScene_Widget>(m_Widget))
 	{
-		m_Widget->m_scoreui->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
+		widget->Initialize();
+		if (g_TurnGameStateInstanceIsValid)
+		{
+			if (auto scoreui = Cast<SUITextComponent>(widget->m_scoreui))
+			{
+				scoreui->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
+			}
+		}
 	}
+	
 }
 
 void UWinScene::UpdateInput()
 {
 	if (Input::IsKeyPressed(VK_C))
 	{
-		UScene::ChangeScene<UMenuScene>(Game::GetNextScenePtr());
+		UScene::ChangeScene<UMenuScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 	}
 }
 
 void UWinScene::StartGame()
 {
-	UScene::ChangeScene<UMenuScene>(Game::GetNextScenePtr());
+	UScene::ChangeScene<UMenuScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 }

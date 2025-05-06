@@ -47,10 +47,14 @@ namespace Input
         return FVector2(float(m_point.x), float(m_point.y));
     }
 
-    FVector2 GetMouseWorldPosition(std::shared_ptr<ACameraActor> camera)
+    FVector2 GetMouseWorldPosition(std::weak_ptr<ACameraActor> camera)
     {
         FVector2 screenPos = GetMousePosition();
-        FVector2 cameraPos = camera->GetActorLocation();
+        FVector2 cameraPos = FVector2(0,0);
+        if (const auto cameraRef = camera.lock())
+        {
+            cameraPos = cameraRef->GetActorLocation();
+        }
         return screenPos + cameraPos;
     }
 }

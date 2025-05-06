@@ -12,21 +12,16 @@ AActor::AActor()
 
 AActor::~AActor()
 {
-	if (SceneComponent)
-	{
-		SceneComponent->Release();
-	}
-	if (StaticMeshComponent)
-	{
-		StaticMeshComponent->Release();
-	}
 	SceneComponent.reset();
 	StaticMeshComponent.reset();
 }
 
 void AActor::LoadStaticMeshData(std::wstring baseDir, std::wstring fileName)
 {
-	StaticMeshComponent->LoadData(baseDir, fileName);
+	if (auto StaticMeshComponentRef = Cast<UStaticMeshComponent>(StaticMeshComponent))
+	{
+		StaticMeshComponentRef->LoadData(baseDir, fileName);
+	}
 }
 
 void AActor::Initialize()
@@ -51,14 +46,6 @@ void AActor::Update()
 void AActor::Release()
 {
 	__super::Release();
-	if (SceneComponent)
-	{
-		SceneComponent->Release();
-	}
-	if (StaticMeshComponent)
-	{
-		StaticMeshComponent->Release();
-	}
 	SceneComponent.reset();
 	StaticMeshComponent.reset();
 }
@@ -69,25 +56,40 @@ void AActor::LoadData()
 
 void AActor::SetActorScale(float x, float y)
 {
-	SceneComponent->SetSceneComponentScale(x, y);
+	if (auto SceneComponentRef = Cast<USceneComponent>(SceneComponent))
+	{
+		SceneComponentRef->SetSceneComponentScale(x, y);
+	}
 }
 
 void AActor::SetActorSize(float x, float y)
 {
-	StaticMeshComponent->SetMeshSize(x, y);
+	if (auto StaticMeshComponentRef = Cast<UStaticMeshComponent>(StaticMeshComponent))
+	{
+		StaticMeshComponentRef->SetMeshSize(x, y);
+	}
 }
 
 void AActor::SetActorLocation(float x, float y)
 {
-	SceneComponent->SetSceneComponentLocation(x, y);
+	if (auto SceneComponentRef = Cast<USceneComponent>(SceneComponent))
+	{
+		SceneComponentRef->SetSceneComponentLocation(x, y);
+	}
 }
 
 void AActor::SetActorLocation(const FVector2& Position)
 {
-	SceneComponent->SetSceneComponentLocation(Position.x, Position.y);
+	if (auto SceneComponentRef = Cast<USceneComponent>(SceneComponent))
+	{
+		SceneComponentRef->SetSceneComponentLocation(Position.x, Position.y);
+	}
 }
 
 void AActor::SetActorRotation(float value)
 {
-	SceneComponent->SetSceneComponentRotation(value);
+	if (auto SceneComponentRef = Cast<USceneComponent>(SceneComponent))
+	{
+		SceneComponentRef->SetSceneComponentRotation(value);
+	}
 }

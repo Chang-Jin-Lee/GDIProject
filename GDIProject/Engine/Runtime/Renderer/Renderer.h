@@ -23,9 +23,9 @@ namespace Renderer
 
 	FVector2 GetResolution();
 	void SetResolution(const float& width, const float& height);
-	void SetMainCamera(const std::shared_ptr<ACameraActor> camera);
+	void SetMainCamera(const std::weak_ptr<ACameraActor> camera);
 	bool IsGdiValid();
-	std::shared_ptr<ACameraActor> GetMainCamera();
+	std::weak_ptr<ACameraActor> GetMainCamera();
 
 	void RenderImage(Gdiplus::Bitmap* ImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size, const bool& bSelected);
 	void RenderText(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush);
@@ -34,15 +34,15 @@ namespace Renderer
 	void RenderRectFill(SolidBrush& brush, FVector2& position, const FVector2& size, int radius = 5);
 	void RenderRectWithRounded(SolidBrush* brush, FVector2& position, const FVector2& size, int radius = 5);
 
-	void RenderMesh(std::shared_ptr<USceneComponent>& sceneComponent, std::shared_ptr<UStaticMeshComponent>& staticMesh, const bool& bSelected);	// 액터 그리기 함수
+	void RenderMesh(const std::shared_ptr<USceneComponent>& sceneComponent, const std::shared_ptr<UStaticMeshComponent>& staticMesh, const bool& bSelected);	// 액터 그리기 함수
 	void RenderCharacterAnimation(ACharacter::FAnimationBundle& animationBundle, ACharacter* character); 	// 애니메이션을 위한 함수. 
 
 	// UI 관련
-	void RenderTextUI(std::shared_ptr<SUITextComponent>& textui, int parentX, int parentY);
-	void RenderButtonUI(std::shared_ptr<SUIButtonComponent>& buttonui, int parentX, int parentY);
+	void RenderTextUI(const std::shared_ptr<SUITextComponent>& textui, int parentX, int parentY);
+	void RenderButtonUI(const std::shared_ptr<SUIButtonComponent>& buttonui, int parentX, int parentY);
 
 	void ClearRenderObjects();
-	void SetRenderObject(std::shared_ptr<UObject> obj);
+	void SetRenderObject(std::weak_ptr<UObject> obj);
 
 	void EndDraw();
 }

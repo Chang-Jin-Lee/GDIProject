@@ -48,12 +48,16 @@ void UScene::Update()
 			{
 				objectPair.second->Update();
 
-				if (objectPair.second.get()->GetActorLocation().x < Renderer::GetMainCamera().get()->GetCameraLocation().x - Renderer::GetResolution().x * 0.2f ||
-					objectPair.second.get()->GetActorLocation().x > Renderer::GetMainCamera().get()->GetCameraLocation().x + Renderer::GetResolution().x * 1.2f ||
-					objectPair.second.get()->GetActorLocation().y < Renderer::GetMainCamera().get()->GetCameraLocation().y - Renderer::GetResolution().x * 0.2f ||
-					objectPair.second.get()->GetActorLocation().y > Renderer::GetMainCamera().get()->GetCameraLocation().y + Renderer::GetResolution().y * 1.2f
-					)
-					continue;
+				if (auto cameraRef = Renderer::GetMainCamera().lock())
+				{
+					if (objectPair.second.get()->GetActorLocation().x < cameraRef->GetCameraLocation().x - Renderer::GetResolution().x * 0.2f ||
+						objectPair.second.get()->GetActorLocation().x > cameraRef->GetCameraLocation().x + Renderer::GetResolution().x * 1.2f ||
+						objectPair.second.get()->GetActorLocation().y < cameraRef->GetCameraLocation().y - Renderer::GetResolution().x * 0.2f ||
+						objectPair.second.get()->GetActorLocation().y > cameraRef->GetCameraLocation().y + Renderer::GetResolution().y * 1.2f
+						)
+						continue;
+				}
+				
 				Renderer::SetRenderObject(objectPair.second);
 			}
 			else

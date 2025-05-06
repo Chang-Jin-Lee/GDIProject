@@ -75,9 +75,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		Game::SetMouseDragState(true);
 		Game::OnWidgetClick(FVector2(LOWORD(lParam), HIWORD(lParam)));
 		{
-			FVector2 CameraPosition = Game::GetGameState()->GetMainCamera().get()->GetActorLocation();
-			FVector2 index = ATile::GetIndexAtPosition(FVector2(LOWORD(lParam), HIWORD(lParam)) + CameraPosition);
-			FVector2 pos = ATile::GetTilePositionAtIndex(index.x, index.y);
+			if (const auto cameraRef = Game::GetGameState()->GetMainCamera().lock())
+			{
+				FVector2 CameraPosition = cameraRef->GetActorLocation();
+				FVector2 index = ATile::GetIndexAtPosition(FVector2(LOWORD(lParam), HIWORD(lParam)) + CameraPosition);
+				FVector2 pos = ATile::GetTilePositionAtIndex(index.x, index.y);
+			}
 		}
 		break;
 	case WM_MOUSEMOVE:
@@ -87,10 +90,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			FVector2 dif = currentPos - Game::GetLMouseClickPosition();
 
 			// 카메라 위치 이동
-			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
-			cameraPos += FVector2(-dif.x, -dif.y);
-			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
-			Game::SetLMouseClickPosition(currentPos);
+			if (const auto cameraRef = Game::GetGameState()->GetMainCamera().lock())
+			{
+				FVector2 cameraPos = cameraRef->GetCameraLocation();
+				cameraPos += FVector2(-dif.x, -dif.y);
+				cameraRef->SetCameraLocation(cameraPos);
+				Game::SetLMouseClickPosition(currentPos);
+			}
 		}
 		break;
 	case WM_LBUTTONUP:
@@ -184,7 +190,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 namespace Game
 {
 	std::shared_ptr<UScene> g_currentScene = std::make_shared<UMenuScene>();
-	std::shared_ptr<UScene> g_nextScene = g_currentScene;
+	std::weak_ptr<UScene> g_nextScene = g_currentScene;
+	std::shared_ptr<UScene> g_nextSceneShared;
 
 	GameStateBase* g_gameInstance = nullptr;
 	
@@ -206,8 +213,8 @@ namespace Game
 		Renderer::Initialize(hwnd);
 		Input::Initialize(hwnd);
 		Time::Initialize();
-		Game::GetCurrentScene()->Initialize();
-		Game::GetCurrentScene()->LoadData();
+		g_currentScene->Initialize();
+		g_currentScene->LoadData();
 		m_FPSPerformancetime = Time::GetTotalTime();
 	}
 
@@ -260,17 +267,17 @@ namespace Game
 		{
 			if (button.second->bVisible)
 			{
-				for (auto& component : button.second.get()->WidgetComponents)
+				for (std::weak_ptr<UWidgetComponent> component : button.second.get()->WidgetComponents)
 				{
-					if (clickPosition.x < component.get()->m_Position.x ||
-						clickPosition.x > component.get()->m_Position.x + component.get()->m_Size.x ||
-						clickPosition.y < component.get()->m_Position.y ||
-						clickPosition.y > component.get()->m_Position.y + component.get()->m_Size.y
+					if (clickPosition.x < component.lock()->m_Position.x ||
+						clickPosition.x > component.lock()->m_Position.x + component.lock()->m_Size.x ||
+						clickPosition.y < component.lock()->m_Position.y ||
+						clickPosition.y > component.lock()->m_Position.y + component.lock()->m_Size.y
 						)
 						continue;
-					if (component->FVoidDelegate)
+					if (component.lock()->FVoidDelegate)
 					{
-						component->FVoidDelegate();
+						component.lock()->FVoidDelegate();
 					}
 				}
 			}
@@ -287,37 +294,36 @@ namespace Game
 			{
 				for (auto& component : button.second.get()->WidgetComponents)
 				{
-					if ((clickPosition.x < component.get()->m_Position.x ||
-						clickPosition.x > component.get()->m_Position.x + component.get()->m_Size.x ||
-						clickPosition.y < component.get()->m_Position.y ||
-						clickPosition.y > component.get()->m_Position.y + component.get()->m_Size.y) == false
-						)
-					if(component->m_bVisible == true)
-						bWidgetExist = true;
+					if (auto componentRef = component.lock())
+					{
+						if ((clickPosition.x < componentRef->m_Position.x ||
+							clickPosition.x > componentRef->m_Position.x + componentRef->m_Size.x ||
+							clickPosition.y < componentRef->m_Position.y ||
+							clickPosition.y > componentRef->m_Position.y + componentRef->m_Size.y) == false
+							)
+							if (componentRef->m_bVisible == true)
+								bWidgetExist = true;
+					}
+					
 				}
 			}
 		}
 		return bWidgetExist;
 	}
 
-	std::shared_ptr<UScene> GetCurrentScene()
-	{
-		return g_currentScene;
-	}
-
-	std::shared_ptr<UScene>* GetCurrentScenePtr()
-	{
-		return &g_currentScene;
-	}
-
-	std::shared_ptr<UScene> GetNextScene()
+	std::weak_ptr<UScene> GetNextScene()
 	{
 		return g_nextScene;
 	}
 
-	std::shared_ptr<UScene>* GetNextScenePtr()
+	std::weak_ptr<UScene>& GetNextSceneWeakPtr()
 	{
-		return &g_nextScene;
+		return g_nextScene;
+	}
+
+	std::shared_ptr<UScene>& GetNextSceneSharedPtr()
+	{
+		return g_nextSceneShared;
 	}
 
 	GameStateBase* GetGameState()
@@ -327,14 +333,16 @@ namespace Game
 
 	void ChangeScene()
 	{
-		if (g_currentScene != g_nextScene)
+		if (g_currentScene != g_nextScene.lock())
 		{
 			Game::SetMouseDragState(false);
 			ReleaseCapture();
 			if (g_currentScene)
 				g_currentScene->Release();
 			g_currentScene.reset();
-			g_currentScene = g_nextScene;
+
+			g_currentScene = g_nextSceneShared;
+			g_nextScene = g_nextSceneShared;
 		}
 	}
 
@@ -358,7 +366,8 @@ namespace Game
 
 	void SetMouseDragState(const bool& state)
 	{
-		if (std::shared_ptr<UPlayScene> scene = std::dynamic_pointer_cast<UPlayScene>(g_currentScene))
+		std::weak_ptr<UPlayScene> scene = std::dynamic_pointer_cast<UPlayScene>(g_currentScene);
+		if (scene.lock())
 		{
 			g_bMouseDragging = state;
 		}

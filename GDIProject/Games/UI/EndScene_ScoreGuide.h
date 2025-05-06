@@ -15,9 +15,9 @@ public:
 	virtual void Release() override;
 
 public:
-	std::shared_ptr<SUITextComponent> m_scoreui;
-	std::shared_ptr<SUITextComponent> m_scoreGuideui;
+	std::weak_ptr<SUITextComponent> m_scoreui;
+	std::weak_ptr<SUITextComponent> m_scoreGuideui;
 
-	std::shared_ptr<SUIButtonComponent> m_startGameButton;
-	std::shared_ptr<SUITextComponent> m_startGameButtonText;
+	std::weak_ptr<SUIButtonComponent> m_startGameButton;
+	std::weak_ptr<SUITextComponent> m_startGameButtonText;
 };

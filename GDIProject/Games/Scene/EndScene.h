@@ -24,6 +24,6 @@ public:
 	// delegate function
 	void StartGame();
 
-	std::shared_ptr<UEndScene_Widget> m_Widget;
-	std::shared_ptr<ABackGroundImage> m_image;
+	std::weak_ptr<UEndScene_Widget> m_Widget;
+	std::weak_ptr<ABackGroundImage> m_image;
 };

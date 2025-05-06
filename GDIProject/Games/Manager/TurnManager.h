@@ -24,12 +24,13 @@ public:
     void Release();
 
     inline  ETurnState GetCurrentTurn() const { return CurrentTurn; }
-    inline std::shared_ptr<APlayerController> GetPlayer() { return Player; }
+    inline std::weak_ptr<APlayerController> GetPlayer() { return Player; }
 
 public:
-    std::shared_ptr<UScene> OwnerScene;
-    std::vector<std::vector<std::shared_ptr<ATile>>> m_tiles;
+    std::weak_ptr<UObject> OwnerScene;
+    std::vector<std::vector<std::weak_ptr<ATile>>> m_tiles;
+
 private:
     ETurnState CurrentTurn;
-    std::shared_ptr<APlayerController> Player;
+    std::weak_ptr<APlayerController> Player;
 };

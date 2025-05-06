@@ -31,35 +31,60 @@ void UMenuscene_StartGuide::Initialize()
 	int y = int(Renderer::GetResolution().y * 0.6);
 	int width = 120;
 	int height = 60;
-	m_startGameButton->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
-	m_startGameButton->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
-	m_startGameButtonText->Initialize
-	(
-		L"게임 시작",
-		10,
-		(wchar_t*)L"Verdana",
-		Gdiplus::Color(255, 255, 255),
-		FVector2(x, y),
-		FVector2(width, height)
-	);
-	m_startGameButtonText->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
+	if (auto btn = Cast<SUIButtonComponent>(m_startGameButton))
+	{
+		btn->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
+		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera()))
+		{
+			btn->AttachedUIToActor(cameraRef);
+		}
+	}
+
+	if (auto text = Cast<SUITextComponent>(m_startGameButtonText))
+	{
+		text->Initialize
+		(
+			L"게임 시작",
+			10,
+			(wchar_t*)L"Verdana",
+			Gdiplus::Color(255, 255, 255),
+			FVector2(x, y),
+			FVector2(width, height)
+		);
+		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera()))
+		{
+			text->AttachedUIToActor(cameraRef);
+		}
+	}
 
 	x = int(Renderer::GetResolution().x * 0.2);
 	y = int(Renderer::GetResolution().y * 0.8);
 	width = 120;
 	height = 60;
-	m_endGameButton->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
-	m_endGameButton->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
-	m_endGameButtonText->Initialize
-	(
-		L"게임 종료",
-		10,
-		(wchar_t*)L"Verdana",
-		Gdiplus::Color(255, 255, 255),
-		FVector2(x, y),
-		FVector2(width, height)
-	);
-	m_endGameButtonText->AttachedUIToActor(Game::GetGameState()->GetMainCamera().get());
+	if (auto btn = Cast<SUIButtonComponent>(m_endGameButton))
+	{
+		btn->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
+		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera()))
+		{
+			btn->AttachedUIToActor(cameraRef);
+		}
+	}
+	if (auto text = Cast<SUITextComponent>(m_endGameButtonText))
+	{
+		text->Initialize
+		(
+			L"게임 종료",
+			10,
+			(wchar_t*)L"Verdana",
+			Gdiplus::Color(255, 255, 255),
+			FVector2(x, y),
+			FVector2(width, height)
+		);
+		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera()))
+		{
+			text->AttachedUIToActor(cameraRef);
+		}
+	}
 }
 
 void UMenuscene_StartGuide::Update()

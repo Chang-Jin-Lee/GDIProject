@@ -12,9 +12,9 @@ public:
 	virtual void Update() override;
 	virtual void Release() override;
 
-	void SetCameraLocation(FVector2 location) { SceneComponent->SetSceneComponentLocation(location); }
+	void SetCameraLocation(FVector2 location) { Cast<USceneComponent>(SceneComponent)->SetSceneComponentLocation(location); }
 
-	FVector2 GetCameraLocation() { return SceneComponent->GetSceneComponentLocation(); }
-	float GetCameraRotation() { return SceneComponent->GetSceneComponentRotation(); }
-	FVector2 GetCameraScale() { return SceneComponent->GetSceneComponentScale(); }
+	FVector2 GetCameraLocation() { return Cast<USceneComponent>(SceneComponent)->GetSceneComponentLocation(); }
+	float GetCameraRotation() { return Cast<USceneComponent>(SceneComponent)->GetSceneComponentRotation(); }
+	FVector2 GetCameraScale() { return Cast<USceneComponent>(SceneComponent)->GetSceneComponentScale(); }
 };

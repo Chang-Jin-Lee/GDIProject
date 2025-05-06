@@ -31,7 +31,7 @@ public:
 	void SetAnimMeshScale(float width, float height);
 	
 	bool m_bAttackAnimationPlaying = false;
-	std::shared_ptr<UCharacterNameWidget> m_nameWidget;
+	std::weak_ptr<UCharacterNameWidget> m_nameWidget;
 
 public:
 	const int RotateSpeed = 200;

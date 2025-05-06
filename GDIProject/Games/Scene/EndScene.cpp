@@ -8,13 +8,20 @@
 #include <UI/UITextComponent.h>
 #include "../Image/BackGroundImage.h"
 #include "../UI/EndScene_ScoreGuide.h"
+#include <Experiment/SmartCast.h>
 
 UEndScene::UEndScene()
 {
 	m_image = NewObject<ABackGroundImage>(TEXT("m_image"));
 	m_Widget = CreateWidget<UEndScene_Widget>(TEXT("scoreGuide"), EUILAYER::HUD);
 
-	m_Widget->m_startGameButton->SetVoidDelegate([this]() { StartGame(); });
+	if (const auto m_WidgetRef = Cast<UEndScene_Widget>(m_Widget))
+	{
+		if (auto btn = Cast<SUIButtonComponent>(m_WidgetRef->m_startGameButton))
+		{
+			btn->SetVoidDelegate([this]() { StartGame(); });
+		}
+	}
 }
 
 UEndScene::~UEndScene()
@@ -26,7 +33,10 @@ UEndScene::~UEndScene()
 void UEndScene::Initialize()
 {
 	__super::Initialize();
-	Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(FVector2(0, 0));
+	if (const auto cameraRef = Game::GetGameState()->GetMainCamera().lock())
+	{
+		cameraRef->SetCameraLocation(FVector2(0, 0));
+	}
 	UIInitialize();
 }
 
@@ -38,8 +48,11 @@ void UEndScene::Update()
 void UEndScene::LoadData()
 {
 	__super::LoadData();
-	m_image->LoadData(L"Image", L"EndImage.png");
-	m_image->SetActorSize(Renderer::GetResolution().x, Renderer::GetResolution().y);
+	if (const auto imageRef = m_image.lock())
+	{
+		imageRef->LoadData(L"Image", L"EndImage.png");
+		imageRef->SetActorSize(Renderer::GetResolution().x, Renderer::GetResolution().y);
+	}
 }
 
 void UEndScene::Release()
@@ -56,12 +69,18 @@ void UEndScene::DeleteNullObjects()
 
 void UEndScene::UIInitialize()
 {
-	m_Widget->Initialize();
-	
-	if (g_TurnGameStateInstanceIsValid)
+	if (const auto widghtRef = m_Widget.lock())
 	{
-		m_Widget->m_scoreui->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
-		std::cout << g_TurnGameStateInstance->m_iTurnCount << '\n';
+		widghtRef->Initialize();
+
+		if (g_TurnGameStateInstanceIsValid)
+		{
+			if (auto text = Cast<SUITextComponent>(widghtRef->m_scoreui))
+			{
+				text->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
+			}
+			std::cout << g_TurnGameStateInstance->m_iTurnCount << '\n';
+		}
 	}
 }
 
@@ -69,11 +88,11 @@ void UEndScene::UpdateInput()
 {
 	if (Input::IsKeyPressed(VK_C))
 	{
-		UScene::ChangeScene<UMenuScene>(Game::GetNextScenePtr());
+		UScene::ChangeScene<UMenuScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 	}
 }
 
 void UEndScene::StartGame()
 {
-	UScene::ChangeScene<UMenuScene>(Game::GetNextScenePtr());
+	UScene::ChangeScene<UMenuScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 }

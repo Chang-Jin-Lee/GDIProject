@@ -11,12 +11,12 @@ public:
 	virtual void Update() override;
 	virtual void Release() override;
 
-	void AttachedUIToActor(AActor* actor);
+	void AttachedUIToActor(const std::weak_ptr<UObject>& object);
 
 	bool IsVisible() { return m_bVisible; }
 
 public:
-	AActor* m_AttachedActor = nullptr;
+	std::weak_ptr<AActor> m_AttachedActor;
 	FVector2 m_Position;
 	FVector2 m_Size;
 

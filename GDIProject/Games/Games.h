@@ -16,10 +16,9 @@ namespace Game
 
 	void OnWidgetClick(const FVector2& clickPosition);
 	bool CheckWidgetPosition(const FVector2& clickPosition);
-	std::shared_ptr<UScene> GetCurrentScene();
-	std::shared_ptr<UScene>* GetCurrentScenePtr();
-	std::shared_ptr<UScene> GetNextScene();
-	std::shared_ptr<UScene>* GetNextScenePtr();
+	std::weak_ptr<UScene> GetNextScene();
+	std::weak_ptr<UScene>& GetNextSceneWeakPtr();
+	std::shared_ptr<UScene>& GetNextSceneSharedPtr();
 	GameStateBase* GetGameState();
 
 	void ChangeScene();

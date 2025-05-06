@@ -16,7 +16,10 @@ void UWidgetComponent::Release()
 	__super::Release();
 }
 
-void UWidgetComponent::AttachedUIToActor(AActor* actor)
+void UWidgetComponent::AttachedUIToActor(const std::weak_ptr<UObject>& object)
 {
-	m_AttachedActor = actor;
+	if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(object.lock()))
+	{
+		m_AttachedActor = actor;
+	}
 }

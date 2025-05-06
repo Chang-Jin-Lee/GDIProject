@@ -58,8 +58,11 @@ void ATile::InitializeImage()
 				int width = right - left;
 				int height = bottom - top;
 
-				StaticMeshComponent->SetMeshSize(width, height);
-				StaticMeshComponent->mesh = baseImage->Clone(left, top, width, height, PixelFormat32bppARGB);
+				if (auto StaticMeshComponentRef = StaticMeshComponent.lock())
+				{
+					StaticMeshComponentRef->SetMeshSize(width, height);
+					StaticMeshComponentRef->mesh = baseImage->Clone(left, top, width, height, PixelFormat32bppARGB);
+				}
 			}
 		}
 	}
@@ -96,7 +99,7 @@ FVector2 ATile::GetIndexAtPosition(FVector2 position)
 	return FVector2(row, col);
 }
 
-int ATile::SearchCost(const int& startRow, const int& startCol, const int& targetRow, const int& targetCol, std::vector<std::vector<std::shared_ptr<ATile>>> map)
+int ATile::SearchCost(const int& startRow, const int& startCol, const int& targetRow, const int& targetCol, std::vector<std::vector<std::weak_ptr<ATile>>> map)
 {
 	const int INF = 1e9;
 	int cost[TILE_ROW_SIZE][TILE_COL_SIZE];
@@ -128,11 +131,14 @@ int ATile::SearchCost(const int& startRow, const int& startCol, const int& targe
 			int newCol = col + dx[d];
 
 			if (!IsValidIndex(newRow, newCol)) continue;
-			if (!map[newRow][newCol]->bVisible) continue;
-			if (map[newRow][newCol]->unit != nullptr) continue;
-
-			int tileCost = map[newRow][newCol]->GetTileMoveCost();
-			if (tileCost == -1) continue; // 물 등 이동 불가
+			int tileCost = 1;
+			if (auto mapRef = Cast<ATile>(map[newRow][newCol]))
+			{
+				if (!mapRef->bVisible) continue;
+				if (mapRef->unit.expired() == false) continue;
+				int tileCost = mapRef->GetTileMoveCost();
+				if (tileCost == -1) continue;
+			}
 
 			if (cost[newRow][newCol] > currCost + tileCost)
 			{
@@ -146,7 +152,7 @@ int ATile::SearchCost(const int& startRow, const int& startCol, const int& targe
 }
 
 void ATile::GetReachableTiles(const int& startRow, const int& startCol, int maxCost,
-	std::vector<std::vector<std::shared_ptr<ATile>>>& map,
+	std::vector<std::vector<std::weak_ptr<ATile>>>& map,
 	std::vector<std::pair<int, int>>& outReachableTiles)
 {
 	const int INF = 1e9;
@@ -189,11 +195,14 @@ void ATile::GetReachableTiles(const int& startRow, const int& startCol, int maxC
 			int newCol = col + dx[d];
 
 			if (!IsValidIndex(newRow, newCol)) continue;
-			if (!map[newRow][newCol]->bVisible) continue;
-			if (map[newRow][newCol]->unit != nullptr) continue;
-
-			int tileCost = map[newRow][newCol]->GetTileMoveCost();
-			if (tileCost == -1) continue;
+			int tileCost = 1;
+			if (auto mapRef = Cast<ATile>(map[newRow][newCol]))
+			{
+				if (!mapRef->bVisible) continue;
+				if (mapRef->unit.expired() == false) continue;
+				tileCost = mapRef->GetTileMoveCost();
+				if (tileCost == -1) continue;
+			}
 
 			if (cost[newRow][newCol] > currCost + tileCost)
 			{

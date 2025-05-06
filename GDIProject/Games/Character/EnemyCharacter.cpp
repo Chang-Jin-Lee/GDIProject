@@ -21,11 +21,13 @@ AEnemyCharacter::~AEnemyCharacter()
 void AEnemyCharacter::Initialize()
 {
 	__super::Initialize();
-	Game::GetCurrentScene();
 	LoadData(L"test", L"Rectangle.png");
 	SetActorLocation(FRandom::GetRandomInRange(Renderer::GetResolution().x * 0.2f, Renderer::GetResolution().y), FRandom::GetRandomInRange(Renderer::GetResolution().y * 0.3f, Renderer::GetResolution().y));
-	m_textui->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
-	m_textui->AttachedUIToActor(this);
+	if (auto text = Cast<SUITextComponent>(m_textui))
+	{
+		text->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
+		text->AttachedUIToActor(weak_from_this());
+	}	
 }
 
 void AEnemyCharacter::Update()

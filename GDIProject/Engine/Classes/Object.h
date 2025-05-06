@@ -1,8 +1,10 @@
 #pragma once
+#include <memory>
 #include "ObjectBase.h"
 #include <iostream>
+#include "../Experiment/SmartCast.h"
 
-class UObject : public UObjectBase
+class UObject : public UObjectBase, public std::enable_shared_from_this<UObject>
 {
 public:
 	UObject();
@@ -12,16 +14,18 @@ public:
 	virtual void Release();
 	
 	template<class TReturnType>
-	std::shared_ptr<TReturnType> CreateDefaultSubobject(const std::wstring& SubobjectName, const int layer = 0)
+	std::weak_ptr<TReturnType> CreateDefaultSubobject(const std::wstring& SubobjectName, const int layer = 0)
 	{
 		std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
-		if (std::shared_ptr<UObject> object = std::dynamic_pointer_cast<UObject>(temp))	// 만약 씬에서 생성할때 위젯이 부착되어 있으면 걔도 관리해줌.
+		if (std::shared_ptr<UObject> object = std::shared_ptr<UObject>(temp))	// 만약 씬에서 생성할때 위젯이 부착되어 있으면 걔도 관리해줌.
 		{
 			object->SetEditorName(SubobjectName);
 			object->RenderLayer = layer;
 		}
-		m_components.insert(std::make_pair(SubobjectName, temp));
-		return temp;
+
+		auto result = m_components.emplace(SubobjectName, temp);
+		auto iter = result.first;
+		return std::dynamic_pointer_cast<TReturnType>(iter->second);
 	}
 
 	void DestroyComponent(const std::wstring& name)
@@ -32,15 +36,12 @@ public:
 
 	void DestroyAllComponent()
 	{
-		for (auto& m_component : m_components)
-		{
-			std::cout << "이전 m_component.second.use_count() : " << m_component.second.use_count() << '\n';
-			while (m_component.second.use_count() > 0)
-			{
-				m_component.second.reset();
-			}
-			std::cout << "이후 m_component.second.use_count() : " << m_component.second.use_count() << '\n';
-		}
+		//for (auto& m_component : m_components)
+		//{
+		//	std::cout << "m_component.second.use_count() : " << m_component.second.use_count() << '\n';
+		//	//if(m_component.second.use_count() > 0)
+		//	m_component.second.reset();
+		//}
 		m_components.clear();
 	}
 	
