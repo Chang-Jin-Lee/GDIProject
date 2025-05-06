@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="UEndScene" Collapsed="true">
+    <Position X="0.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAQAAAAAAEAQAQAAAAAQAAAkAAAAAAAAAAEBABAAEAA=</HashCode>
+      <FileName>Scene\EndScene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UMenuScene" Collapsed="true">
+    <Position X="4" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAQAAAAAAABQAQAAAAAQAAAgAQAAAAAAAAABADAQEAA=</HashCode>
+      <FileName>Scene\MenuScene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UPlayScene" Collapsed="true">
+    <Position X="7.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>FBQQQgAAAAAwAQAAAAAQIACCAgABigAAEAABBBACEAA=</HashCode>
+      <FileName>Scene\PlayScene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AEnemyCharacter" Collapsed="true">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAQAQCAAAAAAAAAAAAAAAAAAAAAABCDAQA=</HashCode>
+      <FileName>Character\EnemyCharacter.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ABackGroundImage" Collapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQACAAAAAAQAQAAAAAAAAAAAAAAAAAAAAAAAACAAAA=</HashCode>
+      <FileName>Image\BackGroundImage.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="APlayerCharacter" Collapsed="true">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgQACAAAIAAZERBAIhAAAQBCEIAIFAAABAAAEBQCAIA=</HashCode>
+      <FileName>Character\PlayerCharacter.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AAIPlayer" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAEAgQBgAAAQAAAAAAAQAAAAAVAAAAEgAAQBAAAgI=</HashCode>
+      <FileName>Player\AIPlayer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TurnGameState" Collapsed="true">
+    <Position X="4" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAgAAAEAAAQAAAgAYABAAhAAAAACBAAAAgBAAAAA=</HashCode>
+      <FileName>Player\TurnGameState.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="APlayerController" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>MAAAAACAAEAAAQAABAAAAAAQABAFAAAAGAAFABAAAAA=</HashCode>
+      <FileName>Player\PlayerController.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UWinScene" Collapsed="true">
+    <Position X="2.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAQAAAAAAAAwAQAAAAAQBAAkAAAAAAAAAAABABAAEAA=</HashCode>
+      <FileName>Scene\WinScene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ACity" Collapsed="true">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABQAAAAAAAAAAQAAAAAAAAAAAABAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>Tile\City.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ATile" Collapsed="true">
+    <Position X="2.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQQAAACMEAowAQAIAAIAAFAAgAAAAQSAAAAAAAQACAA=</HashCode>
+      <FileName>Tile\Tile.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UCharacterNameWidget" Collapsed="true">
+    <Position X="7.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAASQAAAAAAQAAAAAAAAAAAAAAABAAAAA=</HashCode>
+      <FileName>UI\CharacterNameWidget.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UEndScene_Widget" Collapsed="true">
+    <Position X="2.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAAIgAAAAAQAAAAAEAAAIAAAAAAAAAAAAABAAAIA=</HashCode>
+      <FileName>UI\EndScene_ScoreGuide.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UMenuscene_StartGuide" Collapsed="true">
+    <Position X="5.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAACAAAAQAAAAAEAAAEAAAAAABCAAAAABAAAIA=</HashCode>
+      <FileName>UI\MenuScene_StartGuide.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UPlayScene_Widget" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>RJQFgAAACAAAEQAAAAAAACICQADAACRCAAAAABIAAIA=</HashCode>
+      <FileName>UI\PlayScene_Widget.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TurnManager" Collapsed="true">
+    <Position X="5.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAkAAAAAAAQAAAAEAAAgAAAAFAAAAAAAAARAACAA=</HashCode>
+      <FileName>Manager\TurnManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="EUnitType" Collapsed="true">
+    <Position X="4" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAABAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>Character\PlayerCharacter.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ETileType" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAASAABAAAAAAAAAAEAAAAgAAgAAAAAAAAA=</HashCode>
+      <FileName>Tile\Tile.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ETurnState" Collapsed="true">
+    <Position X="2.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAgAAA=</HashCode>
+      <FileName>Manager\TurnManager.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="맑은 고딕" Size="9" />
+</ClassDiagram>

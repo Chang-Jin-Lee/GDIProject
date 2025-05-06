@@ -1,0 +1,312 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="TVector2&lt;T&gt;" Collapsed="true">
+    <Position X="26" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAEAAEAAAAQBACAAAAgAAAABgAAAAACA=</HashCode>
+      <FileName>Math\Math.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UAnimationComponent" Collapsed="true">
+    <Position X="22.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAEQAQEAAAAAQoAAAAAAAAAAAAIAABAAAAA=</HashCode>
+      <FileName>Runtime\Animation\AnimationComponent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="AActor" Collapsed="true">
+    <Position X="9.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEQAAIAAEAARAQAAAAIYAEAFgAIACAgAAAAABBAAIBQ=</HashCode>
+      <FileName>Classes\Actor.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ACharacter" Collapsed="true">
+    <Position X="8" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAgQQAAgJIAABAAAAABAAEAEAIAABAQAAA=</HashCode>
+      <FileName>Classes\Character.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UObject" Collapsed="true">
+    <Position X="8" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AASAAAAAQAEFAQAAAIADABQAAACAAAAAAAAAQhAABAA=</HashCode>
+      <FileName>Classes\Object.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UObjectBase" Collapsed="true">
+    <Position X="8" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAQAAIAAAAAQAAAAAAAAAAAAAAAAIAAAAAABAAAAA=</HashCode>
+      <FileName>Classes\ObjectBase.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="APawn" Collapsed="true">
+    <Position X="8" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQABIAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAABAAAAA=</HashCode>
+      <FileName>Classes\Pawn.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GarbageUpdate" Collapsed="true">
+    <Position X="15" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>Classes\Scene\Scene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UScene" Collapsed="true">
+    <Position X="13" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAQASAACAAAAgBEAABAAAAgQiABABQAAgQ=</HashCode>
+      <FileName>Classes\Scene\Scene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ACameraActor" Collapsed="true">
+    <Position X="10.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAIAAAAAAgAQAAAAAAAAAAAAAAAAEAEABAABAAAAA=</HashCode>
+      <FileName>Classes\Camera\CameraActor.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UCamaraBase" Collapsed="true">
+    <Position X="10.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIQAAAAAAAAAAQAAABAAAAAAAAAAAAAAAAAAABAAAAA=</HashCode>
+      <FileName>Classes\Camera\CameraBase.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UObjectManager&lt;T&gt;" Collapsed="true">
+    <Position X="24.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAABEAgAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Classes\Manager\ObjectManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="GameStateBase" Collapsed="true">
+    <Position X="22.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgBAQAAAAAAQAAAAAAAAAAgACAACEAAAAAARAAAAQ=</HashCode>
+      <FileName>Classes\GameFramework\GameState.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="USceneComponent" Collapsed="true">
+    <Position X="5.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAyAAAAAAACAEAAAAAAAAAAAAgAAQAwAAQAAEAAAAAA=</HashCode>
+      <FileName>Classes\Components\SceneComponent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UStaticMeshComponent" Collapsed="true">
+    <Position X="12.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQQAAAIAABARARAAAAAAAQAAAAABAAAAAAAAABAAAAA=</HashCode>
+      <FileName>Classes\Components\StaticMeshComponent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SUIButtonComponent" Collapsed="true">
+    <Position X="1.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAECAAIAQAAAAAAAAAAAAAAAAAAAAAAABAAAAA=</HashCode>
+      <FileName>UI\UIButtonComponent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SUITextComponent" Collapsed="true">
+    <Position X="3.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAQgAAAQAUAAAQAAAAAgAAAAEAAAAAAQEAIAABgAAAA=</HashCode>
+      <FileName>UI\UITextComponent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UWidget" Collapsed="true">
+    <Position X="17" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AASACAAAAAAAAQAAAAAIAAAAAAAAAAAAAACAABAACAA=</HashCode>
+      <FileName>UI\Widget.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UWidgetComponent" Collapsed="true">
+    <Position X="2.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAgAAACBAEQAAAAAAAAAAgAAAAAAAAAAAABIAAAA=</HashCode>
+      <FileName>UI\WidgetComponent.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UWidgetComponentBase" Collapsed="true">
+    <Position X="2.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAABAAAAA=</HashCode>
+      <FileName>UI\WidgetComponentBase.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TQuadTree&lt;ElementType, NodeCapacity&gt;" Collapsed="true">
+    <Position X="24.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAMAAAABAECAAAAAQAAAAAAFBAAgQAAIgAABAIAA=</HashCode>
+      <FileName>Experiment\QuadTree.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="FFileHelper" Collapsed="true">
+    <Position X="24.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Runtime\Core\FIleHelper.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="FAABBBox" Collapsed="true">
+    <Position X="22.5" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAUAAAQAAgAAAAAIQAUAAABAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\AABBBox.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Math::TRandom&lt;T&gt;" Collapsed="true">
+    <Position X="26" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Math\Math.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Typedef Name="uint8" Collapsed="true">
+    <Position X="12" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="uint16" Collapsed="true">
+    <Position X="8.5" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="uint32" Collapsed="true">
+    <Position X="4.5" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="uint64" Collapsed="true">
+    <Position X="22.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="int8" Collapsed="true">
+    <Position X="22.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="int16" Collapsed="true">
+    <Position X="24.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="int32" Collapsed="true">
+    <Position X="0.5" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="int64" Collapsed="true">
+    <Position X="26" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="ANSICHAR" Collapsed="true">
+    <Position X="22.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="WIDECHAR" Collapsed="true">
+    <Position X="24.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="CHAR8" Collapsed="true">
+    <Position X="12" Y="11.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="CHAR16" Collapsed="true">
+    <Position X="8.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="CHAR32" Collapsed="true">
+    <Position X="4.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="TCHAR" Collapsed="true">
+    <Position X="24.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um\winnt.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="TYPE_OF_NULL" Collapsed="true">
+    <Position X="0.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Typedef Name="TYPE_OF_NULLPTR" Collapsed="true">
+    <Position X="26" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Typedef>
+  <Enum Name="ESCENELAYER" Collapsed="true">
+    <Position X="24.25" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAAAAAAAAAAAAAAAAAAAAAAIAAAAAAQAAAAAAA=</HashCode>
+      <FileName>Classes\Scene\Scene.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="EUILAYER" Collapsed="true">
+    <Position X="26" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEABAAAAAAAAAAAAAAAAAAACAgAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\Scene\Scene.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="UTF8CHAR" Collapsed="true">
+    <Position X="22.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\Platform.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="eCameraViewState" Collapsed="true">
+    <Position X="22.5" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Experiment\StateOption.h</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="맑은 고딕" Size="9" />
+</ClassDiagram>
