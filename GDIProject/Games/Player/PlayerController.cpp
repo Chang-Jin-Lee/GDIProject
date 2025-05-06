@@ -108,10 +108,20 @@ void APlayerController::Release()
 	{
 		Citie.reset();
 	}
+	std::vector<std::vector<std::weak_ptr<ATile>>>().swap(m_tiles);
+	std::vector<std::weak_ptr<APlayerCharacter>>().swap(Units);
+	std::vector<std::weak_ptr<ACity>>().swap(Cities);
 }
 
 void APlayerController::SpawnAtIndex(int row, int col)
 {
+	if (const auto tile = m_tiles[col][row].lock())
+	{
+		if (tile->unit.expired() == false)
+		{
+			return;
+		}
+	}
 	if (row < 0 || col < 0) return;
 	int type = static_cast<int>(EUnitType::Settler);
 	if (auto OwnerSceneRef = std::dynamic_pointer_cast<UScene>(OwnerScene.lock()))
@@ -143,6 +153,14 @@ void APlayerController::SpawnAtPosition(FVector2 position, EUnitType unitType)
 	FVector2 index = ATile::GetIndexAtPosition(position);
 	FVector2 pos = ATile::GetTilePositionAtIndex((int)index.x, (int)index.y);
 	if (pos.x == -1 || pos.y == -1) return;
+
+	if (const auto tile = m_tiles[(int)index.x][(int)index.y].lock())
+	{
+		if (tile->unit.expired() == false)
+		{
+			return;
+		}
+	}
 
 	if (auto OwnerSceneRef = std::dynamic_pointer_cast<UScene>(OwnerScene.lock()))
 	{

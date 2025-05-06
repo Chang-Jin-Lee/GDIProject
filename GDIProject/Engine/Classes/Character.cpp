@@ -89,6 +89,12 @@ void ACharacter::LoadAnimationData(const wchar_t* baseDir, const wchar_t* baseSa
 	AnimationBundle.baseImages[static_cast<int>(animState)]->LoadData(baseDir, originalImagefileName);
 	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
 	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(AnimationBundle.baseImages[static_cast<int>(animState)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
+	
+	for (int i = 0; i < cloneInfoRowSize; i++)
+	{
+		free(cloneInfo[i]);
+	}
+	free(cloneInfo);
 }
 
 const wchar_t* ACharacter::GetDirStateName(DirState state)

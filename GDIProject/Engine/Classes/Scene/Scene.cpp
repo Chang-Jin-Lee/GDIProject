@@ -34,11 +34,12 @@ UScene::~UScene()
 
 void UScene::Initialize()
 {
-	
+	__super::Initialize();
 }
 
 void UScene::Update()
 {
+	__super::Update();
 	Renderer::ClearRenderObjects();
 	for (auto& objectMap : m_objects)
 	{
@@ -94,37 +95,32 @@ void UScene::LoadData()
 
 void UScene::Release()
 {
+	__super::Release();
 	for (auto& m_object : m_objects)
 	{
 		for (auto& object : m_object)
 		{
 			std::cout << "이전 m_component.second.use_count() : " << object.second.use_count() << '\n';
-			while (object.second.use_count() > 0)
-			{
-				object.second.reset();
-			}
-			std::cout << "이전 m_component.second.use_count() : " << object.second.use_count() << '\n';
+			object.second.reset();
 			//object.second.reset();
 		}
 		m_object.clear();
 	}
 	m_objects.clear();
+	std::vector<std::unordered_map<std::wstring, std::shared_ptr<AActor>>>().swap(m_objects);
 
 	for (auto& m_widget : m_widgets)
 	{
 		for (auto& widget : m_widget)
 		{
 			std::cout << "이전 m_component.second.use_count() : " << widget.second.use_count() << '\n';
-			while (widget.second.use_count() > 0)
-			{
-				widget.second.reset();
-			}
-			std::cout << "이전 m_component.second.use_count() : " << widget.second.use_count() << '\n';
+			widget.second.reset();
 			//widget.second.reset();
 		}
 		m_widget.clear();
 	}
 	m_widgets.clear();
+	std::vector<std::unordered_map<std::wstring, std::shared_ptr<UWidget>>>().swap(m_widgets);
 }
 
 void UScene::DeleteNullObjects()

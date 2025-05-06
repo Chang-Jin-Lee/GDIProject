@@ -20,6 +20,7 @@ void TurnManager::Initialize()
 		PlayerRef->m_tiles = m_tiles;
 		PlayerRef->Initialize();
 	}
+	std::vector<std::vector<std::weak_ptr<ATile>>>().swap(m_tiles);
 }
 
 void TurnManager::Update()
@@ -36,5 +37,6 @@ void TurnManager::Update()
 
 void TurnManager::Release()
 {
-
+	__super::Release();
+	std::vector<std::vector<std::weak_ptr<ATile>>>().swap(m_tiles);
 }

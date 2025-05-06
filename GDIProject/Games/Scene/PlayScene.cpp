@@ -108,6 +108,7 @@ void UPlayScene::LoadData()
 
 void UPlayScene::Release()
 {
+	__super::Release();
 	for (auto objectMap : m_objects)
 	{
 		for (auto object : objectMap)
@@ -121,18 +122,7 @@ void UPlayScene::Release()
 	}
 	m_objects.clear();
 	m_PlayScene_Widget.reset();
-	for (int i = 0; i < TILE_ROW_SIZE; i++)
-	{
-		for (int j = 0; j < TILE_COL_SIZE; j++)
-		{
-			std::cout << "m_tiles" << i << ' ' << j << " : " << m_tiles[i][j].use_count() << '\n';
-			while (m_tiles[i][j].use_count() > 0)
-			{
-				m_tiles[i][j].reset();
-			}
-			m_tiles[i][j].reset();
-		}
-	}
+
 	std::cout << "TurnMgr : " << TurnMgr.use_count() << '\n';
 	TurnMgr.reset();
 }

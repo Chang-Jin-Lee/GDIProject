@@ -56,7 +56,7 @@ void UWinScene::LoadData()
 
 void UWinScene::Release()
 {
-
+	__super::Release();
 }
 
 void UWinScene::DeleteNullObjects()

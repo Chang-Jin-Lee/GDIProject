@@ -10,15 +10,29 @@ public:
 		m_Position = FVector2(0, 0);
 		m_Size = FVector2(150, 150);
 	}
-	~SUIButtonComponent() {}
-	
-	void Initialize(Gdiplus::Color color, FVector2 Position, FVector2 Size, int _radius)
+	~SUIButtonComponent() 
 	{
+		m_brush = nullptr;
+	}
+	
+	virtual void Initialize(Gdiplus::Color color, FVector2 Position, FVector2 Size, int _radius)
+	{
+		__super::Initialize();
 		if(m_brush == nullptr) m_brush = new Gdiplus::SolidBrush(Gdiplus::Color(255, 255, 255));
 		m_brush->SetColor(color);
-		m_Position = Position;
+		m_Position = Position;	
 		m_Size = Size;
 		m_radius = _radius;
+	}
+
+	virtual void Release()
+	{
+		__super::Release();
+		if (m_brush)
+		{
+			delete m_brush;
+			m_brush = nullptr;
+		}
 	}
 
 public:
