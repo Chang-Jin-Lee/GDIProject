@@ -8,6 +8,7 @@
 #include <UI/UITextComponent.h>
 #include "../Image/BackGroundImage.h"
 #include "../UI/EndScene_ScoreGuide.h"
+#include <Runtime/Core/FIleHelper.h>
 
 UWinScene::UWinScene()
 {
@@ -75,6 +76,8 @@ void UWinScene::UIInitialize()
 			{
 				scoreui->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
 			}
+			FFileHelper::SaveScoreAndKeepTop10(L"/highscore.txt", g_TurnGameStateInstance->m_iTurnCount);
+			std::cout << g_TurnGameStateInstance->m_iTurnCount << '\n';
 		}
 	}
 	

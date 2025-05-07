@@ -9,6 +9,7 @@
 #include "../Image/BackGroundImage.h"
 #include "../UI/EndScene_ScoreGuide.h"
 #include <Experiment/SmartCast.h>
+#include <Runtime/Core/FIleHelper.h>
 
 UEndScene::UEndScene()
 {
@@ -79,7 +80,6 @@ void UEndScene::UIInitialize()
 			{
 				text->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
 			}
-			std::cout << g_TurnGameStateInstance->m_iTurnCount << '\n';
 		}
 	}
 }

@@ -22,4 +22,8 @@ public:
 
 	std::weak_ptr<SUIButtonComponent> m_endGameButton;
 	std::weak_ptr<SUITextComponent> m_endGameButtonText;
+
+	std::vector<std::weak_ptr<SUITextComponent>> textScore;
+	std::vector<std::weak_ptr<SUITextComponent>> textTime;
+	std::weak_ptr<SUITextComponent> HallOfFameText;
 };

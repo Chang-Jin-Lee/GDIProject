@@ -12,7 +12,7 @@ public:
 
 	SUITextComponent()
 	{
-		m_content = L"Default_Text";
+		m_content = L"";
 		m_fontSize = 10;
 		m_fontFamily = L"Verdana";
 		m_color = Gdiplus::Color(255, 255, 255);

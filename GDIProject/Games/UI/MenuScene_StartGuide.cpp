@@ -1,5 +1,6 @@
 #include "MenuScene_StartGuide.h"
 #include "../Games.h"
+#include <Runtime/Core/FIleHelper.h>
 
 UMenuscene_StartGuide::UMenuscene_StartGuide()
 {
@@ -9,10 +10,21 @@ UMenuscene_StartGuide::UMenuscene_StartGuide()
 	m_endGameButton = CreateDefaultSubobject<SUIButtonComponent>(TEXT("endGameButton"));
 	m_endGameButtonText = CreateDefaultSubobject<SUITextComponent>(TEXT("endGameButtonText"));
 
+	HallOfFameText = CreateDefaultSubobject<SUITextComponent>(TEXT("HallOfFameText"));
+
 	WidgetComponents.push_back(m_startGameButton);
 	WidgetComponents.push_back(m_startGameButtonText);
 	WidgetComponents.push_back(m_endGameButton);
 	WidgetComponents.push_back(m_endGameButtonText);
+	WidgetComponents.push_back(HallOfFameText);
+
+	for (int i = 0; i < 10; i++)
+	{
+		textScore.emplace_back(CreateDefaultSubobject<SUITextComponent>(TEXT("textScore") + std::to_wstring(i)));
+		textTime.emplace_back(CreateDefaultSubobject<SUITextComponent>(TEXT("textTime") + std::to_wstring(i)));
+		WidgetComponents.push_back(textScore.back());
+		WidgetComponents.push_back(textTime.back());
+	}
 }
 
 UMenuscene_StartGuide::~UMenuscene_StartGuide()
@@ -85,6 +97,71 @@ void UMenuscene_StartGuide::Initialize()
 			text->AttachedUIToActor(cameraRef);
 		}
 	}
+
+	x = int(Renderer::GetResolution().x * 0.65);
+	y = int(Renderer::GetResolution().y * 0.15);
+	width = 240;
+	height = 60;
+	if (auto text = Cast<SUITextComponent>(HallOfFameText))
+	{
+		text->Initialize
+		(
+			L"명예의 전당",
+			12,
+			(wchar_t*)L"Verdana",
+			Gdiplus::Color(255, 255, 255),
+			FVector2(x, y),
+			FVector2(width, height)
+		);
+		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera()))
+		{
+			text->AttachedUIToActor(cameraRef);
+		}
+	}
+
+	std::vector<FFileHelper::ScoreEntry> scoreList;
+	FFileHelper::LoadFileString(L"/highscore.txt", scoreList);
+	width = 240;
+	height = 60;
+	for (int i = 0; i < scoreList.size(); i++)
+	{
+		x = int(Renderer::GetResolution().x * 0.5);
+		y = int(Renderer::GetResolution().y * 0.25) + int((Renderer::GetResolution().y * 0.07) * i);
+
+		if (auto text = Cast<SUITextComponent>(textScore[i]))
+		{
+			text->Initialize
+			(
+				std::to_wstring(scoreList[i].score),
+				10,
+				(wchar_t*)L"Verdana",
+				Gdiplus::Color(255, 255, 255),
+				FVector2(x, y),
+				FVector2(width, height)
+			);
+			if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera()))
+			{
+				text->AttachedUIToActor(cameraRef);
+			}
+		}
+
+		if (auto text = Cast<SUITextComponent>(textTime[i]))
+		{
+			text->Initialize
+			(
+				scoreList[i].time,
+				10,
+				(wchar_t*)L"Verdana",
+				Gdiplus::Color(255, 255, 255),
+				FVector2(x + int(Renderer::GetResolution().x * 0.2), y),
+				FVector2(width, height)
+			);
+			if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera()))
+			{
+				text->AttachedUIToActor(cameraRef);
+			}
+		}
+	}
 }
 
 void UMenuscene_StartGuide::Update()
@@ -99,4 +176,6 @@ void UMenuscene_StartGuide::Release()
 	m_startGameButtonText.reset();
 	m_endGameButton.reset();
 	m_endGameButtonText.reset();
+	textScore.clear();
+	textTime.clear();
 }
