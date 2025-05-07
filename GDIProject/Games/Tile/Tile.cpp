@@ -136,7 +136,7 @@ int ATile::SearchCost(const int& startRow, const int& startCol, const int& targe
 			{
 				if (!mapRef->bVisible) continue;
 				if (mapRef->unit.expired() == false) continue;
-				int tileCost = mapRef->GetTileMoveCost();
+				tileCost = mapRef->GetTileMoveCost();
 				if (tileCost == -1) continue;
 			}
 
