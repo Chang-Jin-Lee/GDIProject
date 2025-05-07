@@ -392,7 +392,7 @@ void UPlayScene::CheckVictoryConditions()
 							bVictory = false;
 						}
 					}
-					chRef->ReadyForNextTurn();
+					//chRef->ReadyForNextTurn();
 				}
 			}
 		}
@@ -459,7 +459,7 @@ void UPlayScene::ReadyForNextStage()
 		
 		if (auto tile = Cast<ATile>(m_tiles[x][y]))
 		{
-			while (tile->bVisible == false || tile->unit.expired() == false)
+			while (tile->bVisible == false || tile->unit.expired() == false || tile->m_etileType == ETileType::Capital)
 			{
 				x = FRandom::GetRandomInRange(0, int(TILE_ROW_SIZE));
 				y = FRandom::GetRandomInRange(0, int(TILE_COL_SIZE));

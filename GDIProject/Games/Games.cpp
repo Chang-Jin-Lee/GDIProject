@@ -126,7 +126,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	//Renderer::SetResolution(800, 600);	// 해상도 조절
 	//Renderer::SetResolution(1280, 800);	// 해상도 조절
 	Renderer::SetResolution(1024, 600);	// 해상도 조절
-	InitConsole();  // 콘솔 출력 초기화
+	//InitConsole();  // 콘솔 출력 초기화
 
 	char szPath[MAX_PATH] = { 0, };
 	::GetCurrentDirectoryA(MAX_PATH, szPath);

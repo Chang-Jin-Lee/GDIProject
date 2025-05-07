@@ -90,6 +90,26 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 					SelectedUnitRef->ActionRemainCount -= distance;
 					SelectedUnitRef->SetActorLocation(pos);
 
+					if (const auto OwnerSceneRef = OwnerScene.lock())
+					{
+						std::shared_ptr<UPlayScene> ps = std::dynamic_pointer_cast<UPlayScene>(OwnerSceneRef);
+						if (auto widget = ps->m_PlayScene_Widget.lock())
+						{
+							if (auto text = widget->m_selectTileName.lock())
+							{
+								text->m_content = L"캐릭터 이름 : " + SelectedUnitRef->GetName();
+							}
+						}
+
+						if (auto widget = ps->m_PlayScene_Widget.lock())
+						{
+							if (auto text = widget->m_selectTileActionCount.lock())
+							{
+								text->m_content = L"남은 행동 수 : " + std::to_wstring(SelectedUnitRef->ActionRemainCount);
+							}
+						}
+					}
+
 					for (auto& tiles : m_tiles)
 					{
 						for (auto& tile : tiles)

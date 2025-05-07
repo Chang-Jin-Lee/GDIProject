@@ -107,7 +107,7 @@ void APlayerCharacter::Release()
 
 void APlayerCharacter::ReadyForNextTurn()
 {
-	ActionRemainCount = ActionMaxCount;
+	ActionRemainCount += ActionMaxCount;
 }
 
 void APlayerCharacter::Input()
@@ -261,7 +261,7 @@ std::wstring APlayerCharacter::GetUnitTypeString(int value)
 	case EUnitType::Warrior:
 		return L"Àü»ç";
 	case EUnitType::Archer:
-		return L"±Ã¼ö";
+		return L"Á¤Âûº´";
 	default:
 		return L"default";
 	}
