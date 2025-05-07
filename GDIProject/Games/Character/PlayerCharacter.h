@@ -1,6 +1,7 @@
 #pragma once
 #include <Classes/Character.h>
 #include <Runtime/Animation/AnimationComponent.h>
+#include <vector>
 
 enum class EUnitType
 {
@@ -27,7 +28,8 @@ public:
 
 	void Input();
 
-	void LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, DirState dirState, AnimationState animState, int pixelformat);
+	//void LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, DirState dirState, AnimationState animState, int pixelformat);
+	void LoadData(Gdiplus::Bitmap* baseImage, std::vector<std::vector<int>>& infos, DirState dirState, AnimationState animState, int pixelformat);
 	void SetAnimMeshScale(float width, float height);
 	
 	bool m_bAttackAnimationPlaying = false;

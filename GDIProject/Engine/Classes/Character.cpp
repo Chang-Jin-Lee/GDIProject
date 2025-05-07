@@ -76,25 +76,35 @@ void ACharacter::Release()
 
 void ACharacter::LoadAnimationData(const wchar_t* baseDir, const wchar_t* baseSate, const wchar_t delimeter, AnimationState animState, DirState dirState)
 {
-	int** cloneInfo = nullptr;
-	int cloneInfoRowSize = -1;
-	int cloneInfoColsize = -1;
+	//int** cloneInfo = nullptr;
+	/*int cloneInfoRowSize = -1;
+	int cloneInfoColsize = -1;*/
+
+	
 
 	wchar_t originalImagefileName[MAX_INFOFILE_NAME_SIZE] = { L'\0', };
 	int num = swprintf(originalImagefileName, 50, L"%s_%s.png", baseSate, GetAnimStateName(animState));
 	wchar_t infoFileName[MAX_INFOFILE_NAME_SIZE] = { L'\0', };
 	num = swprintf(infoFileName, MAX_INFOFILE_NAME_SIZE, L"%s_%s_%s.txt", baseSate, GetAnimStateName(animState), GetDirStateName(static_cast<DirState>(dirState)));
 
-	FFileHelper::LoadFileToArrayWithDelimeter<int>(baseDir, infoFileName, delimeter, 100, &cloneInfoRowSize, &cloneInfoColsize, &cloneInfo);
+	//FFileHelper::LoadFileToArrayWithDelimeter<int>(baseDir, infoFileName, delimeter, 100, &cloneInfoRowSize, &cloneInfoColsize, &cloneInfo);
+	//AnimationBundle.baseImages[static_cast<int>(animState)]->LoadData(baseDir, originalImagefileName);
+	//AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
+	//AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(AnimationBundle.baseImages[static_cast<int>(animState)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
+	
+	std::vector<std::vector<int>> infos;
+	FFileHelper::LoadFileToVectorWithDelimiter<int>(baseDir, infoFileName, delimeter, infos);
+	int cloneInfoRowSize = infos.size();
+	int cloneInfoColsize = infos[0].size();
 	AnimationBundle.baseImages[static_cast<int>(animState)]->LoadData(baseDir, originalImagefileName);
 	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
-	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(AnimationBundle.baseImages[static_cast<int>(animState)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
-	
-	for (int i = 0; i < cloneInfoRowSize; i++)
-	{
-		free(cloneInfo[i]);
-	}
-	free(cloneInfo);
+	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(AnimationBundle.baseImages[static_cast<int>(animState)]->mesh, infos, PixelFormat32bppARGB);
+
+	//for (int i = 0; i < cloneInfoRowSize; i++)
+	//{
+	//	free(cloneInfo[i]);
+	//}
+	//free(cloneInfo);
 }
 
 const wchar_t* ACharacter::GetDirStateName(DirState state)

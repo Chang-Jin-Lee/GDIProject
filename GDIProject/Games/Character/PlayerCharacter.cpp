@@ -162,9 +162,14 @@ void APlayerCharacter::Input()
 	}
 }
 
-void APlayerCharacter::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, DirState dirState, AnimationState animState, int pixelformat)
+//void APlayerCharacter::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, DirState dirState, AnimationState animState, int pixelformat)
+//{
+//	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(baseImage, cloneInfo, rowSize, colSize, pixelformat);
+//}
+
+void APlayerCharacter::LoadData(Gdiplus::Bitmap* baseImage, std::vector<std::vector<int>>& infos, DirState dirState, AnimationState animState, int pixelformat)
 {
-	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(baseImage, cloneInfo, rowSize, colSize, pixelformat);
+	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(baseImage, infos, pixelformat);
 }
 
 void APlayerCharacter::SetAnimMeshScale(float width, float height)

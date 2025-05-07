@@ -2,6 +2,7 @@
 
 #include "Pawn.h"
 #include "../Runtime/Animation/AnimationComponent.h"
+#include <vector>
 
 #ifndef MAX_INFOFILE_NAME_SIZE
 #define MAX_INFOFILE_NAME_SIZE 50

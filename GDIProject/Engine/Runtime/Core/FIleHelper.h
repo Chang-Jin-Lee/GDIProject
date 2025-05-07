@@ -94,13 +94,72 @@ struct FFileHelper
 		free(wcsbuf);
 	}
 
+	template<typename T>
+	static bool LoadFileToVectorWithDelimiter(const std::wstring& baseDir, const std::wstring& fileName, wchar_t delimiter, std::vector<std::vector<T>>& outArray)
+	{
+		// 경로 구성
+		std::wstring fullPath = L"../Resource/" + baseDir + L"/" + fileName;
+
+		// 파일 열기
+		std::wifstream file(fullPath);
+		if (!file.is_open()) {
+			//std::wcerr << L"파일 열기 실패: " << fullPath << std::endl;
+			return false;
+		}
+
+		outArray.clear();
+		std::wstring line;
+
+		// 첫 줄: 총 row 개수 (정보용, 실제로는 무시 가능)
+		if (!std::getline(file, line))
+			return false;
+
+		int expectedRowCount = std::stoi(line);
+
+		int expectedColSize = -1;
+		while (std::getline(file, line)) {
+			std::vector<T> row;
+			std::wstringstream ss(line);
+			std::wstring token;
+
+			while (std::getline(ss, token, delimiter)) {
+				if constexpr (std::is_same_v<T, int>) {
+					row.push_back(std::stoi(token));
+				}
+				else if constexpr (std::is_same_v<T, float>) {
+					row.push_back(std::stof(token));
+				}
+				else {
+					row.push_back(static_cast<T>(token)); // 문자열 등
+				}
+			}
+
+			if (expectedColSize == -1) {
+				expectedColSize = static_cast<int>(row.size());
+			}
+			else if (expectedColSize != row.size()) {
+				//std::wcerr << L"열 개수가 일치하지 않습니다. txt 파일 구조 확인 필요" << std::endl;
+				return false;
+			}
+
+			outArray.push_back(std::move(row));
+		}
+
+		// 행 개수 검증
+		if (outArray.size() != expectedRowCount) {
+			//std::wcerr << L"행 개수가 예상과 다릅니다: " << outArray.size() << L" != " << expectedRowCount << std::endl;
+		}
+
+		return true;
+	}
+
 	struct ScoreEntry
 	{
 		int score;
 		std::wstring time;
 
 		bool operator<(const ScoreEntry& other) const {
-			return score > other.score; // 점수 높은 순 정렬
+			return score < other.score; // 점수 높은 순 정렬
 		}
 	};
 

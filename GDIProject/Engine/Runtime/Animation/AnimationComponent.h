@@ -1,6 +1,7 @@
 #pragma once
 #include <windows.h>
 #include <stdio.h>
+#include <vector>
 #include <gdiplus.h>
 #include "../../Math/Math.h"
 #pragma comment(lib, "gdiplus.lib")
@@ -36,6 +37,7 @@ public:
 	~UAnimationComponent();
 
 	void Initialize(int rowSize, int colSize);
-	void LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, int pixelformat);
+	//void LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, int pixelformat);
+	void LoadData(Gdiplus::Bitmap* baseImage, const std::vector<std::vector<int>>& cloneInfo, int pixelFormat);
 	void Release();
 };

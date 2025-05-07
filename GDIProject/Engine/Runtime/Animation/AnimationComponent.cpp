@@ -24,15 +24,47 @@ void UAnimationComponent::Initialize(int rowSize, int colSize)
 	}
 }
 
-void UAnimationComponent::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, int pixelformat)
+//void UAnimationComponent::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, int pixelformat)
+//{
+//	if (!cloneInfo || m_frames.empty()) return;
+//
+//	for (int i = 0; i < rowSize && i < m_frames.size(); ++i)
+//	{
+//		if (!cloneInfo[i] || colSize <= 3) continue;
+//
+//		int left = cloneInfo[i][0], top = cloneInfo[i][1], right = cloneInfo[i][2], bottom = cloneInfo[i][3];
+//		int width = right - left;
+//		int height = bottom - top;
+//
+//		FFrame& frame = m_frames[i][0];
+//
+//		if (frame.m_frame)
+//		{
+//			delete frame.m_frame;
+//			frame.m_frame = nullptr;
+//		}
+//
+//		frame.m_frameSize = FVector2((float)width, (float)height);
+//		frame.m_frame = baseImage->Clone(left, top, width, height, pixelformat);
+//	}
+//}
+
+void UAnimationComponent::LoadData(Gdiplus::Bitmap* baseImage, const std::vector<std::vector<int>>& cloneInfo, int pixelFormat)
 {
-	if (!cloneInfo || m_frames.empty()) return;
+	if (cloneInfo.empty() || m_frames.empty()) return;
 
-	for (int i = 0; i < rowSize && i < m_frames.size(); ++i)
+	size_t rowSize = cloneInfo.size();
+
+	for (size_t i = 0; i < rowSize && i < m_frames.size(); ++i)
 	{
-		if (!cloneInfo[i] || colSize <= 3) continue;
+		const std::vector<int>& row = cloneInfo[i];
+		if (row.size() < 4) continue; // 최소 4개: left, top, right, bottom
 
-		int left = cloneInfo[i][0], top = cloneInfo[i][1], right = cloneInfo[i][2], bottom = cloneInfo[i][3];
+		int left = row[0];
+		int top = row[1];
+		int right = row[2];
+		int bottom = row[3];
+
 		int width = right - left;
 		int height = bottom - top;
 
@@ -45,7 +77,7 @@ void UAnimationComponent::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, 
 		}
 
 		frame.m_frameSize = FVector2((float)width, (float)height);
-		frame.m_frame = baseImage->Clone(left, top, width, height, pixelformat);
+		frame.m_frame = baseImage->Clone(left, top, width, height, pixelFormat);
 	}
 }
 
