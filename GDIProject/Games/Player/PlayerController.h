@@ -19,7 +19,7 @@ public:
     void MoveSelectedUnitTo(const FVector2& pos);
     void Release();
 
-    void SpawnAtIndex(int row, int col);
+    void SpawnAtIndex(int row, int col, int type, std::wstring name);
     void SpawnAtPosition(FVector2 position, EUnitType unitType = EUnitType::Warrior);
     std::weak_ptr<APlayerCharacter> GetUnitRefAtPosition(FVector2 position);
     std::weak_ptr<ATile> GetTileRefAtPosition(FVector2 position);

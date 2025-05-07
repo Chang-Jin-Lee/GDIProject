@@ -52,9 +52,10 @@ public:
 	{
 		int intLayer = static_cast<int>(layer);
 		std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
+		std::wstring name = NewobjectName + MakeUniqueName();
 		if (std::shared_ptr<UObject> object = std::dynamic_pointer_cast<UObject>(temp))	// ¸¸¾à ¾À¿¡¼­ »ý¼ºÇÒ¶§ À§Á¬ÀÌ ºÎÂøµÇ¾î ÀÖÀ¸¸é °Âµµ °ü¸®ÇØÁÜ.
 		{
-			object->SetEditorName(NewobjectName);
+			object->SetEditorName(name);
 			object->RenderLayer = intLayer;
 
 			if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(object))
@@ -63,13 +64,13 @@ public:
 				{
 					if (auto widgetShared = widgetWeak.lock())
 					{
-						m_widgets[widgetShared->RenderLayer].emplace(widgetShared->GetName(), std::move(widgetShared));
+						m_widgets[widgetShared->RenderLayer].emplace(widgetShared->GetEditorName(), std::move(widgetShared));
 					}
 				}
 			}
 		}
 
-		auto result = m_objects[intLayer].emplace(NewobjectName, std::move(temp));
+		auto result = m_objects[intLayer].emplace(name, std::move(temp));
 		auto iter = result.first;
 		return std::dynamic_pointer_cast<TReturnType>(iter->second);
 	}

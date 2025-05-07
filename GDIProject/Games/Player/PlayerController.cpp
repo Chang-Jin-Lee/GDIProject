@@ -37,7 +37,24 @@ APlayerController::~APlayerController()
 void APlayerController::Initialize()
 {
 	// °³Ã´ÀÚ ¼ÒÈ¯
-	SpawnAtIndex(3, 2);
+	//SpawnAtIndex(3, 2);
+	//SpawnAtIndex(3, 2);
+	//SpawnAtIndex(3, 2);
+
+	std::vector<std::pair<int, int>> indexVector;
+	for (int i = 0; i < 3; i++)
+	{
+		int x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
+		int y = (int)FRandom::GetRandomInRange(0, TILE_COL_SIZE * 0.2);
+		while (std::find(indexVector.begin(), indexVector.end(), std::make_pair(x, y)) != indexVector.end())
+		{
+			x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
+			y = (int)FRandom::GetRandomInRange(0, TILE_COL_SIZE * 0.2);
+		}
+		indexVector.emplace_back(x, y);
+		SpawnAtIndex(y, x, i, std::to_wstring(y)+L"_"+std::to_wstring(x));
+	}
+	std::vector<std::pair<int, int>>().swap(indexVector);
 }
 
 void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
@@ -113,7 +130,7 @@ void APlayerController::Release()
 	std::vector<std::weak_ptr<ACity>>().swap(Cities);
 }
 
-void APlayerController::SpawnAtIndex(int row, int col)
+void APlayerController::SpawnAtIndex(int row, int col, int type, std::wstring name)
 {
 	if (const auto tile = m_tiles[col][row].lock())
 	{
@@ -123,10 +140,11 @@ void APlayerController::SpawnAtIndex(int row, int col)
 		}
 	}
 	if (row < 0 || col < 0) return;
-	int type = static_cast<int>(EUnitType::Settler);
+
+	//int type = static_cast<int>(EUnitType::Settler);
 	if (auto OwnerSceneRef = std::dynamic_pointer_cast<UScene>(OwnerScene.lock()))
 	{
-		auto Unit = OwnerSceneRef->NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()), ESCENELAYER::CHARACTER);
+		auto Unit = OwnerSceneRef->NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()) + name, ESCENELAYER::CHARACTER);
 		if (auto UnitRef = Unit.lock())
 		{
 			UnitRef->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());

@@ -184,43 +184,25 @@ void UPlayScene::TileInitilize()
 		}
 	}
 
-	int x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
-	int y = (int)TILE_COL_SIZE * 0.8;
-	if (const auto tile = Cast<ATile>(m_tiles[x][y]))
+	std::vector<std::pair<int, int>> indexVector;
+	for (int i = 0; i < 3; i++)
 	{
-		tile->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
-		tile->Initialize();
-	}
+		int x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
+		int y = (int)TILE_COL_SIZE * 0.8;
+		while (std::find(indexVector.begin(), indexVector.end(), std::make_pair(x, y)) != indexVector.end())
+		{
+			x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
+			y = (int)TILE_COL_SIZE * 0.8;
+		}
+		indexVector.emplace_back(x, y);
 
-	x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
-	if (const auto tile = Cast<ATile>(m_tiles[x][y]))
-	{
-		tile->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
-		tile->Initialize();
+		if (const auto tile = Cast<ATile>(m_tiles[x][y]))
+		{
+			tile->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
+			tile->Initialize();
+		}
 	}
-
-	x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
-	if (const auto tile = Cast<ATile>(m_tiles[x][y]))
-	{
-		tile->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
-		tile->Initialize();
-	}
-
-	x = (int)TILE_ROW_SIZE * 0.8;
-	y = (int)FRandom::GetRandomInRange(0, TILE_COL_SIZE);
-	if (const auto tile = Cast<ATile>(m_tiles[x][y]))
-	{
-		tile->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
-		tile->Initialize();
-	}
-
-	x = (int)TILE_ROW_SIZE * 0.8;
-	y = (int)FRandom::GetRandomInRange(0, TILE_COL_SIZE);
-	if (const auto tile = Cast<ATile>(m_tiles[x][y]))
-	{
-		tile->m_etileType = static_cast<ETileType>(static_cast<int>(ETileType::Capital));
-		tile->Initialize();
-	}
+	std::vector<std::pair<int, int>>().swap(indexVector);
 }
 
 void UPlayScene::TurnManagerInitilize()
@@ -400,7 +382,6 @@ void UPlayScene::CheckVictoryConditions()
 			{
 				if (auto chRef = Cast<APlayerCharacter>(ch))
 				{
-
 					FVector2 Index = ATile::GetIndexAtPosition(chRef->GetActorLocation());
 					int y = (int)Index.y;
 					int x = (int)Index.x;
@@ -415,8 +396,8 @@ void UPlayScene::CheckVictoryConditions()
 				}
 			}
 		}
-		
 	}
+
 	if (bVictory)
 	{
 		UScene::ChangeScene<UWinScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());

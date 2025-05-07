@@ -212,7 +212,7 @@ void APlayerCharacter::SetUnitType(EUnitType Type)
 		AttackDamage = 15;
 		MoveRange = 1;
 		AttackRange = 2;
-		ActionMaxCount = 4;
+		ActionMaxCount = 6;
 		break;
 	default:
 		break;
@@ -243,7 +243,7 @@ void APlayerCharacter::SetUnitType(int value)
 		AttackDamage = 15;
 		MoveRange = 1;
 		AttackRange = 2;
-		ActionMaxCount = 4;
+		ActionMaxCount = 6;
 		break;
 	default:
 		break;
