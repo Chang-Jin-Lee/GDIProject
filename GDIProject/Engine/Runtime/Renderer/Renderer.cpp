@@ -4,10 +4,17 @@
 #include "Renderer.h"
 #include "../../Classes/Actor.h"
 #include "../../Math/Math.h"
+#include "../../Classes/Character.h"
+#include "../../UI/UITextComponent.h"
+#include "../../UI/UIButtonComponent.h"
 #include "../../Classes/Camera/CameraActor.h"
+#include "../../Classes/Components/SceneComponent.h"
+#include "../../Classes/Components/StaticMeshComponent.h"
 #include <iostream>
 #include "../../UI/Widget.h"
 #include "../../Experiment/SmartCast.h"
+#include <gdiplus.h>
+#pragma comment(lib, "gdiplus.lib")
 
 
 namespace Renderer
@@ -28,9 +35,9 @@ namespace Renderer
 	std::weak_ptr<ACameraActor> g_mainCamera;
 	std::vector<std::weak_ptr<UObject>> g_renderedObjs;
 
-	const Gdiplus::Pen* m_redPen = nullptr;
-	const Gdiplus::Pen* m_BluePen = nullptr;
-	const Gdiplus::SolidBrush* m_redBrush = nullptr;
+    Gdiplus::Pen* m_redPen = nullptr;
+    Gdiplus::Pen* m_BluePen = nullptr;
+    Gdiplus::SolidBrush* m_redBrush = nullptr;
 	void Initialize(HWND hwnd)
 	{
 		g_hWnd = hwnd;
@@ -50,8 +57,8 @@ namespace Renderer
 		g_pBackBufferGraphics->SetInterpolationMode(Gdiplus::InterpolationModeNearestNeighbor);
 		g_pBackBufferGraphics->SetSmoothingMode(Gdiplus::SmoothingModeNone);
 
-		if (!m_redPen) m_redPen = new Gdiplus::Pen(Color(255, 0, 0), 1.0f);
-		if (!m_BluePen) m_BluePen = new Gdiplus::Pen(Color(0, 0, 255), 1.0f);
+        if (!m_redPen) m_redPen = new Gdiplus::Pen(Gdiplus::Color(255, 0, 0), 1.0f);
+        if (!m_BluePen) m_BluePen = new Gdiplus::Pen(Gdiplus::Color(0, 0, 255), 1.0f);
 		if (!m_redBrush) m_redBrush = new Gdiplus::SolidBrush(Gdiplus::Color(255, 0, 0));
 	}
 
@@ -69,14 +76,14 @@ namespace Renderer
 		g_pBackBufferGraphics->SetInterpolationMode(Gdiplus::InterpolationModeNearestNeighbor);
 		g_pBackBufferGraphics->SetSmoothingMode(Gdiplus::SmoothingModeNone);
 
-		// 화면 지우기
-		PatBlt(g_BackBufferDC, 0, 0, (int)g_resolution.x, (int)g_resolution.y, BLACKNESS);
+        // 화면 지우기
+        ::PatBlt(g_BackBufferDC, 0, 0, (int)g_resolution.x, (int)g_resolution.y, BLACKNESS);
 	}
 
 	void EndDraw()
 	{
 		// 그려진 백버퍼를 화면으로 복사
-		BitBlt(
+        ::BitBlt(
 			g_FrontBufferDC,
 			0, 0, (int)g_resolution.x, (int)g_resolution.y,
 			g_BackBufferDC,
@@ -111,7 +118,7 @@ namespace Renderer
 			{
 				if (std::shared_ptr<ACharacter> character = std::dynamic_pointer_cast<ACharacter>(obejctRef))
 				{
-					RenderCharacterAnimation(character->AnimationBundle, character.get());
+                    RenderCharacterAnimation(character.get());
 				}
 				else if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(obejctRef))
 				{
@@ -121,7 +128,7 @@ namespace Renderer
 						{
 							if (auto StaticMeshComponentRef = actor->StaticMeshComponent.lock())
 							{
-								RenderMesh(std::move(componentRef), std::move(StaticMeshComponentRef), actor->bSelected);
+                                RenderMesh(componentRef, StaticMeshComponentRef, actor->bSelected);
 							}
 						}
 					}
@@ -137,29 +144,49 @@ namespace Renderer
 							{
 								if (std::shared_ptr<SUITextComponent> uitextComponent = std::dynamic_pointer_cast<SUITextComponent>(UWidgetComponentRef))
 								{
-									Renderer::RenderTextUI(std::move(uitextComponent), 0, 0);
+                                    Renderer::RenderTextUI(uitextComponent, 0, 0);
 								}
 								else if (std::shared_ptr<SUIButtonComponent> uitextComponent = std::dynamic_pointer_cast<SUIButtonComponent>(UWidgetComponentRef))
 								{
-									Renderer::RenderButtonUI(std::move(uitextComponent), 0, 0);
+                                    Renderer::RenderButtonUI(uitextComponent, 0, 0);
 								}
 							}
 							else // 어떤 액터에 부착되어 있을 때
 							{
-								if (std::shared_ptr<SUITextComponent> uitextComponent = std::dynamic_pointer_cast<SUITextComponent>(UWidgetComponentRef))
-								{
-									if (auto actor = UWidgetComponentRef->m_AttachedActor.lock())
-									{
-										Renderer::RenderTextUI(std::move(uitextComponent), actor->GetActorLocation().x, actor->GetActorLocation().y);
-									}
-								}
-								else if (std::shared_ptr<SUIButtonComponent> uitextComponent = std::dynamic_pointer_cast<SUIButtonComponent>(UWidgetComponentRef))
-								{
-									if (auto actor = UWidgetComponentRef->m_AttachedActor.lock())
-									{
-										Renderer::RenderButtonUI(std::move(uitextComponent), actor->GetActorLocation().x, actor->GetActorLocation().y);
-									}
-								}
+                                if (std::shared_ptr<SUITextComponent> uitextComponent = std::dynamic_pointer_cast<SUITextComponent>(UWidgetComponentRef))
+                                {
+                                    if (auto actor = UWidgetComponentRef->m_AttachedActor.lock())
+                                    {
+                                        int parentX = (int)actor->GetActorLocation().x;
+                                        int parentY = (int)actor->GetActorLocation().y;
+                                        if (UWidgetComponentRef->GetWidgetRenderType() == UWidgetComponent::WidgetRenderType::Camera)
+                                        {
+                                            if (auto cam = g_mainCamera.lock())
+                                            {
+                                                parentX -= (int)cam->GetCameraLocation().x;
+                                                parentY -= (int)cam->GetCameraLocation().y;
+                                            }
+                                        }
+                                        Renderer::RenderTextUI(uitextComponent, parentX, parentY);
+                                    }
+                                }
+                                else if (std::shared_ptr<SUIButtonComponent> uitextComponent = std::dynamic_pointer_cast<SUIButtonComponent>(UWidgetComponentRef))
+                                {
+                                    if (auto actor = UWidgetComponentRef->m_AttachedActor.lock())
+                                    {
+                                        int parentX = (int)actor->GetActorLocation().x;
+                                        int parentY = (int)actor->GetActorLocation().y;
+                                        if (UWidgetComponentRef->GetWidgetRenderType() == UWidgetComponent::WidgetRenderType::Camera)
+                                        {
+                                            if (auto cam = g_mainCamera.lock())
+                                            {
+                                                parentX -= (int)cam->GetCameraLocation().x;
+                                                parentY -= (int)cam->GetCameraLocation().y;
+                                            }
+                                        }
+                                        Renderer::RenderButtonUI(uitextComponent, parentX, parentY);
+                                    }
+                                }
 							}
 						}
 					}
@@ -171,39 +198,47 @@ namespace Renderer
 
 	void RenderImage(Gdiplus::Bitmap* pImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size, const bool& bSelected)
 	{
-		if (auto g_mainCameraRef = g_mainCamera.lock())
-		{
-			if (position.x < g_mainCameraRef->GetCameraLocation().x - g_resolution.x * 0.2f ||
-				position.x > g_mainCameraRef->GetCameraLocation().x + g_resolution.x * 1.2f ||
-				position.y < g_mainCameraRef->GetCameraLocation().y - g_resolution.x * 0.2f ||
-				position.y > g_mainCameraRef->GetCameraLocation().y + g_resolution.y * 1.2f
-				)
-				return;
-		}
-		
-		const int imgWidth = size.x;
-		const int imgHeight = size.y;
+               // camera culling (basic)
+               if (auto cam = g_mainCamera.lock())
+               {
+                   if (position.x < cam->GetCameraLocation().x - g_resolution.x * 0.5f ||
+                       position.x > cam->GetCameraLocation().x + g_resolution.x * 1.5f ||
+                       position.y < cam->GetCameraLocation().y - g_resolution.y * 0.5f ||
+                       position.y > cam->GetCameraLocation().y + g_resolution.y * 1.5f)
+                   {
+                       // off-screen (pre-zoom heuristic)
+                   }
+               }
 
-		FVector2 finalPos = position;
-		if (auto g_mainCameraRef = g_mainCamera.lock())
-		{
-			finalPos = position - g_mainCameraRef->GetCameraLocation();
-		}
+               // compute camera-relative position and zoom
+               float zoom = 1.0f;
+               FVector2 finalPos = position;
+               if (auto cam = g_mainCamera.lock())
+               {
+                   finalPos = position - cam->GetCameraLocation();
+                   zoom = cam->GetCameraScale().x;
+                   if (zoom < 0.1f) zoom = 0.1f;
+               }
 
-		//g_pBackBufferGraphics->DrawImage(pImageBitmap, (int)finalPos.x, (int)finalPos.y, (int)size.x, (int)size.y);
-		g_pBackBufferGraphics->DrawImage(pImageBitmap, (int)finalPos.x, (int)finalPos.y, (int)size.x, (int)size.y);
+               // apply zoom to position and size
+               finalPos = finalPos * zoom;
+               const int drawW = (int)(size.x * zoom);
+               const int drawH = (int)(size.y * zoom);
 
-		if (bSelected)
-		{
-			int circleRadius = 12;
-			Gdiplus::Rect ellipseRect(
-				(int)(finalPos.x + (size.x / 2) - circleRadius),
-				(int)(finalPos.y + (size.y / 2) - circleRadius),
-				circleRadius * 2,
-				circleRadius * 2
-			);
-			g_pBackBufferGraphics->FillEllipse(m_redBrush, ellipseRect);
-		}
+               g_pBackBufferGraphics->DrawImage(pImageBitmap, (int)finalPos.x, (int)finalPos.y, drawW, drawH);
+
+               if (bSelected)
+               {
+                   int circleRadius = (int)(12 * zoom);
+                   if (circleRadius < 2) circleRadius = 2;
+                   Gdiplus::Rect ellipseRect(
+                       (int)(finalPos.x + (drawW / 2) - circleRadius),
+                       (int)(finalPos.y + (drawH / 2) - circleRadius),
+                       circleRadius * 2,
+                       circleRadius * 2
+                   );
+                   g_pBackBufferGraphics->FillEllipse(m_redBrush, ellipseRect);
+               }
 	}
 
 	void RenderText(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush)
@@ -240,48 +275,42 @@ namespace Renderer
 		g_pBackBufferGraphics->DrawRectangle(m_BluePen, rect);
 	}
 
-	void RenderRectFill(SolidBrush& brush, FVector2& position, const FVector2& size, int radius)
+    void RenderRectFill(Gdiplus::SolidBrush& brush, FVector2& position, const FVector2& size, int radius)
 	{
-		if (auto g_mainCameraRef = g_mainCamera.lock())
-		{
-			if (position.x < g_mainCameraRef->GetCameraLocation().x - g_resolution.x * 0.2f ||
-				position.x > g_mainCameraRef->GetCameraLocation().x + g_resolution.x * 1.2f ||
-				position.y < g_mainCameraRef->GetCameraLocation().y - g_resolution.x * 0.2f ||
-				position.y > g_mainCameraRef->GetCameraLocation().y + g_resolution.y * 1.2f
-				)
-				return;
-		}
-
-		FVector2 finalPos = position;
-		if (auto g_mainCameraRef = g_mainCamera.lock())
-		{
-			finalPos = position - g_mainCameraRef->GetCameraLocation();
-		}
-
-		int x = position.x;
-		int y = position.y;
-		int width = size.x;
-		int height = size.y;
-		g_pBackBufferGraphics->FillRectangle(&brush, x, y, width, height);
+               float zoom = 1.0f;
+               FVector2 finalPos = position;
+               if (auto cam = g_mainCamera.lock())
+               {
+                   finalPos = position - cam->GetCameraLocation();
+                   zoom = cam->GetCameraScale().x;
+               }
+               finalPos = finalPos * zoom;
+               const int x = (int)finalPos.x;
+               const int y = (int)finalPos.y;
+               const int width = (int)(size.x * zoom);
+               const int height = (int)(size.y * zoom);
+               g_pBackBufferGraphics->FillRectangle(&brush, x, y, width, height);
 	}
 
-	void RenderRectWithRounded(SolidBrush* brush, FVector2& position, const FVector2& size, int radius)
+    void RenderRectWithRounded(Gdiplus::SolidBrush* brush, FVector2& position, const FVector2& size, int radius)
 	{
-		FVector2 finalPos = position;
-		if (auto g_mainCameraRef = g_mainCamera.lock())
-		{
-			finalPos = position - g_mainCameraRef->GetCameraLocation();
-		}
-
-		int x = finalPos.x;
-		int y = finalPos.y;
-		int width = size.x;
-		int height = size.y;
+               float zoom = 1.0f;
+               FVector2 finalPos = position;
+               if (auto cam = g_mainCamera.lock())
+               {
+                   finalPos = position - cam->GetCameraLocation();
+                   zoom = cam->GetCameraScale().x;
+               }
+               finalPos = finalPos * zoom;
+               const int x = (int)finalPos.x;
+               const int y = (int)finalPos.y;
+               const int width = (int)(size.x * zoom);
+               const int height = (int)(size.y * zoom);
 
 		Gdiplus::PointF center = Gdiplus::PointF(width / 2.0f, height / 2.0f);
 		Gdiplus::Matrix matrix;
 		matrix.Translate((float)x, (float)y);
-		matrix.RotateAt(0, center);
+               matrix.RotateAt(0, center);
 		g_pBackBufferGraphics->SetTransform(&matrix);
 
 		Gdiplus::GraphicsPath path;
@@ -300,11 +329,40 @@ namespace Renderer
 	}
 	
 
-	void RenderButtonUI(const std::shared_ptr<SUIButtonComponent>& buttonui, int parentX, int parentY)
+    void RenderButtonUI(const std::shared_ptr<SUIButtonComponent>& buttonui, int parentX, int parentY)
 	{
-		FVector2 position = buttonui->m_Position + FVector2(parentX, parentY);
-		RenderRectWithRounded(buttonui->m_brush, position, buttonui->m_Size, buttonui->m_radius);
+               FVector2 position = buttonui->GetPosition() + FVector2(parentX, parentY);
+               RenderRectWithRoundedUI(buttonui->GetBrush(), position, buttonui->GetSize(), buttonui->GetRadius());
 	}
+
+           void RenderRectWithRoundedUI(Gdiplus::SolidBrush* brush, FVector2& position, const FVector2& size, int radius)
+           {
+               // 카메라 줌 비적용: 화면 고정 좌표로 그대로 렌더링
+               const int x = (int)position.x;
+               const int y = (int)position.y;
+               const int width = (int)size.x;
+               const int height = (int)size.y;
+
+               Gdiplus::PointF center = Gdiplus::PointF(width / 2.0f, height / 2.0f);
+               Gdiplus::Matrix matrix;
+               matrix.Translate((float)x, (float)y);
+               matrix.RotateAt(0, center);
+               g_pBackBufferGraphics->SetTransform(&matrix);
+
+               Gdiplus::GraphicsPath path;
+               path.AddArc(0, 0, radius * 2, radius * 2, 180, 90);
+               path.AddLine(radius, 0, width - radius, 0);
+               path.AddArc(width - radius * 2, 0, radius * 2, radius * 2, 270, 90);
+               path.AddLine(width, radius, width, height - radius);
+               path.AddArc(width - radius * 2, height - radius * 2, radius * 2, radius * 2, 0, 90);
+               path.AddLine(width - radius, height, radius, height);
+               path.AddArc(0, height - radius * 2, radius * 2, radius * 2, 90, 90);
+               path.AddLine(0, height - radius, 0, radius);
+               path.CloseFigure();
+
+               g_pBackBufferGraphics->FillPath(brush, &path);
+               g_pBackBufferGraphics->ResetTransform();
+           }
 
 	void ClearRenderObjects()
 	{
@@ -317,7 +375,7 @@ namespace Renderer
 	}
 
 	// 애니메이션을 할때는 비트맵을 한장씩 넘기기
-	void RenderCharacterAnimation(ACharacter::FAnimationBundle& animationBundle, ACharacter* character)
+    void RenderCharacterAnimation(ACharacter* character)
 	{
 		if (!character)
 		{
@@ -325,7 +383,7 @@ namespace Renderer
 			return;
 		}
 
-		auto animComp = animationBundle.animationComponent[(int)character->dirState][(int)character->animstate];
+        auto animComp = character->AnimationBundle.animationComponent[(int)character->dirState][(int)character->animstate];
 		if (!animComp || animComp->m_frames.empty())
 		{
 			printf("RenderCharacterAnimation Error: animation component or frames are null\n");
@@ -358,27 +416,27 @@ namespace Renderer
 		RenderImage(pImageBitmap, position, rotation, scale, size, character->bSelected);
 	}
 
-	void RenderTextUI(const std::shared_ptr<SUITextComponent>& textui, int parentX, int parentY)
+    void RenderTextUI(const std::shared_ptr<SUITextComponent>& textui, int parentX, int parentY)
 	{
-		std::wstring& name = textui->m_content;
+		const std::wstring& name = textui->GetContent();
 		if (name.empty() == false)
 		{
-			FVector2 position = textui->m_Position + FVector2(parentX, parentY);
-			const FVector2 size = textui->m_Size;
-			Gdiplus::FontFamily fontFamily(textui->m_fontFamily.c_str());
-			Gdiplus::Font font(&fontFamily, textui->m_fontSize, textui->m_efontStyle, textui->m_eworldUnit);
+			FVector2 position = textui->GetPosition() + FVector2(parentX, parentY);
+			const FVector2 size = textui->GetSize();
+			Gdiplus::FontFamily fontFamily(textui->GetFontFamily().c_str());
+			Gdiplus::Font font(&fontFamily, textui->GetFontSize(), (Gdiplus::FontStyle)textui->GetFontStyle(), (Gdiplus::Unit)textui->GetWorldUnit());
 			Gdiplus::StringFormat stringFormat;
-			stringFormat.SetAlignment(textui->m_fontAlignment);	// 영역의 상단에 맞춰지게 
-			stringFormat.SetLineAlignment(textui->m_fontLineAlignment); // 다음 줄로 갱신될 때 왼쪽부터 써지기
-			stringFormat.SetTrimming(textui->m_fontTrimming); // trim 안함
-			Gdiplus::SolidBrush brush(textui->m_color);
+			stringFormat.SetAlignment((Gdiplus::StringAlignment)textui->GetFontAlignment());
+			stringFormat.SetLineAlignment((Gdiplus::StringAlignment)textui->GetFontLineAlignment());
+			stringFormat.SetTrimming((Gdiplus::StringTrimming)textui->GetFontTrimming());
+			Gdiplus::SolidBrush brush(textui->GetColor());
 			RenderText(name.c_str(), position, size, font, stringFormat, brush);
 		}
 	}
 
-	void RenderMesh(const std::shared_ptr<USceneComponent>& sceneComponent, const std::shared_ptr<UStaticMeshComponent>& staticMesh, const bool& bSelected)
+    void RenderMesh(const std::shared_ptr<USceneComponent>& sceneComponent, const std::shared_ptr<UStaticMeshComponent>& staticMesh, const bool& bSelected)
 	{
-		Gdiplus::Bitmap*&& pImageBitmap = std::move(staticMesh->GetMesh());
+        Gdiplus::Bitmap* pImageBitmap = staticMesh->GetMesh();
 		FVector2 position = sceneComponent->GetSceneComponentLocation();
 		const float rotation = sceneComponent->GetSceneComponentRotation();
 		const FVector2 scale = sceneComponent->GetSceneComponentScale();

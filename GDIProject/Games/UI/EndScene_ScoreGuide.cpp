@@ -2,6 +2,11 @@
 #include <Runtime/Renderer/Renderer.h>
 #include "../Games.h"
 #include "../Player/TurnGameState.h"
+#include <gdiplus.h>
+#include <UI/UITextComponent.h>
+#include <UI/UIButtonComponent.h>
+#include <Classes/Camera/CameraActor.h>
+#include <Math/Math.h>
 
 UEndScene_Widget::UEndScene_Widget()
 {
@@ -11,10 +16,10 @@ UEndScene_Widget::UEndScene_Widget()
 	m_startGameButton = CreateDefaultSubobject<SUIButtonComponent>(TEXT("startGameButton"));
 	m_startGameButtonText = CreateDefaultSubobject<SUITextComponent>(TEXT("startGameButtonText"));
 
-	WidgetComponents.push_back(m_scoreui);
-	WidgetComponents.push_back(m_scoreGuideui);
-	WidgetComponents.push_back(m_startGameButton);
-	WidgetComponents.push_back(m_startGameButtonText);
+    if (auto sp = m_scoreui.lock()) WidgetComponents.push_back(std::static_pointer_cast<UWidgetComponent>(sp));
+    if (auto sp = m_scoreGuideui.lock()) WidgetComponents.push_back(std::static_pointer_cast<UWidgetComponent>(sp));
+    if (auto sp = m_startGameButton.lock()) WidgetComponents.push_back(std::static_pointer_cast<UWidgetComponent>(sp));
+    if (auto sp = m_startGameButtonText.lock()) WidgetComponents.push_back(std::static_pointer_cast<UWidgetComponent>(sp));
 }
 
 UEndScene_Widget::~UEndScene_Widget()
@@ -96,7 +101,7 @@ void UEndScene_Widget::Initialize()
 			FVector2(x, y),
 			FVector2(width, height)
 		);
-		text->m_content = _wcsdup(std::to_wstring(10.0f).c_str());
+    text->SetContent(std::to_wstring(10.0f));
 	}
 }
 

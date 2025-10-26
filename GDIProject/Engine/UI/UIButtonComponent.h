@@ -1,41 +1,26 @@
 #pragma once
 #include "WidgetComponent.h"
 
+namespace Gdiplus { class SolidBrush; class Color; }
+template<typename T> class TVector2; using FVector2 = TVector2<float>;
+
 class SUIButtonComponent : public UWidgetComponent
 {
 public:
-	SUIButtonComponent()
-	{
-		m_brush = new Gdiplus::SolidBrush(Gdiplus::Color(255, 255, 255)); // 기본 하얀색
-		m_Position = FVector2(0, 0);
-		m_Size = FVector2(150, 150);
-	}
-	~SUIButtonComponent() 
-	{
-		m_brush = nullptr;
-	}
-	
-	virtual void Initialize(Gdiplus::Color color, FVector2 Position, FVector2 Size, int _radius)
-	{
-		__super::Initialize();
-		if(m_brush == nullptr) m_brush = new Gdiplus::SolidBrush(Gdiplus::Color(255, 255, 255));
-		m_brush->SetColor(color);
-		m_Position = Position;	
-		m_Size = Size;
-		m_radius = _radius;
-	}
+    SUIButtonComponent();
+    ~SUIButtonComponent();
 
-	virtual void Release()
-	{
-		__super::Release();
-		if (m_brush)
-		{
-			delete m_brush;
-			m_brush = nullptr;
-		}
-	}
+    void Initialize(Gdiplus::Color color, const FVector2& Position, const FVector2& Size, int radius);
+
+    virtual void Release() override;
 
 public:
-	Gdiplus::SolidBrush* m_brush;
-	int m_radius = 5;
+    // 접근자 (pImpl로 은닉된 상태 관리)
+    Gdiplus::SolidBrush* GetBrush() const;
+    int GetRadius() const;
+    void SetRadius(int radius);
+
+private:
+    struct Impl;
+    std::unique_ptr<Impl> pImpl;
 };

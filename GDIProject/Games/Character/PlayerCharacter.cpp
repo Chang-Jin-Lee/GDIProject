@@ -8,18 +8,19 @@
 #include "../Scene/PlayScene.h"
 #include "../UI/CharacterNameWidget.h"
 #include <UI/UITextComponent.h>
+#include <Classes/Components/StaticMeshComponent.h>
 
 APlayerCharacter::APlayerCharacter()
 {
 	bStatic = false;
 
-	for (int j = 0; j < static_cast<int>(AnimationState::Max); j++)
+    for (int j = 0; j < static_cast<int>(AnimationState::Max); j++)
 	{
 		for (int i = 0; i < static_cast<int>(DirState::Max); i++)
 		{
 			AnimationBundle.animationComponent[i][j] = new UAnimationComponent();
 		}
-		AnimationBundle.baseImages[j] = new UStaticMeshComponent();
+        AnimationBundle.baseImages[j] = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseImage"));
 	}
 
 	dirState = DirState::Bottom;
@@ -76,6 +77,7 @@ void APlayerCharacter::Initialize()
 		{
 			text->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
 			text->AttachedUIToActor(weak_from_this());
+			text->SetWidgetRenderType(UWidgetComponent::WidgetRenderType::World); // 유닛 머리 위 이름은 월드 공간
 		}
 	}
 

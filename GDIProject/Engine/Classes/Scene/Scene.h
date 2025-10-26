@@ -1,6 +1,7 @@
 #pragma once
-#include "../Actor.h"
-#include "../../UI/Widget.h"
+#include <vector>
+#include <unordered_map>
+#include <string>
 #include "../Object.h"
 
 #define DEFAULT_SCENELAYER_SIZE 3
@@ -26,6 +27,9 @@ class GarbageUpdate
 	virtual void DeleteNullObjects() = 0;
 };
 
+class AActor;
+class UWidget;
+
 class UScene : public UObject, public GarbageUpdate
 {
 public:
@@ -47,57 +51,31 @@ public:
 		nextSceneWeak = nextSceneShared;
 	}
 
-	template<typename TReturnType>
-	std::weak_ptr<TReturnType> NewObject(const std::wstring& NewobjectName, ESCENELAYER layer = ESCENELAYER::CHARACTER)
-	{
-		int intLayer = static_cast<int>(layer);
-		std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
-		std::wstring name = NewobjectName + MakeUniqueName();
-		if (std::shared_ptr<UObject> object = std::dynamic_pointer_cast<UObject>(temp))	// ¸¸¾à ¾À¿¡¼­ »ý¼ºÇÒ¶§ À§Á¬ÀÌ ºÎÂøµÇ¾î ÀÖÀ¸¸é °Âµµ °ü¸®ÇØÁÜ.
-		{
-			object->SetEditorName(name);
-			object->RenderLayer = intLayer;
+    template<typename TReturnType>
+    std::weak_ptr<TReturnType> NewObject(const std::wstring& NewobjectName, ESCENELAYER layer = ESCENELAYER::CHARACTER)
+    {
+        int intLayer = static_cast<int>(layer);
+        std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
+        std::wstring name = NewobjectName + MakeUniqueName();
+        if (std::shared_ptr<UObject> object = std::dynamic_pointer_cast<UObject>(temp))
+        {
+            object->SetEditorName(name);
+            object->RenderLayer = intLayer;
 
-			if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(object))
-			{
-				for (const auto& widgetWeak : actor->attachedWidgets)
-				{
-					if (auto widgetShared = widgetWeak.lock())
-					{
-						m_widgets[widgetShared->RenderLayer].emplace(widgetShared->GetEditorName(), std::move(widgetShared));
-					}
-				}
-			}
-		}
+            if (std::shared_ptr<AActor> actor = std::dynamic_pointer_cast<AActor>(object))
+            {
+                RegisterAttachedWidgets(actor, m_widgets);
+            }
+        }
 
-		auto result = m_objects[intLayer].emplace(name, std::move(temp));
-		auto iter = result.first;
-		return std::dynamic_pointer_cast<TReturnType>(iter->second);
-	}
+        auto result = m_objects[intLayer].emplace(name, std::move(temp));
+        auto iter = result.first;
+        return std::dynamic_pointer_cast<TReturnType>(iter->second);
+    }
 
-	void Destroy(std::weak_ptr<AActor> actor)
-	{
-		if (auto actorRef = actor.lock())
-		{
-			for (std::weak_ptr<UWidget> widget : actorRef->attachedWidgets)
-			{
-				if (auto widgetRef = widget.lock())
-				{
-					Destroy<UWidget>(widgetRef->RenderLayer, widgetRef->GetEditorName());
-				}
-			}
-			actorRef->DestroyAllComponent();
-			Destroy<AActor>(actorRef->RenderLayer, actorRef->GetEditorName());
-		}
-	}
+    void Destroy(std::weak_ptr<AActor> actor);
 
-	void Destroy(std::weak_ptr<UWidget> widget)
-	{
-		if (auto shared = widget.lock())
-		{
-			Destroy<UWidget>(shared->RenderLayer, shared->GetEditorName());
-		}
-	}
+    void Destroy(std::weak_ptr<UWidget> widget);
 
 	template<typename TargetType>
 	void Destroy(const int& layer, const std::wstring& objectName)
@@ -142,4 +120,8 @@ protected:
 
 public:
 	bool bEraseOjbect = false;
+
+private:
+    static void RegisterAttachedWidgets(const std::shared_ptr<AActor>& actor,
+        std::vector<std::unordered_map<std::wstring, std::shared_ptr<UWidget>>>& widgets);
 };

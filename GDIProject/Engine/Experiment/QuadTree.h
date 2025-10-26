@@ -88,8 +88,8 @@ TQuadTree<ElementType, NodeCapacity>::~TQuadTree()
 template<typename ElementType, int32 NodeCapacity>
 inline void TQuadTree<ElementType, NodeCapacity>::Split()
 {
-	float subWidth = (boundBox.m_maxVector.x - boundBox.m_minVector.x) / 2.0f;
-	float subHeight = (boundBox.m_maxVector.y - boundBox.m_minVector.y) / 2.0f;
+	float subWidth = (boundBox.GetMaxVector().x - boundBox.GetMinVector().x) / 2.0f;
+	float subHeight = (boundBox.GetMaxVector().y - boundBox.GetMinVector().y) / 2.0f;
 	float x = centerPosition.x;
 	float y = centerPosition.y;
 
@@ -187,11 +187,11 @@ inline int32 TQuadTree<ElementType, NodeCapacity>::GetQuadsIndex(const FAABBBox&
 	int32 QuadCount = -1;
 	if (IsleafNode == false)
 	{
-		bool bNegX = Box.m_minVector.x <= centerPosition.x;
-		bool bNegY = Box.m_minVector.y <= centerPosition.y;
+		bool bNegX = Box.GetMinVector().x <= centerPosition.x;
+		bool bNegY = Box.GetMinVector().y <= centerPosition.y;
 
-		bool bPosX = Box.m_maxVector.x >= centerPosition.x;
-		bool bPosY = Box.m_maxVector.y >= centerPosition.y;
+		bool bPosX = Box.GetMaxVector().x >= centerPosition.x;
+		bool bPosY = Box.GetMaxVector().y >= centerPosition.y;
 
 		if (bNegX && bNegY)
 		{

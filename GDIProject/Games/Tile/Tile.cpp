@@ -3,6 +3,7 @@
 #include "../Games.h"
 #include "../Player/TurnGameState.h"
 #include "../Scene/PlayScene.h"
+#include <Classes/Components/StaticMeshComponent.h>
 #include <queue>
 #include <tuple>
 #include <iostream>
@@ -58,11 +59,11 @@ void ATile::InitializeImage()
 				int width = right - left;
 				int height = bottom - top;
 
-				if (auto StaticMeshComponentRef = StaticMeshComponent.lock())
-				{
-					StaticMeshComponentRef->SetMeshSize(width, height);
-					StaticMeshComponentRef->mesh = baseImage->Clone(left, top, width, height, PixelFormat32bppARGB);
-				}
+                if (auto StaticMeshComponentRef = StaticMeshComponent.lock())
+                {
+                    StaticMeshComponentRef->SetMeshSize(width, height);
+                    StaticMeshComponentRef->SetMesh(baseImage->Clone(left, top, width, height, PixelFormat32bppARGB));
+                }
 			}
 		}
 	}

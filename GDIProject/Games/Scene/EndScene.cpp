@@ -10,6 +10,7 @@
 #include "../UI/EndScene_ScoreGuide.h"
 #include <Experiment/SmartCast.h>
 #include <Runtime/Core/FIleHelper.h>
+#include <UI/UIButtonComponent.h>
 
 UEndScene::UEndScene()
 {
@@ -78,7 +79,7 @@ void UEndScene::UIInitialize()
 		{
 			if (auto text = Cast<SUITextComponent>(widghtRef->m_scoreui))
 			{
-				text->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
+                text->SetContent(std::to_wstring(g_TurnGameStateInstance->m_iTurnCount));
 			}
 		}
 	}

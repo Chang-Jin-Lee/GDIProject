@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iomanip>
 #include <memory>
+#include <unordered_map>
 #include "ObjectBase.h"
 #include <iostream>
 #include "../Experiment/SmartCast.h"
@@ -41,7 +42,7 @@ public:
 	{
 		std::shared_ptr<TReturnType> temp = std::make_shared<TReturnType>();
 		std::wstring Name = SubobjectName + MakeUniqueName();
-		if (std::shared_ptr<UObject> object = std::shared_ptr<UObject>(temp))	// 만약 씬에서 생성할때 위젯이 부착되어 있으면 걔도 관리해줌.
+		if (std::shared_ptr<UObject> object = std::static_pointer_cast<UObject>(temp))	// 안전한 업캐스트
 		{
 			object->SetEditorName(Name);
 			object->RenderLayer = layer;

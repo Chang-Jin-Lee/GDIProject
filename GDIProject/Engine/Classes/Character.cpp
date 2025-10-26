@@ -2,6 +2,7 @@
 #include "../Runtime/Core/FIleHelper.h"
 #include "../Runtime/Renderer/Renderer.h"
 #include "../Time/Time.h"
+#include "Components/StaticMeshComponent.h"
 
 ACharacter::ACharacter()
 {
@@ -63,15 +64,10 @@ void ACharacter::Release()
 		}
 	}
 
-	for (int state = 0; state < static_cast<int>(AnimationState::Max); ++state)
-	{
-		UStaticMeshComponent*& mesh = AnimationBundle.baseImages[state];
-		if (mesh)
-		{
-			delete mesh;
-			mesh = nullptr;
-		}
-	}
+    for (int state = 0; state < static_cast<int>(AnimationState::Max); ++state)
+    {
+        AnimationBundle.baseImages[state].reset();
+    }
 }
 
 void ACharacter::LoadAnimationData(const wchar_t* baseDir, const wchar_t* baseSate, const wchar_t delimeter, AnimationState animState, DirState dirState)
@@ -92,13 +88,19 @@ void ACharacter::LoadAnimationData(const wchar_t* baseDir, const wchar_t* baseSa
 	//AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
 	//AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(AnimationBundle.baseImages[static_cast<int>(animState)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
 	
-	std::vector<std::vector<int>> infos;
+    std::vector<std::vector<int>> infos;
 	FFileHelper::LoadFileToVectorWithDelimiter<int>(baseDir, infoFileName, delimeter, infos);
 	int cloneInfoRowSize = infos.size();
 	int cloneInfoColsize = infos[0].size();
-	AnimationBundle.baseImages[static_cast<int>(animState)]->LoadData(baseDir, originalImagefileName);
-	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
-	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(AnimationBundle.baseImages[static_cast<int>(animState)]->mesh, infos, PixelFormat32bppARGB);
+    if (auto baseImage = AnimationBundle.baseImages[static_cast<int>(animState)].lock())
+    {
+        baseImage->LoadData(baseDir, originalImagefileName);
+    }
+    AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
+    if (auto baseImage = AnimationBundle.baseImages[static_cast<int>(animState)].lock())
+    {
+        AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(baseImage->GetMesh(), infos, PixelFormat32bppARGB);
+    }
 
 	//for (int i = 0; i < cloneInfoRowSize; i++)
 	//{

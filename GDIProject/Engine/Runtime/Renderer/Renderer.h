@@ -2,17 +2,22 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include "../../Classes/Character.h"
-#include "../../UI/UITextComponent.h"
-#include "../../UI/UIButtonComponent.h"
-#include "../../Experiment/StateOption.h"
+#include <memory>
 
-#include <gdiplus.h>
-#pragma comment(lib, "gdiplus.lib")
+template<typename T> class TVector2; using FVector2 = TVector2<float>;
+class ACharacter;               // from Classes/Character.h
+class SUITextComponent;         // from UI/UITextComponent.h
+class SUIButtonComponent;       // from UI/UIButtonComponent.h
 
-using namespace Gdiplus;
+// GDI+ 전방 선언 (헤더에서 직접 포함하지 않음)
+namespace Gdiplus {
+    class Bitmap; class Font; class StringFormat; class SolidBrush;
+}
 
 class ACameraActor;
+class USceneComponent;
+class UStaticMeshComponent;
+class UObject;
 
 namespace Renderer
 {
@@ -21,25 +26,27 @@ namespace Renderer
 	void BeginDraw();
 	void Release(HWND hwnd);
 
-	FVector2 GetResolution();
+    FVector2 GetResolution();
 	void SetResolution(const float& width, const float& height);
 	void SetMainCamera(const std::weak_ptr<ACameraActor> camera);
 	bool IsGdiValid();
 	std::weak_ptr<ACameraActor> GetMainCamera();
 
-	void RenderImage(Gdiplus::Bitmap* ImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size, const bool& bSelected);
-	void RenderText(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush);
+    void RenderImage(Gdiplus::Bitmap* ImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size, const bool& bSelected);
+    void RenderText(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush);
 	void RenderRectRed(int x, int y, int width, int height);
 	void RenderRectBlue(int x, int y, int width, int height);
-	void RenderRectFill(SolidBrush& brush, FVector2& position, const FVector2& size, int radius = 5);
-	void RenderRectWithRounded(SolidBrush* brush, FVector2& position, const FVector2& size, int radius = 5);
+    void RenderRectFill(Gdiplus::SolidBrush& brush, FVector2& position, const FVector2& size, int radius = 5);
+    void RenderRectWithRounded(Gdiplus::SolidBrush* brush, FVector2& position, const FVector2& size, int radius = 5);
+    // UI는 줌 비율 미적용. 카메라에 부착되어 있음
+    void RenderRectWithRoundedUI(Gdiplus::SolidBrush* brush, FVector2& position, const FVector2& size, int radius = 5);
 
 	void RenderMesh(const std::shared_ptr<USceneComponent>& sceneComponent, const std::shared_ptr<UStaticMeshComponent>& staticMesh, const bool& bSelected);	// 액터 그리기 함수
-	void RenderCharacterAnimation(ACharacter::FAnimationBundle& animationBundle, ACharacter* character); 	// 애니메이션을 위한 함수. 
+    void RenderCharacterAnimation(ACharacter* character); 	// 애니메이션을 위한 함수. 
 
 	// UI 관련
 	void RenderTextUI(const std::shared_ptr<SUITextComponent>& textui, int parentX, int parentY);
-	void RenderButtonUI(const std::shared_ptr<SUIButtonComponent>& buttonui, int parentX, int parentY);
+    void RenderButtonUI(const std::shared_ptr<SUIButtonComponent>& buttonui, int parentX, int parentY);
 
 	void ClearRenderObjects();
 	void SetRenderObject(std::weak_ptr<UObject> obj);

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <UI/Widget.h>
-#include <UI/UIButtonComponent.h>
 
 class SUIButtonComponent;
 class SUITextComponent;

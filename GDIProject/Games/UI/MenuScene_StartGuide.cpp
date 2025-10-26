@@ -1,6 +1,12 @@
 #include "MenuScene_StartGuide.h"
 #include "../Games.h"
 #include <Runtime/Core/FIleHelper.h>
+#include <gdiplus.h>
+#include <UI/UITextComponent.h>
+#include <UI/UIButtonComponent.h>
+#include <Classes/Camera/CameraActor.h>
+#include <Runtime/Renderer/Renderer.h>
+#include <Math/Math.h>
 
 UMenuscene_StartGuide::UMenuscene_StartGuide()
 {
@@ -12,18 +18,18 @@ UMenuscene_StartGuide::UMenuscene_StartGuide()
 
 	HallOfFameText = CreateDefaultSubobject<SUITextComponent>(TEXT("HallOfFameText"));
 
-	WidgetComponents.push_back(m_startGameButton);
-	WidgetComponents.push_back(m_startGameButtonText);
-	WidgetComponents.push_back(m_endGameButton);
-	WidgetComponents.push_back(m_endGameButtonText);
-	WidgetComponents.push_back(HallOfFameText);
+    if (auto sp = m_startGameButton.lock()) WidgetComponents.push_back(std::static_pointer_cast<UWidgetComponent>(sp));
+    if (auto sp = m_startGameButtonText.lock()) WidgetComponents.push_back(std::static_pointer_cast<UWidgetComponent>(sp));
+    if (auto sp = m_endGameButton.lock()) WidgetComponents.push_back(std::static_pointer_cast<UWidgetComponent>(sp));
+    if (auto sp = m_endGameButtonText.lock()) WidgetComponents.push_back(std::static_pointer_cast<UWidgetComponent>(sp));
+    if (auto sp = HallOfFameText.lock()) WidgetComponents.push_back(std::static_pointer_cast<UWidgetComponent>(sp));
 
 	for (int i = 0; i < 10; i++)
 	{
-		textScore.emplace_back(CreateDefaultSubobject<SUITextComponent>(TEXT("textScore") + std::to_wstring(i)));
-		textTime.emplace_back(CreateDefaultSubobject<SUITextComponent>(TEXT("textTime") + std::to_wstring(i)));
-		WidgetComponents.push_back(textScore.back());
-		WidgetComponents.push_back(textTime.back());
+        textScore.emplace_back(CreateDefaultSubobject<SUITextComponent>(TEXT("textScore") + std::to_wstring(i)));
+        textTime.emplace_back(CreateDefaultSubobject<SUITextComponent>(TEXT("textTime") + std::to_wstring(i)));
+        if (auto sp = textScore.back().lock()) WidgetComponents.push_back(std::static_pointer_cast<UWidgetComponent>(sp));
+        if (auto sp = textTime.back().lock()) WidgetComponents.push_back(std::static_pointer_cast<UWidgetComponent>(sp));
 	}
 }
 

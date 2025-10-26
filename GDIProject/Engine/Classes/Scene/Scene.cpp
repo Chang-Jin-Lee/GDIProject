@@ -2,6 +2,8 @@
 #include "../../Runtime/Renderer/Renderer.h"
 #include "../Camera/CameraActor.h"
 #include "../../UI/Widget.h"
+#include "../Actor.h"
+#include "../../Math/Math.h"
 
 UScene::UScene()
 {
@@ -121,6 +123,41 @@ void UScene::Release()
 	}
 	m_widgets.clear();
 	std::vector<std::unordered_map<std::wstring, std::shared_ptr<UWidget>>>().swap(m_widgets);
+}
+void UScene::Destroy(std::weak_ptr<AActor> actor)
+{
+    if (auto actorRef = actor.lock())
+    {
+        for (std::weak_ptr<UWidget> widget : actorRef->attachedWidgets)
+        {
+            if (auto widgetRef = widget.lock())
+            {
+                Destroy<UWidget>(widgetRef->RenderLayer, widgetRef->GetEditorName());
+            }
+        }
+        actorRef->DestroyAllComponent();
+        Destroy<AActor>(actorRef->RenderLayer, actorRef->GetEditorName());
+    }
+}
+
+void UScene::Destroy(std::weak_ptr<UWidget> widget)
+{
+    if (auto shared = widget.lock())
+    {
+        Destroy<UWidget>(shared->RenderLayer, shared->GetEditorName());
+    }
+}
+
+void UScene::RegisterAttachedWidgets(const std::shared_ptr<AActor>& actor,
+    std::vector<std::unordered_map<std::wstring, std::shared_ptr<UWidget>>>& widgets)
+{
+    for (const auto& widgetWeak : actor->attachedWidgets)
+    {
+        if (auto widgetShared = widgetWeak.lock())
+        {
+            widgets[widgetShared->RenderLayer].emplace(widgetShared->GetEditorName(), std::move(widgetShared));
+        }
+    }
 }
 
 void UScene::DeleteNullObjects()

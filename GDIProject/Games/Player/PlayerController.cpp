@@ -7,6 +7,8 @@
 #include <Input/Input.h>
 #include <iostream>
 #include "../Scene/PlayScene.h"
+#include <UI/UITextComponent.h>
+#include <UI/UIButtonComponent.h>
 
 APlayerController::APlayerController() 
 {
@@ -61,23 +63,29 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 {
 	if (const auto& SelectedUnitRef = SelectedUnit.lock())
 	{
-		FVector2 unitIndex = ATile::GetIndexAtPosition(SelectedUnitRef->GetActorLocation());
+    	// 현재 유닛의 타일 인덱스는 유닛 중심 기준으로 계산하여 오차 방지
+    	FVector2 unitCenter = SelectedUnitRef->GetActorLocation() + SelectedUnitRef->GetActorSize() / 2;
+    	FVector2 unitIndex = ATile::GetIndexAtPosition(unitCenter);
 		if (unitIndex.x == -1 || unitIndex.y == -1) return;
 		FVector2 index = ATile::GetIndexAtPosition(pos);
 		FVector2 pos = ATile::GetTilePositionAtIndex((int)index.x, (int)index.y);
 		if (pos.x == -1 || pos.y == -1) return;
+   		 // 동일 타일이면 이동 금지
+    	if ((int)unitIndex.x == (int)index.x && (int)unitIndex.y == (int)index.y) return;
 
 		int x = (int)index.x;
 		int y = (int)index.y;
-		int distance = ATile::SearchCost(int(unitIndex.x), int(unitIndex.y), x, y, m_tiles);
+    	int distance = ATile::SearchCost(int(unitIndex.x), int(unitIndex.y), x, y, m_tiles);
 
 		if (distance == -1)
 		{
 			return;
 		}
-		else
+        else
 		{
-			if (distance <= SelectedUnitRef->ActionRemainCount)
+            // 동일 타일이면 이동 금지
+            if (distance == 0) return;
+            if (distance <= SelectedUnitRef->ActionRemainCount)
 			{
 				if (const auto tile = m_tiles[x][y].lock())
 				{
@@ -87,8 +95,9 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 				if (const auto tile = m_tiles[(int)unitIndex.x][(int)unitIndex.y].lock())
 				{
 					tile->unit.reset();
-					SelectedUnitRef->ActionRemainCount -= distance;
-					SelectedUnitRef->SetActorLocation(pos);
+                    SelectedUnitRef->ActionRemainCount -= distance;
+                    FVector2 size = SelectedUnitRef->GetActorSize();
+                    SelectedUnitRef->SetActorLocation(pos - size / 2);
 
 					if (const auto OwnerSceneRef = OwnerScene.lock())
 					{
@@ -97,7 +106,7 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 						{
 							if (auto text = widget->m_selectTileName.lock())
 							{
-								text->m_content = L"캐릭터 이름 : " + SelectedUnitRef->GetName();
+                                text->SetContent(L"캐릭터 이름 : " + SelectedUnitRef->GetName());
 							}
 						}
 
@@ -105,7 +114,7 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 						{
 							if (auto text = widget->m_selectTileActionCount.lock())
 							{
-								text->m_content = L"남은 행동 수 : " + std::to_wstring(SelectedUnitRef->ActionRemainCount);
+                                text->SetContent(L"남은 행동 수 : " + std::to_wstring(SelectedUnitRef->ActionRemainCount));
 							}
 						}
 					}
@@ -281,7 +290,7 @@ void APlayerController::HandleInput()
 				{
 					if (auto text = widget->m_selectTileName.lock())
 					{
-						text->m_content = L"캐릭터 이름 : " + SelectedUnitRef->GetName();
+                        text->SetContent(L"캐릭터 이름 : " + SelectedUnitRef->GetName());
 					}
 				}
 				
@@ -289,7 +298,7 @@ void APlayerController::HandleInput()
 				{
 					if (auto text = widget->m_selectTileActionCount.lock())
 					{
-						text->m_content = L"남은 행동 수 : " + std::to_wstring(SelectedUnitRef->ActionRemainCount);
+                        text->SetContent(L"남은 행동 수 : " + std::to_wstring(SelectedUnitRef->ActionRemainCount));
 					}
 				}
 
@@ -312,7 +321,7 @@ void APlayerController::HandleInput()
 					}
 					return;
 				}
-				else
+                else
 				{
 					for (auto& tiles : m_tiles)
 					{
@@ -324,10 +333,12 @@ void APlayerController::HandleInput()
 							}
 						}
 					}
-					for (auto& tile : reachable)
+                    for (auto& tile : reachable)
 					{
 						int r = tile.first;
 						int c = tile.second;
+                        // 현재 유닛이 서 있는 타일은 표시하지 않음
+                        if (r == (int)unitIndex.x && c == (int)unitIndex.y) continue;
 						if (const auto tileRef = m_tiles[r][c].lock())
 						{
 							tileRef->SetHighlight(true); // 미리보기 표시
@@ -361,14 +372,14 @@ void APlayerController::HandleInput()
 					{
 						if (auto text = widget->m_selectTileName.lock())
 						{
-							text->m_content = L"타일 이름 : " + t.lock()->GetTileName();
+                            text->SetContent(L"타일 이름 : " + t.lock()->GetTileName());
 						}
 					}
 					if (auto widget = ps->m_PlayScene_Widget.lock())
 					{
 						if (auto text = widget->m_selectTileActionCount.lock())
 						{
-							text->m_content = L"";
+                            text->SetContent(L"");
 						}
 					}
 				}
@@ -378,14 +389,14 @@ void APlayerController::HandleInput()
 					{
 						if (auto text = widget->m_selectTileName.lock())
 						{
-							text->m_content = L"타일 이름 : ";
+                            text->SetContent(L"타일 이름 : ");
 						}
 					}
 					if (auto widget = ps->m_PlayScene_Widget.lock())
 					{
 						if (auto text = widget->m_selectTileActionCount.lock())
 						{
-							text->m_content = L"";
+                            text->SetContent(L"");
 						}
 					}
 				}

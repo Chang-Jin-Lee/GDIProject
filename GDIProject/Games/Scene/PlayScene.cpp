@@ -13,6 +13,7 @@
 #include "../Player/TurnGameState.h"
 #include "../Player/PlayerController.h"
 #include <Experiment/SmartCast.h>
+#include <UI/UIButtonComponent.h>
 
 UPlayScene::UPlayScene()
 {
@@ -139,7 +140,24 @@ void UPlayScene::UpdateInput()
 		UScene::ChangeScene<UEndScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 	}
 
-	if (Input::IsKeyPressed(VK_LBUTTON))
+    // 마우스 휠로 줌 인/아웃 (위 = 확대, 아래 = 축소)
+    {
+        int wheel = Input::GetWheelDelta(); // 프레임당 휠 변화량(예: +120/-120)
+        if (wheel != 0)
+        {
+            if (const auto cameraRef = Game::GetGameState()->GetMainCamera().lock())
+            {
+                float step = (wheel > 0) ? 1.1f : 0.9f;
+                FVector2 currentScale = cameraRef->GetCameraScale();
+                float zoom = currentScale.x * step;
+                if (zoom < 0.3f) zoom = 0.3f;
+                if (zoom > 4.0f) zoom = 4.0f;
+                cameraRef->SetActorScale(zoom, zoom);
+            }
+        }
+    }
+
+    if (Input::IsKeyPressed(VK_LBUTTON))
 	{
 		if (Game::CheckWidgetPosition(Input::GetMousePosition()) == false)
 		{
@@ -158,6 +176,22 @@ void UPlayScene::UIInitialize()
 	if (const auto widget = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
 	{
 		widget->Initialize();
+        // Skip Turn 버튼
+        if (auto btn = Cast<SUIButtonComponent>(widget->m_skipTurnButton))
+        {
+            btn->SetVoidDelegate([this]() {
+                if (const auto turnRef = Cast<TurnManager>(TurnMgr))
+                {
+                    if (auto player = Cast<APlayerController>(turnRef->GetPlayer()))
+                    {
+                        if (const auto unit = player->SelectedUnit.lock())
+                        {
+                            if (unit->ActionRemainCount > 0) unit->ActionRemainCount = 0;				
+                        }
+                    }
+                }
+            });
+        }
 	}
 }
 
@@ -274,20 +308,48 @@ void UPlayScene::UpdateUI()
 {
 	if (const auto ref = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
 	{
-		if (const auto popupText = Cast<SUITextComponent>(ref->m_popupText))
-		{
-			if (popupText->m_bVisible)
-			{
-				if (Time::GetTotalTime() - ref->m_currentTime > ref->m_PopUpTextDelay)
-				{
-					popupText->m_bVisible = false;
-					if (const auto popupRectangle = Cast<SUIButtonComponent>(ref->m_popupRectangle))
-					{
-						popupRectangle->m_bVisible = false;
-					}
-				}
-			}
-		}
+        if (const auto popupText = Cast<SUITextComponent>(ref->m_popupText))
+        {
+            if (popupText->IsVisible())
+            {
+                // shake during popup lifetime
+                double elapsed = Time::GetTotalTime() - ref->m_currentTime;
+                const double duration = ref->m_PopUpTextDelay;
+                if (elapsed <= duration)
+                {
+                    float phase = float(elapsed * ref->m_ShakeFrequency);
+                    float dx = std::sin(phase) * ref->m_ShakeAmplitude;
+                    float dy = std::cos(phase) * ref->m_ShakeAmplitude;
+                    if (auto rect = Cast<SUIButtonComponent>(ref->m_popupRectangle))
+                    {
+                        if (!ref->m_popupBaseCaptured)
+                        {
+                            auto bp = rect->GetPosition();
+                            ref->m_popupRectBaseX = bp.x; ref->m_popupRectBaseY = bp.y;
+                            auto tp = popupText->GetPosition();
+                            ref->m_popupTextBaseX = tp.x; ref->m_popupTextBaseY = tp.y;
+                            ref->m_popupBaseCaptured = true;
+                        }
+                        rect->SetPosition({ ref->m_popupRectBaseX + dx, ref->m_popupRectBaseY + dy });
+                    }
+                    popupText->SetPosition({ ref->m_popupTextBaseX + dx, ref->m_popupTextBaseY + dy });
+                }
+                else
+                {
+                    // hide and reset positions
+                    popupText->SetVisible(false);
+                    if (auto rect = Cast<SUIButtonComponent>(ref->m_popupRectangle))
+                    {
+                        rect->SetVisible(false);
+                        if (ref->m_popupBaseCaptured)
+                            rect->SetPosition({ ref->m_popupRectBaseX, ref->m_popupRectBaseY });
+                    }
+                    if (ref->m_popupBaseCaptured)
+                        popupText->SetPosition({ ref->m_popupTextBaseX, ref->m_popupTextBaseY });
+                    ref->m_popupBaseCaptured = false;
+                }
+            }
+        }
 		
 	}
 }
@@ -296,9 +358,14 @@ void UPlayScene::NextTurn()
 {
 	if (const auto ref = Cast<TurnManager>(TurnMgr))
 	{
-		if (ref->GetCurrentTurn() == ETurnState::PlayerTurn)
+        if (ref->GetCurrentTurn() == ETurnState::PlayerTurn)
 		{
-			CheckVictoryConditions();
+            // block if any unit still has remaining actions
+            if (CheckUnitActionCount() == false)
+            {
+                return;
+            }
+            CheckVictoryConditions();
 
 			if (const auto PlayScene_Widget_Ref = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
 			{
@@ -306,14 +373,14 @@ void UPlayScene::NextTurn()
 				{
 					g_TurnGameStateInstance->m_iTurnCount++;
 
-					if (auto remainui = Cast<SUITextComponent>(PlayScene_Widget_Ref->m_remainTurnui))
+                    if (auto remainui = Cast<SUITextComponent>(PlayScene_Widget_Ref->m_remainTurnui))
 					{
-						remainui->m_content = std::to_wstring(g_TurnGameStateInstance->m_iTurnCount);
+                        remainui->SetContent(std::to_wstring(g_TurnGameStateInstance->m_iTurnCount));
 					}
 				}
 				if (auto popupRectangle = Cast<SUIButtonComponent>(PlayScene_Widget_Ref->m_popupRectangle))
 				{
-					popupRectangle->m_brush->SetColor(Gdiplus::Color(10, 10, 222));
+                    if (auto brush = popupRectangle->GetBrush()) brush->SetColor(Gdiplus::Color(10, 10, 222));
 				}
 			}
 			PopUpUI(L"다음 턴으로 넘어갑니다.");
@@ -350,13 +417,13 @@ bool UPlayScene::CheckUnitActionCount()
 			{
 				if (auto chRef = Cast<APlayerCharacter>(ch))
 				{
-					if (chRef->ActionMaxCount > 0)
+                    if (chRef->ActionRemainCount > 0)
 					{
 						if (const auto PlayScene_Widget_Ref = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
 						{
-							if (auto popupRectangle = Cast<SUIButtonComponent>(PlayScene_Widget_Ref->m_popupRectangle))
+                            if (auto popupRectangle = Cast<SUIButtonComponent>(PlayScene_Widget_Ref->m_popupRectangle))
 							{
-								popupRectangle->m_brush->SetColor(Gdiplus::Color(222, 10, 10));
+                                if (auto brush = popupRectangle->GetBrush()) brush->SetColor(Gdiplus::Color(222, 10, 10));
 							}
 						}
 						PopUpUI(L"행동 수가 남아있습니다.");
@@ -418,12 +485,12 @@ void UPlayScene::PopUpUI(const std::wstring& str)
 		ref->m_currentTime = Time::GetTotalTime();
 		if (const auto text = Cast<SUITextComponent>(ref->m_popupText))
 		{
-			text->m_content = str;
-			text->m_bVisible = true;
+            text->SetContent(str);
+            text->SetVisible(true);
 		}
 		if (const auto btn = Cast<SUIButtonComponent>(ref->m_popupRectangle))
 		{
-			btn->m_bVisible = true;
+            btn->SetVisible(true);
 		}
 	}
 }

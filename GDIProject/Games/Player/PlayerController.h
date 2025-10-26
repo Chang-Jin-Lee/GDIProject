@@ -27,8 +27,6 @@ public:
 public:
     std::weak_ptr<UObject> OwnerScene;
     std::vector<std::vector<std::weak_ptr<ATile>>> m_tiles;
-
-private:
     std::weak_ptr<APlayerCharacter> SelectedUnit;
 
 public:

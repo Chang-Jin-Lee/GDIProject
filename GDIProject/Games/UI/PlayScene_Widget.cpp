@@ -2,6 +2,12 @@
 #include "../Games.h"
 #include "../Player/TurnGameState.h"
 #include <Experiment/SmartCast.h>
+#include <gdiplus.h>
+#include <UI/UITextComponent.h>
+#include <UI/UIButtonComponent.h>
+#include <Classes/Camera/CameraActor.h>
+#include <Runtime/Renderer/Renderer.h>
+#include <Math/Math.h>
 
 UPlayScene_Widget::UPlayScene_Widget()
 {
@@ -19,18 +25,20 @@ UPlayScene_Widget::UPlayScene_Widget()
 	m_endGameButtonText = CreateDefaultSubobject<SUITextComponent>(TEXT("endGameButtonText"));
 	m_popupRectangle = CreateDefaultSubobject<SUIButtonComponent>(TEXT("m_popupRectangle"));
 	m_popupText = CreateDefaultSubobject<SUITextComponent>(TEXT("m_popupText"));
-	if (const auto popupText = Cast<SUITextComponent>(m_popupText))
-	{
-		popupText->m_bVisible = false;
-	}
-	if (const auto ref = Cast<SUIButtonComponent>(m_popupRectangle))
-	{
-		ref->m_bVisible = false;
-	}
+    if (const auto popupText = Cast<SUITextComponent>(m_popupText))
+    {
+        popupText->SetVisible(false);
+    }
+    if (const auto ref = Cast<SUIButtonComponent>(m_popupRectangle))
+    {
+        ref->SetVisible(false);
+    }
 
 	m_selectTileInfomationRectangle = CreateDefaultSubobject<SUIButtonComponent>(TEXT("m_selectTileInfomationRectangle"));
 	m_selectTileName = CreateDefaultSubobject<SUITextComponent>(TEXT("m_selectTileName"));
 	m_selectTileActionCount = CreateDefaultSubobject<SUITextComponent>(TEXT("m_selectTileActionCount"));
+    m_skipTurnButton = CreateDefaultSubobject<SUIButtonComponent>(TEXT("m_skipTurnButton"));
+    m_skipTurnButtonText = CreateDefaultSubobject<SUITextComponent>(TEXT("m_skipTurnButtonText"));
 
 	WidgetComponents.push_back(m_remainTurnGuideui);
 	WidgetComponents.push_back(m_remainTurnui);
@@ -50,6 +58,8 @@ UPlayScene_Widget::UPlayScene_Widget()
 	WidgetComponents.push_back(m_selectTileInfomationRectangle);
 	WidgetComponents.push_back(m_selectTileName);
 	WidgetComponents.push_back(m_selectTileActionCount);
+    WidgetComponents.push_back(m_skipTurnButton);
+    WidgetComponents.push_back(m_skipTurnButtonText);
 }
 
 UPlayScene_Widget::~UPlayScene_Widget()
@@ -123,7 +133,7 @@ void UPlayScene_Widget::Initialize()
 					FVector2(int(Renderer::GetResolution().x * 0.5), int(Renderer::GetResolution().y * 0.15)),
 					FVector2(60, 30)
 				);
-				ref->m_content = _wcsdup(std::to_wstring(10.0f).c_str());
+                ref->SetContent(std::to_wstring(10.0f));
 			}
 			ref->AttachedUIToActor(cameraRef);
 		}
@@ -299,6 +309,30 @@ void UPlayScene_Widget::Initialize()
 			);
 			ref->AttachedUIToActor(cameraRef);
 		}
+
+        // Skip Turn button (우하단 info 영역 내부 오른쪽 아래)
+        int sx = int(Renderer::GetResolution().x * 0.25);
+        int sy = int(Renderer::GetResolution().y * 0.92);
+        int sw = 110;
+        int sh = 40;
+        if (const auto ref = Cast<SUIButtonComponent>(m_skipTurnButton))
+        {
+            ref->Initialize(Gdiplus::Color(48, 50, 113), FVector2(sx - sw / 2, sy - sh / 2), FVector2(sw, sh), 8);
+            ref->AttachedUIToActor(cameraRef);
+        }
+        if (const auto ref = Cast<SUITextComponent>(m_skipTurnButtonText))
+        {
+            ref->Initialize
+            (
+                L"턴 넘기기",
+                10,
+                (wchar_t*)L"Verdana",
+                Gdiplus::Color(255, 255, 255),
+                FVector2(sx - sw / 2, sy - sh / 2),
+                FVector2(sw, sh)
+            );
+            ref->AttachedUIToActor(cameraRef);
+        }
 	}
 	
 	

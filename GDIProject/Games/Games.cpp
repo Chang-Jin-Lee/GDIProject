@@ -15,6 +15,7 @@
 #include "Scene/PlayScene.h"
 #include "Games.h"
 #include <iostream>
+#include <UI/WidgetComponent.h>
 
 LPCTSTR g_szClassName = TEXT("윈도우 클래스 이름");
 
@@ -98,6 +99,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				Game::SetLMouseClickPosition(currentPos);
 			}
 		}
+		break;
+	case WM_MOUSEWHEEL:
+		Input::OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam));
 		break;
 	case WM_LBUTTONUP:
 		Game::SetMouseDragState(false);
@@ -267,19 +271,22 @@ namespace Game
 		{
 			if (button.second->bVisible)
 			{
-				for (std::weak_ptr<UWidgetComponent> component : button.second.get()->WidgetComponents)
-				{
-					if (clickPosition.x < component.lock()->m_Position.x ||
-						clickPosition.x > component.lock()->m_Position.x + component.lock()->m_Size.x ||
-						clickPosition.y < component.lock()->m_Position.y ||
-						clickPosition.y > component.lock()->m_Position.y + component.lock()->m_Size.y
-						)
-						continue;
-					if (component.lock()->FVoidDelegate)
-					{
-						component.lock()->FVoidDelegate();
-					}
-				}
+                for (std::weak_ptr<UWidgetComponent> component : button.second.get()->WidgetComponents)
+                {
+                    if (auto comp = component.lock())
+                    {
+                        if (clickPosition.x < comp->GetPosition().x ||
+                            clickPosition.x > comp->GetPosition().x + comp->GetSize().x ||
+                            clickPosition.y < comp->GetPosition().y ||
+                            clickPosition.y > comp->GetPosition().y + comp->GetSize().y
+                            )
+                            continue;
+                        if (comp->FVoidDelegate)
+                        {
+                            comp->FVoidDelegate();
+                        }
+                    }
+                }
 			}
 		}
 	}
@@ -296,12 +303,12 @@ namespace Game
 				{
 					if (auto componentRef = component.lock())
 					{
-						if ((clickPosition.x < componentRef->m_Position.x ||
-							clickPosition.x > componentRef->m_Position.x + componentRef->m_Size.x ||
-							clickPosition.y < componentRef->m_Position.y ||
-							clickPosition.y > componentRef->m_Position.y + componentRef->m_Size.y) == false
+                        if ((clickPosition.x < componentRef->GetPosition().x ||
+                            clickPosition.x > componentRef->GetPosition().x + componentRef->GetSize().x ||
+                            clickPosition.y < componentRef->GetPosition().y ||
+                            clickPosition.y > componentRef->GetPosition().y + componentRef->GetSize().y) == false
 							)
-							if (componentRef->m_bVisible == true)
+                            if (componentRef->IsVisible() == true)
 								bWidgetExist = true;
 					}
 					

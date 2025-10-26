@@ -1,46 +1,49 @@
 #pragma once
-#include "Components/SceneComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include "../Math/Math.h"
-#include "../Experiment/AABBBox.h"
+#include <vector>
+#include <memory>
 #include "Object.h"
 
+template<typename T> class TVector2; using FVector2 = TVector2<float>;
+
+// Forward declarations to reduce header dependencies
+namespace Gdiplus { class Bitmap; }
+class USceneComponent;
+class UStaticMeshComponent;
 class UWidget;
+class FAABBBox;
 
 class AActor : public UObject
 {
 public:
-	AActor();
-	~AActor();
-	void LoadStaticMeshData(std::wstring baseDir, std::wstring fileName);
+    AActor();
+    ~AActor();
+    void LoadStaticMeshData(std::wstring baseDir, std::wstring fileName);
 
-	virtual void Initialize() override;
-	virtual void Update() override;
-	virtual void Release() override;
-	virtual void LoadData();
+    virtual void Initialize() override;
+    virtual void Update() override;
+    virtual void Release() override;
+    virtual void LoadData();
 
-	//std::vector<std::function<UObject>()> functions;
+    // Accessors moved to cpp to avoid including heavy headers here
+    Gdiplus::Bitmap* GetBitmap();
+    FVector2 GetActorLocation() const;
+    FVector2 GetActorSize();
+    FVector2 GetActorScale();
+    float GetActorRotation();
 
-	Gdiplus::Bitmap* GetBitmap() { return Cast<UStaticMeshComponent>(StaticMeshComponent)->mesh; }
-
-	FVector2 GetActorLocation() const { return Cast<USceneComponent>(SceneComponent)->GetSceneComponentLocation(); }
-	FVector2 GetActorSize() { return Cast<UStaticMeshComponent>(StaticMeshComponent)->GetMeshSize();}
-	FVector2 GetActorScale() { return Cast<USceneComponent>(SceneComponent)->GetSceneComponentScale(); }
-	float GetActorRotation() { return Cast<USceneComponent>(SceneComponent)->GetSceneComponentRotation(); }
-
-	FAABBBox* GetBoundBox() { return &boundBox; }
-	
-	void SetActorScale(float x, float y);
-	void SetActorSize(float x, float y);
-	void SetActorLocation(float x, float y);
-	void SetActorLocation(const FVector2& Position);
-	void SetActorRotation(float value);
-	
+    FAABBBox* GetBoundBox();
+    
+    void SetActorScale(float x, float y);
+    void SetActorSize(float x, float y);
+    void SetActorLocation(float x, float y);
+    void SetActorLocation(const FVector2& Position);
+    void SetActorRotation(float value);
+    
 public:
-	std::weak_ptr<USceneComponent> SceneComponent;
-	std::weak_ptr<UStaticMeshComponent> StaticMeshComponent;
-	FAABBBox boundBox;
-	std::vector<std::weak_ptr<UWidget>> attachedWidgets;
-	bool bSelected = false;
-	bool bVisible = true;
+    std::weak_ptr<USceneComponent> SceneComponent;
+    std::weak_ptr<UStaticMeshComponent> StaticMeshComponent;
+    std::unique_ptr<FAABBBox> boundBox;
+    std::vector<std::weak_ptr<UWidget>> attachedWidgets;
+    bool bSelected = false;
+    bool bVisible = true;
 };

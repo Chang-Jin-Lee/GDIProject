@@ -9,6 +9,7 @@ namespace Input
     SHORT currState[256] = { 0 };
     HWND m_hwnd;
     POINT m_point;
+    int m_wheelDelta = 0; // 누적 휠 델타(프레임 단위로 소비)
 
     void Initialize(HWND hwnd)
     {
@@ -56,5 +57,17 @@ namespace Input
             cameraPos = cameraRef->GetActorLocation();
         }
         return screenPos + cameraPos;
+    }
+
+    int GetWheelDelta()
+    {
+        int delta = m_wheelDelta;
+        m_wheelDelta = 0; // 사용 후 리셋합니다
+        return delta;
+    }
+
+    void OnMouseWheel(int delta)
+    {
+        m_wheelDelta += delta;
     }
 }

@@ -32,11 +32,11 @@ public:
 
 	virtual void LoadAnimationData(const wchar_t* baseDir, const wchar_t* baseSate, const wchar_t delimeter, AnimationState animState, DirState dirState);
 
-	struct FAnimationBundle // 방향, 애니메이션
-	{
-		UAnimationComponent* animationComponent[static_cast<int>(DirState::Max)][static_cast<int>(AnimationState::Max)];
-		UStaticMeshComponent* baseImages[static_cast<int>(AnimationState::Max)];
-	};
+    struct FAnimationBundle // 방향, 애니메이션
+    {
+        UAnimationComponent* animationComponent[static_cast<int>(DirState::Max)][static_cast<int>(AnimationState::Max)];
+        std::weak_ptr<UStaticMeshComponent> baseImages[static_cast<int>(AnimationState::Max)];
+    };
 
 public:
 	const wchar_t* GetDirStateName(DirState state);

@@ -1,6 +1,7 @@
 ﻿#include "TurnGameState.h"
 #include <iostream>
 #include <Runtime/Core/FIleHelper.h>
+#include <gdiplus.h>
 
 TurnGameState::TurnGameState()
 {

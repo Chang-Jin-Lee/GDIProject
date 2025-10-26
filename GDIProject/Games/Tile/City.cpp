@@ -2,6 +2,7 @@
 #include "../Games.h"
 #include "Tile.h"
 #include "../Player/TurnGameState.h"
+#include <Classes/Components/StaticMeshComponent.h>
 
 void ACity::Initialize() 
 {
@@ -26,11 +27,11 @@ void ACity::Initialize()
 				int width = right - left;
 				int height = bottom - top;
 
-				if (auto StaticMeshComponentRef = StaticMeshComponent.lock())
-				{
-					StaticMeshComponentRef->SetMeshSize(width, height);
-					StaticMeshComponentRef->mesh = baseImage->Clone(left, top, width, height, PixelFormat32bppARGB);
-				}
+                if (auto StaticMeshComponentRef = StaticMeshComponent.lock())
+                {
+                    StaticMeshComponentRef->SetMeshSize(width, height);
+                    StaticMeshComponentRef->SetMesh(baseImage->Clone(left, top, width, height, PixelFormat32bppARGB));
+                }
 			}
 		}
 	}

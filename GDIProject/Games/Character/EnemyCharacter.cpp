@@ -2,6 +2,8 @@
 #include "../Games.h"
 #include <Time/Time.h>
 #include <Math/Math.h>
+#include <UI/UITextComponent.h>
+#include <gdiplus.h>
 
 AEnemyCharacter::AEnemyCharacter()
 {

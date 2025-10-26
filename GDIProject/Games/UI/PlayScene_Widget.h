@@ -1,7 +1,8 @@
 #pragma once
 
 #include <UI/Widget.h>
-#include <UI/UIButtonComponent.h>
+class SUITextComponent; // forward decl
+class SUIButtonComponent; // forward decl
 
 class UPlayScene_Widget : public UWidget
 {
@@ -16,6 +17,14 @@ public:
 	bool m_bPopUpText = false;
 	double m_currentTime = 0;
 	double m_PopUpTextDelay = 1.3;
+    // shake effect params
+    float m_ShakeAmplitude = 3.0f;
+    float m_ShakeFrequency = 25.0f;
+    float m_popupTextBaseX = 0.0f;
+    float m_popupTextBaseY = 0.0f;
+    float m_popupRectBaseX = 0.0f;
+    float m_popupRectBaseY = 0.0f;
+    bool m_popupBaseCaptured = false;
 
 public:
 	std::weak_ptr<SUITextComponent> m_remainTurnGuideui;
@@ -41,4 +50,8 @@ public:
 	std::weak_ptr<SUIButtonComponent> m_selectTileInfomationRectangle;
 	std::weak_ptr<SUITextComponent> m_selectTileName;
 	std::weak_ptr<SUITextComponent> m_selectTileActionCount;
+
+    // 유닛 턴 넘기기 버튼 (우하단)
+    std::weak_ptr<SUIButtonComponent> m_skipTurnButton;
+    std::weak_ptr<SUITextComponent> m_skipTurnButtonText;
 };

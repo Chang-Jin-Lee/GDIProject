@@ -1,7 +1,10 @@
 #pragma once
 
+#include <vector>
+#include <memory>
 #include "../Classes/Object.h"
-#include "UITextComponent.h"
+
+class UWidgetComponent;
 
 // 상속받아 위젯 클래스를 만들고 그 안에 원하는 컴포넌를 추가해 위젯 만들기
 class UWidget : public UObject

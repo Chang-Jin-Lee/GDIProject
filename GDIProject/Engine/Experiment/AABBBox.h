@@ -1,24 +1,23 @@
 #pragma once
-#include "../Math/Math.h"
+template<typename T> class TVector2; using FVector2 = TVector2<float>;
 
-struct FAABBBox
+class FAABBBox
 {
-	FAABBBox() : m_minVector(0,0), m_maxVector(0,0) {}
-	FAABBBox(const float& minX, const  float& minY, const float& maxX, const float& maxY) : m_minVector(minX, minY), m_maxVector(maxX, maxY) {}
-	~FAABBBox() {}
+public:
+    FAABBBox();
+    FAABBBox(const float& minX, const  float& minY, const float& maxX, const float& maxY);
+    ~FAABBBox();
 
-	void SetMinVector(float x, float y) { m_minVector = FVector2(x, y); }
-	void SetMaxVector(float x, float y) { m_maxVector = FVector2(x, y); }
+    void SetMinVector(float x, float y);
+    void SetMaxVector(float x, float y);
 
-	FVector2 GetMinVector() { return m_minVector; }
-	FVector2 GetMaxVector() { return m_maxVector; }
+    FVector2 GetMinVector();
+    FVector2 GetMaxVector();
 
-	bool IsValid() { return m_minVector != FVector2(-1, -1) && m_maxVector != FVector2(-1, -1); }
+    bool IsValidBox();
+    FVector2 GetCenter();
 
-	FVector2 GetCenter()
-	{
-		return FVector2((m_minVector + m_maxVector) * 0.5f);
-	}
-
-	FVector2 m_minVector, m_maxVector;
+private:
+    struct Impl;
+    Impl* pImpl; // 수명은 cpp에서 관리
 };

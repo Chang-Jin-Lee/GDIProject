@@ -1,4 +1,5 @@
 #include "CameraBase.h"
+#include "../Components/SceneComponent.h"
 
 UCamaraBase::UCamaraBase()
 {

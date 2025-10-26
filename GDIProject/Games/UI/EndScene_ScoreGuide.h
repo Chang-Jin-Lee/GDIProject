@@ -1,7 +1,8 @@
 #pragma once
 
 #include <UI/Widget.h>
-#include <UI/UIButtonComponent.h>
+class SUITextComponent; // forward decl
+class SUIButtonComponent; // forward decl
 #include <memory>
 
 class UEndScene_Widget : public UWidget

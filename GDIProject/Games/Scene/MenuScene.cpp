@@ -6,6 +6,7 @@
 #include "PlayScene.h"
 #include <Experiment/SmartCast.h>
 #include <Runtime/Core/FIleHelper.h>
+#include <UI/UIButtonComponent.h>
 
 UMenuScene::UMenuScene()
 {

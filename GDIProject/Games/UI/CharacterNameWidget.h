@@ -1,6 +1,7 @@
 #pragma once
 
 #include <UI/Widget.h>
+class SUITextComponent; // forward decl
 
 class UCharacterNameWidget : public UWidget
 {
