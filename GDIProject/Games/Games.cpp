@@ -79,7 +79,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (const auto cameraRef = Game::GetGameState()->GetMainCamera().lock())
 			{
 				FVector2 CameraPosition = cameraRef->GetActorLocation();
-				FVector2 index = ATile::GetIndexAtPosition(FVector2(LOWORD(lParam), HIWORD(lParam)) + CameraPosition);
+				float zoom = cameraRef->GetCameraScale().x;
+				if (zoom <= 0.0f) zoom = 1.0f;
+				FVector2 worldMouse = CameraPosition + FVector2(LOWORD(lParam), HIWORD(lParam)) / zoom;
+				FVector2 index = ATile::GetIndexAtPosition(worldMouse);
 				FVector2 pos = ATile::GetTilePositionAtIndex(index.x, index.y);
 			}
 		}
@@ -94,7 +97,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (const auto cameraRef = Game::GetGameState()->GetMainCamera().lock())
 			{
 				FVector2 cameraPos = cameraRef->GetCameraLocation();
-				cameraPos += FVector2(-dif.x, -dif.y);
+				float zoom = cameraRef->GetCameraScale().x;
+				if (zoom <= 0.0f) zoom = 1.0f;
+				cameraPos += FVector2(-dif.x / zoom, -dif.y / zoom);
 				cameraRef->SetCameraLocation(cameraPos);
 				Game::SetLMouseClickPosition(currentPos);
 			}
@@ -350,6 +355,12 @@ namespace Game
 
 			g_currentScene = g_nextSceneShared;
 			g_nextScene = g_nextSceneShared;
+
+			// 씬 전환 시 카메라 줌 초기화
+			if (const auto cameraRef = g_gameInstance->GetMainCamera().lock())
+			{
+				cameraRef->SetActorScale(1.0f, 1.0f);
+			}
 		}
 	}
 

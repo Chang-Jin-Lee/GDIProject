@@ -1,4 +1,4 @@
-// Renderer.cpp : Á¤Àû ¶óÀÌºê·¯¸®¸¦ À§ÇÑ ÇÔ¼ö¸¦ Á¤ÀÇÇÕ´Ï´Ù.
+// Renderer.cpp : ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºê·¯ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.
 //
 
 #include "Renderer.h"
@@ -21,12 +21,12 @@ namespace Renderer
 {
 	FVector2 g_resolution = FVector2(1280, 800);
 	HWND g_hWnd;
-	HDC g_FrontBufferDC;    // ¾Õ¸é DC
-	HDC g_BackBufferDC;     // µÞ¸é DC (°øÀ¯)
+	HDC g_FrontBufferDC;    // ï¿½Õ¸ï¿½ DC
+	HDC g_BackBufferDC;     // ï¿½Þ¸ï¿½ DC (ï¿½ï¿½ï¿½ï¿½)
 
-	HBITMAP g_BackBufferBitmapA; // ´õºí ¹öÆÛ A
-	HBITMAP g_BackBufferBitmapB; // ´õºí ¹öÆÛ B
-	bool g_bUsingBufferA = true; // ÇöÀç A¸¦ »ç¿ëÇÏ°í ÀÖ´Â°¡
+	HBITMAP g_BackBufferBitmapA; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ A
+	HBITMAP g_BackBufferBitmapB; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ B
+	bool g_bUsingBufferA = true; // ï¿½ï¿½ï¿½ï¿½ Aï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿? ï¿½Ö´Â°ï¿½
 
 	ULONG_PTR g_GdiPlusToken;
 	Gdiplus::Graphics* g_pBackBufferGraphics = nullptr;
@@ -46,7 +46,7 @@ namespace Renderer
 
 		g_BackBufferBitmapA = CreateCompatibleBitmap(g_FrontBufferDC, (int)g_resolution.x, (int)g_resolution.y);
 		g_BackBufferBitmapB = CreateCompatibleBitmap(g_FrontBufferDC, (int)g_resolution.x, (int)g_resolution.y);
-		SelectObject(g_BackBufferDC, g_BackBufferBitmapA); // ÃÊ±â ¼±ÅÃ
+		SelectObject(g_BackBufferDC, g_BackBufferBitmapA); // ï¿½Ê±ï¿½ ï¿½ï¿½ï¿½ï¿½
 
 		Gdiplus::GdiplusStartupInput gsi;
 		Gdiplus::GdiplusStartup(&g_GdiPlusToken, &gsi, nullptr);
@@ -64,11 +64,11 @@ namespace Renderer
 
 	void BeginDraw()
 	{
-		// ÇÁ·¹ÀÓ¸¶´Ù ¹é¹öÆÛ ±³´ë
+		// ï¿½ï¿½ï¿½ï¿½ï¿½Ó¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿? ï¿½ï¿½ï¿½ï¿½
 		HBITMAP currentBitmap = g_bUsingBufferA ? g_BackBufferBitmapA : g_BackBufferBitmapB;
 		SelectObject(g_BackBufferDC, currentBitmap);
 
-		// g_pBackBufferGraphics¸¦ »õ·Î °»½Å
+		// g_pBackBufferGraphicsï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		if (g_pBackBufferGraphics)
 			delete g_pBackBufferGraphics;
 		g_pBackBufferGraphics = Gdiplus::Graphics::FromHDC(g_BackBufferDC);
@@ -76,13 +76,13 @@ namespace Renderer
 		g_pBackBufferGraphics->SetInterpolationMode(Gdiplus::InterpolationModeNearestNeighbor);
 		g_pBackBufferGraphics->SetSmoothingMode(Gdiplus::SmoothingModeNone);
 
-        // È­¸é Áö¿ì±â
+        // È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿?
         ::PatBlt(g_BackBufferDC, 0, 0, (int)g_resolution.x, (int)g_resolution.y, BLACKNESS);
 	}
 
 	void EndDraw()
 	{
-		// ±×·ÁÁø ¹é¹öÆÛ¸¦ È­¸éÀ¸·Î º¹»ç
+		// ï¿½×·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Û¸ï¿? È­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         ::BitBlt(
 			g_FrontBufferDC,
 			0, 0, (int)g_resolution.x, (int)g_resolution.y,
@@ -91,7 +91,7 @@ namespace Renderer
 			SRCCOPY
 		);
 
-		// ´ÙÀ½ ÇÁ·¹ÀÓ¿¡ ¹öÆÛ¸¦ ±³´ë
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿ï¿½ ï¿½ï¿½ï¿½Û¸ï¿½ ï¿½ï¿½ï¿½ï¿½
 		g_bUsingBufferA = !g_bUsingBufferA;
 	}
 
@@ -140,7 +140,7 @@ namespace Renderer
 						if (auto UWidgetComponentRef = UWidgetComponent.lock())
 						{
 							if (UWidgetComponentRef->IsVisible() == false) continue;
-							if (UWidgetComponentRef->m_AttachedActor.expired()) // ¾×ÅÍ¿¡ ºÎÂøµÇ¾î ÀÖÁö ¾ÊÀ» ¶§
+							if (UWidgetComponentRef->m_AttachedActor.expired()) // ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 							{
 								if (std::shared_ptr<SUITextComponent> uitextComponent = std::dynamic_pointer_cast<SUITextComponent>(UWidgetComponentRef))
 								{
@@ -151,7 +151,7 @@ namespace Renderer
                                     Renderer::RenderButtonUI(uitextComponent, 0, 0);
 								}
 							}
-							else // ¾î¶² ¾×ÅÍ¿¡ ºÎÂøµÇ¾î ÀÖÀ» ¶§
+							else // ï¿½î¶² ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
 							{
                                 if (std::shared_ptr<SUITextComponent> uitextComponent = std::dynamic_pointer_cast<SUITextComponent>(UWidgetComponentRef))
                                 {
@@ -198,68 +198,72 @@ namespace Renderer
 
 	void RenderImage(Gdiplus::Bitmap* pImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size, const bool& bSelected)
 	{
-               // camera culling (basic)
-               if (auto cam = g_mainCamera.lock())
-               {
-                   if (position.x < cam->GetCameraLocation().x - g_resolution.x * 0.5f ||
-                       position.x > cam->GetCameraLocation().x + g_resolution.x * 1.5f ||
-                       position.y < cam->GetCameraLocation().y - g_resolution.y * 0.5f ||
-                       position.y > cam->GetCameraLocation().y + g_resolution.y * 1.5f)
-                   {
-                       // off-screen (pre-zoom heuristic)
-                   }
-               }
+		// compute camera-relative position and zoom (screen-space first)
+		float zoom = 1.0f;
+		FVector2 finalPos = position;
+		if (auto cam = g_mainCamera.lock())
+		{
+			finalPos = position - cam->GetCameraLocation();
+			zoom = cam->GetCameraScale().x;
+			if (zoom < 0.1f) zoom = 0.1f;
+		}
 
-               // compute camera-relative position and zoom
-               float zoom = 1.0f;
-               FVector2 finalPos = position;
-               if (auto cam = g_mainCamera.lock())
-               {
-                   finalPos = position - cam->GetCameraLocation();
-                   zoom = cam->GetCameraScale().x;
-                   if (zoom < 0.1f) zoom = 0.1f;
-               }
+		// apply zoom to position and size
+		finalPos = finalPos * zoom;
+		const int drawW = (int)(size.x * zoom);
+		const int drawH = (int)(size.y * zoom);
 
-               // apply zoom to position and size
-               finalPos = finalPos * zoom;
-               const int drawW = (int)(size.x * zoom);
-               const int drawH = (int)(size.y * zoom);
+		// screen-space culling (robust regardless of camera semantics)
+		const int margin = 64;
+		if (finalPos.x + drawW < -margin || finalPos.x > g_resolution.x + margin ||
+			finalPos.y + drawH < -margin || finalPos.y > g_resolution.y + margin)
+		{
+			return;
+		}
 
-               g_pBackBufferGraphics->DrawImage(pImageBitmap, (int)finalPos.x, (int)finalPos.y, drawW, drawH);
+		g_pBackBufferGraphics->DrawImage(pImageBitmap, (int)finalPos.x, (int)finalPos.y, drawW, drawH);
 
-               if (bSelected)
-               {
-                   int circleRadius = (int)(12 * zoom);
-                   if (circleRadius < 2) circleRadius = 2;
-                   Gdiplus::Rect ellipseRect(
-                       (int)(finalPos.x + (drawW / 2) - circleRadius),
-                       (int)(finalPos.y + (drawH / 2) - circleRadius),
-                       circleRadius * 2,
-                       circleRadius * 2
-                   );
-                   g_pBackBufferGraphics->FillEllipse(m_redBrush, ellipseRect);
-               }
+		if (bSelected)
+		{
+			int circleRadius = (int)(12 * zoom);
+			if (circleRadius < 2) circleRadius = 2;
+			Gdiplus::Rect ellipseRect(
+				(int)(finalPos.x + (drawW / 2) - circleRadius),
+				(int)(finalPos.y + (drawH / 2) - circleRadius),
+				circleRadius * 2,
+				circleRadius * 2
+			);
+			g_pBackBufferGraphics->FillEllipse(m_redBrush, ellipseRect);
+		}
 	}
 
 	void RenderText(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush)
 	{
-		if (auto g_mainCameraRef = g_mainCamera.lock())
-		{
-			if (position.x < g_mainCameraRef->GetCameraLocation().x - g_resolution.x * 0.2f ||
-				position.x > g_mainCameraRef->GetCameraLocation().x + g_resolution.x * 1.2f ||
-				position.y < g_mainCameraRef->GetCameraLocation().y - g_resolution.x * 0.2f ||
-				position.y > g_mainCameraRef->GetCameraLocation().y + g_resolution.y * 1.2f
-				)
-				return;
-		}
-
 		FVector2 finalPos = position;
+		FVector2 finalSize = size;
 		if (auto g_mainCameraRef = g_mainCamera.lock())
 		{
-			finalPos = position - g_mainCameraRef->GetCameraLocation();
+			const FVector2 camLoc = g_mainCameraRef->GetCameraLocation();
+			float zoom = g_mainCameraRef->GetCameraScale().x;
+			if (zoom <= 0.0f) zoom = 1.0f;
+			finalPos = (position - camLoc) * zoom;
+			finalSize = finalSize * zoom;
 		}
 
-		Gdiplus::RectF rect(finalPos.x, finalPos.y, size.x, size.y);
+		// screen-space culling for world text
+		const int margin = 64;
+		if (finalPos.x + finalSize.x < -margin || finalPos.x > g_resolution.x + margin ||
+			finalPos.y + finalSize.y < -margin || finalPos.y > g_resolution.y + margin)
+			return;
+
+		Gdiplus::RectF rect(finalPos.x, finalPos.y, finalSize.x, finalSize.y);
+		g_pBackBufferGraphics->DrawString(content, (INT)wcslen(content), &font, rect, &stringFormat, &brush);
+	}
+
+	// Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ®)
+	void RenderTextScreen(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush)
+	{
+		Gdiplus::RectF rect(position.x, position.y, size.x, size.y);
 		g_pBackBufferGraphics->DrawString(content, (INT)wcslen(content), &font, rect, &stringFormat, &brush);
 	}
 
@@ -337,7 +341,7 @@ namespace Renderer
 
            void RenderRectWithRoundedUI(Gdiplus::SolidBrush* brush, FVector2& position, const FVector2& size, int radius)
            {
-               // Ä«¸Þ¶ó ÁÜ ºñÀû¿ë: È­¸é °íÁ¤ ÁÂÇ¥·Î ±×´ë·Î ·»´õ¸µ
+               // Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½: È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½×´ï¿½ï¿? ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                const int x = (int)position.x;
                const int y = (int)position.y;
                const int width = (int)size.x;
@@ -374,7 +378,7 @@ namespace Renderer
 		g_renderedObjs.push_back(obj);
 	}
 
-	// ¾Ö´Ï¸ÞÀÌ¼ÇÀ» ÇÒ¶§´Â ºñÆ®¸ÊÀ» ÇÑÀå¾¿ ³Ñ±â±â
+	// ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½Ò¶ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½å¾¿ ï¿½Ñ±ï¿½ï¿?
     void RenderCharacterAnimation(ACharacter* character)
 	{
 		if (!character)
@@ -393,7 +397,7 @@ namespace Renderer
 		const int clipIndex = animComp->m_ianimationClip;
 		const int rowIndex = clipIndex;
 
-		// ÇÁ·¹ÀÓ Á¸Àç ¿©ºÎ È®ÀÎ
+		// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
 		if (rowIndex >= animComp->m_frames.size() || animComp->m_frames[rowIndex].empty())
 		{
 			printf("RenderCharacterAnimation Error: frame index out of bounds\n");
@@ -424,13 +428,27 @@ namespace Renderer
 			FVector2 position = textui->GetPosition() + FVector2(parentX, parentY);
 			const FVector2 size = textui->GetSize();
 			Gdiplus::FontFamily fontFamily(textui->GetFontFamily().c_str());
-			Gdiplus::Font font(&fontFamily, textui->GetFontSize(), (Gdiplus::FontStyle)textui->GetFontStyle(), (Gdiplus::Unit)textui->GetWorldUnit());
+			float fontSize = textui->GetFontSize();
+			if (textui->GetWidgetRenderType() == UWidgetComponent::WidgetRenderType::World)
+			{
+				if (auto cam = g_mainCamera.lock())
+				{
+					float zoom = cam->GetCameraScale().x;
+					if (zoom <= 0.0f) zoom = 1.0f;
+					fontSize *= zoom;
+				}
+			}
+			Gdiplus::Font font(&fontFamily, fontSize, (Gdiplus::FontStyle)textui->GetFontStyle(), (Gdiplus::Unit)textui->GetWorldUnit());
 			Gdiplus::StringFormat stringFormat;
 			stringFormat.SetAlignment((Gdiplus::StringAlignment)textui->GetFontAlignment());
 			stringFormat.SetLineAlignment((Gdiplus::StringAlignment)textui->GetFontLineAlignment());
 			stringFormat.SetTrimming((Gdiplus::StringTrimming)textui->GetFontTrimming());
 			Gdiplus::SolidBrush brush(textui->GetColor());
-			RenderText(name.c_str(), position, size, font, stringFormat, brush);
+			// È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ð±ï¿½
+			if (textui->GetWidgetRenderType() == UWidgetComponent::WidgetRenderType::Camera)
+				RenderTextScreen(name.c_str(), position, size, font, stringFormat, brush);
+			else
+				RenderText(name.c_str(), position, size, font, stringFormat, brush);
 		}
 	}
 

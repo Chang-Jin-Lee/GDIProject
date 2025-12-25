@@ -56,6 +56,7 @@ public:
 	bool bIsDead = false;
 	int ActionMaxCount = 0;		// 한 턴에 최대로 이동 가능한 수
 	int ActionRemainCount = 0;	// 현재 남은 이동 횟수
+	bool bSkipTurn = false;     // 이번 턴 남은 행동 무시 플래그
 
 	// Turn 게임에서의 Tile 좌표
 	int row = 0;

@@ -163,9 +163,12 @@ void UPlayScene::UpdateInput()
 		{
 			if (const auto cameraRef = Game::GetGameState()->GetMainCamera().lock())
 			{
-				FVector2 CameraPosition = cameraRef->GetActorLocation();
-				FVector2 index = ATile::GetIndexAtPosition(MousePosition + CameraPosition);
-				MousePosition = Input::GetMousePosition() + CameraPosition;
+				FVector2 camPos = cameraRef->GetCameraLocation();
+				float zoom = cameraRef->GetCameraScale().x;
+				if (zoom <= 0.0f) zoom = 1.0f;
+				FVector2 worldMouse = camPos + Input::GetMousePosition() / zoom;
+				FVector2 index = ATile::GetIndexAtPosition(worldMouse);
+				MousePosition = worldMouse;
 			}
 		}
 	}
@@ -186,7 +189,7 @@ void UPlayScene::UIInitialize()
                     {
                         if (const auto unit = player->SelectedUnit.lock())
                         {
-                            if (unit->ActionRemainCount > 0) unit->ActionRemainCount = 0;				
+                            unit->bSkipTurn = true;
                         }
                     }
                 }
@@ -417,6 +420,7 @@ bool UPlayScene::CheckUnitActionCount()
 			{
 				if (auto chRef = Cast<APlayerCharacter>(ch))
 				{
+                    if (chRef->bSkipTurn) continue;
                     if (chRef->ActionRemainCount > 0)
 					{
 						if (const auto PlayScene_Widget_Ref = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
@@ -506,6 +510,7 @@ void UPlayScene::ReadyForNextStage()
 				if (const auto& chRef = Cast<APlayerCharacter>(ch))
 				{
 					chRef->ReadyForNextTurn();
+					chRef->bSkipTurn = false;
 				}
 			}
 		}

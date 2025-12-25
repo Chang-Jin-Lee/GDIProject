@@ -311,7 +311,7 @@ void UPlayScene_Widget::Initialize()
 		}
 
         // Skip Turn button (우하단 info 영역 내부 오른쪽 아래)
-        int sx = int(Renderer::GetResolution().x * 0.25);
+        int sx = int(Renderer::GetResolution().x * 0.25) + 10;
         int sy = int(Renderer::GetResolution().y * 0.92);
         int sw = 110;
         int sh = 40;

@@ -53,11 +53,17 @@ void UScene::Update()
 
 				if (auto cameraRef = Renderer::GetMainCamera().lock())
 				{
-					if (objectPair.second.get()->GetActorLocation().x < cameraRef->GetCameraLocation().x - Renderer::GetResolution().x * 0.2f ||
-						objectPair.second.get()->GetActorLocation().x > cameraRef->GetCameraLocation().x + Renderer::GetResolution().x * 1.2f ||
-						objectPair.second.get()->GetActorLocation().y < cameraRef->GetCameraLocation().y - Renderer::GetResolution().x * 0.2f ||
-						objectPair.second.get()->GetActorLocation().y > cameraRef->GetCameraLocation().y + Renderer::GetResolution().y * 1.2f
-						)
+					const FVector2 camLoc = cameraRef->GetCameraLocation();
+					float zoom = cameraRef->GetCameraScale().x;
+					if (zoom <= 0.0f) zoom = 1.0f;
+					const float viewW = Renderer::GetResolution().x / zoom;
+					const float viewH = Renderer::GetResolution().y / zoom;
+					const float left = camLoc.x - viewW * 0.2f;
+					const float right = camLoc.x + viewW * 1.2f;
+					const float top = camLoc.y - viewH * 0.2f;
+					const float bottom = camLoc.y + viewH * 1.2f;
+					const FVector2 loc = objectPair.second.get()->GetActorLocation();
+					if (loc.x < left || loc.x > right || loc.y < top || loc.y > bottom)
 						continue;
 				}
 				

@@ -9,7 +9,7 @@ class ACharacter;               // from Classes/Character.h
 class SUITextComponent;         // from UI/UITextComponent.h
 class SUIButtonComponent;       // from UI/UIButtonComponent.h
 
-// GDI+ Àü¹æ ¼±¾ð (Çì´õ¿¡¼­ Á÷Á¢ Æ÷ÇÔÇÏÁö ¾ÊÀ½)
+// GDI+ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 namespace Gdiplus {
     class Bitmap; class Font; class StringFormat; class SolidBrush;
 }
@@ -34,17 +34,19 @@ namespace Renderer
 
     void RenderImage(Gdiplus::Bitmap* ImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size, const bool& bSelected);
     void RenderText(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush);
+	// È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ®(Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+	void RenderTextScreen(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush);
 	void RenderRectRed(int x, int y, int width, int height);
 	void RenderRectBlue(int x, int y, int width, int height);
     void RenderRectFill(Gdiplus::SolidBrush& brush, FVector2& position, const FVector2& size, int radius = 5);
     void RenderRectWithRounded(Gdiplus::SolidBrush* brush, FVector2& position, const FVector2& size, int radius = 5);
-    // UI´Â ÁÜ ºñÀ² ¹ÌÀû¿ë. Ä«¸Þ¶ó¿¡ ºÎÂøµÇ¾î ÀÖÀ½
+    // UIï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½
     void RenderRectWithRoundedUI(Gdiplus::SolidBrush* brush, FVector2& position, const FVector2& size, int radius = 5);
 
-	void RenderMesh(const std::shared_ptr<USceneComponent>& sceneComponent, const std::shared_ptr<UStaticMeshComponent>& staticMesh, const bool& bSelected);	// ¾×ÅÍ ±×¸®±â ÇÔ¼ö
-    void RenderCharacterAnimation(ACharacter* character); 	// ¾Ö´Ï¸ÞÀÌ¼ÇÀ» À§ÇÑ ÇÔ¼ö. 
+	void RenderMesh(const std::shared_ptr<USceneComponent>& sceneComponent, const std::shared_ptr<UStaticMeshComponent>& staticMesh, const bool& bSelected);	// ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
+    void RenderCharacterAnimation(ACharacter* character); 	// ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½. 
 
-	// UI °ü·Ã
+	// UI ï¿½ï¿½ï¿½ï¿½
 	void RenderTextUI(const std::shared_ptr<SUITextComponent>& textui, int parentX, int parentY);
     void RenderButtonUI(const std::shared_ptr<SUIButtonComponent>& buttonui, int parentX, int parentY);
 

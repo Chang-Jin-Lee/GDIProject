@@ -1,4 +1,5 @@
 #include "TurnManager.h"
+#include <Time/Time.h>
 
 TurnManager::TurnManager()
 {
@@ -28,10 +29,15 @@ void TurnManager::Update()
 	{
 		if (const auto PlayerRef = Player.lock())
 		{
-			PlayerRef->HandleInput();
+			// ï¿½Ìµï¿½ ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+			PlayerRef->UpdateMovement(Time::GetElapsedTime());
+			if (!PlayerRef->bIsUnitMoving)
+			{
+				PlayerRef->HandleInput();
+			}
 		}
 	}
-	// AI´Â Update()´Â ±»ÀÌ ¸Å ÇÁ·¹ÀÓ ÇÏÁö ¾ÊÀ½ (EndTurn()¶§ ¼öÇà)
+	// AIï¿½ï¿½ Update()ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (EndTurn()ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
 }
 
 void TurnManager::Release()

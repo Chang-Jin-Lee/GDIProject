@@ -15,8 +15,9 @@ public:
     ~APlayerController();
 
     void Initialize();
-    void HandleInput(); // »ç¿ëÀÚÀÇ ÀÔ·Â ¹Þ¾Æ Ã³¸®
+    void HandleInput(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿? ï¿½Ô·ï¿½ ï¿½Þ¾ï¿½ Ã³ï¿½ï¿½
     void MoveSelectedUnitTo(const FVector2& pos);
+    void UpdateMovement(float deltaSeconds);
     void Release();
 
     void SpawnAtIndex(int row, int col, int type, std::wstring name);
@@ -32,4 +33,9 @@ public:
 public:
     std::vector<std::weak_ptr<APlayerCharacter>> Units;
     std::vector<std::weak_ptr<ACity>> Cities;
+
+    // ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½
+    bool bIsUnitMoving = false;
+    std::vector<FVector2> m_movePathWorld;
+    int m_movePathIndex = 0;
 };
