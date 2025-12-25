@@ -2,40 +2,56 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include "../../Classes/Character.h"
-#include "../../UI/UITextComponent.h"
-#include "../../Experiment/StateOption.h"
+#include <memory>
 
-#include <gdiplus.h>
-#pragma comment(lib, "gdiplus.lib")
+template<typename T> class TVector2; using FVector2 = TVector2<float>;
+class ACharacter;               // from Classes/Character.h
+class SUITextComponent;         // from UI/UITextComponent.h
+class SUIButtonComponent;       // from UI/UIButtonComponent.h
 
-using namespace Gdiplus;
+// GDI+ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿? ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+namespace Gdiplus {
+    class Bitmap; class Font; class StringFormat; class SolidBrush;
+}
 
 class ACameraActor;
+class USceneComponent;
+class UStaticMeshComponent;
+class UObject;
 
 namespace Renderer
 {
 	void Initialize(HWND hwnd);
+	void Update();
 	void BeginDraw();
 	void Release(HWND hwnd);
 
-	FVector2 GetResolution();
+    FVector2 GetResolution();
 	void SetResolution(const float& width, const float& height);
-	void SetMainCamera(const std::shared_ptr<ACameraActor> camera);
-	std::shared_ptr<ACameraActor> GetMainCamera();
+	void SetMainCamera(const std::weak_ptr<ACameraActor> camera);
+	bool IsGdiValid();
+	std::weak_ptr<ACameraActor> GetMainCamera();
 
-	void RenderImage(Gdiplus::Bitmap* ImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size);
-	void RenderText(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush);
-
-	void RenderActor(AActor* actor);	// ¾×ÅÍ ±×¸®±â ÇÔ¼ö
-	void RenderCharacterAnimation(ACharacter::FAnimationBundle& animationBundle, ACharacter* character); 	// ¾Ö´Ï¸ÞÀÌ¼ÇÀ» À§ÇÑ ÇÔ¼ö. 
-
-	// UI °ü·Ã
+    void RenderImage(Gdiplus::Bitmap* ImageBitmap, FVector2& position, const float& rotation, const FVector2& scale, const FVector2& size, const bool& bSelected);
+    void RenderText(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush);
+	// È­ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ø½ï¿½Æ®(Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+	void RenderTextScreen(const wchar_t* content, FVector2& position, const FVector2& size, const Gdiplus::Font& font, const Gdiplus::StringFormat& stringFormat, const Gdiplus::SolidBrush& brush);
 	void RenderRectRed(int x, int y, int width, int height);
 	void RenderRectBlue(int x, int y, int width, int height);
-	void RenderTextUI(SUITextComponent* textui, int x, int y);
-	void RenderButtonUI(int x, int y, int width, int height, Gdiplus::Pen* pen);
+    void RenderRectFill(Gdiplus::SolidBrush& brush, FVector2& position, const FVector2& size, int radius = 5);
+    void RenderRectWithRounded(Gdiplus::SolidBrush* brush, FVector2& position, const FVector2& size, int radius = 5);
+    // UIï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½
+    void RenderRectWithRoundedUI(Gdiplus::SolidBrush* brush, FVector2& position, const FVector2& size, int radius = 5);
 
-	void RenderMesh(USceneComponent* sceneComponent, UStaticMeshComponent* staticMesh);	// ¾×ÅÍ ±×¸®±â ÇÔ¼ö
+	void RenderMesh(const std::shared_ptr<USceneComponent>& sceneComponent, const std::shared_ptr<UStaticMeshComponent>& staticMesh, const bool& bSelected);	// ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
+    void RenderCharacterAnimation(ACharacter* character); 	// ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½. 
+
+	// UI ï¿½ï¿½ï¿½ï¿½
+	void RenderTextUI(const std::shared_ptr<SUITextComponent>& textui, int parentX, int parentY);
+    void RenderButtonUI(const std::shared_ptr<SUIButtonComponent>& buttonui, int parentX, int parentY);
+
+	void ClearRenderObjects();
+	void SetRenderObject(std::weak_ptr<UObject> obj);
+
 	void EndDraw();
 }

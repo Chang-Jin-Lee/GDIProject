@@ -75,9 +75,6 @@
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Math\Math.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Input\Input.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -153,6 +150,18 @@
     <ClInclude Include="Experiment\StateOption.h">
       <Filter>헤더 파일\Experiment</Filter>
     </ClInclude>
+    <ClInclude Include="UI\WidgetComponentBase.h">
+      <Filter>헤더 파일\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\WidgetComponent.h">
+      <Filter>헤더 파일\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Experiment\SmartCast.h">
+      <Filter>헤더 파일\Experiment</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Math.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
@@ -218,5 +227,17 @@
     <ClCompile Include="Classes\Camera\CameraActor.cpp">
       <Filter>소스 파일\Classes\Camera</Filter>
     </ClCompile>
+    <ClCompile Include="UI\WidgetComponentBase.cpp">
+      <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\WidgetComponent.cpp">
+      <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIButtonComponent.cpp">
+      <Filter>소스 파일\UI</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

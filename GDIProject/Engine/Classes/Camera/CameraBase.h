@@ -1,4 +1,5 @@
 #pragma once
+class USceneComponent; // forward decl
 #include "../Actor.h"
 
 class UCamaraBase : public AActor

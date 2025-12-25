@@ -1,4 +1,5 @@
 #include "CameraBase.h"
+#include "../Components/SceneComponent.h"
 
 UCamaraBase::UCamaraBase()
 {
@@ -7,7 +8,7 @@ UCamaraBase::UCamaraBase()
 
 UCamaraBase::~UCamaraBase()
 {
-	delete SceneComponent;
+	SceneComponent.reset();
 }
 
 void UCamaraBase::Initialize()
@@ -23,5 +24,6 @@ void UCamaraBase::Update()
 void UCamaraBase::Release()
 {
 	__super::Release();
+	SceneComponent.reset();
 }
 

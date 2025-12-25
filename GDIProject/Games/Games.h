@@ -9,14 +9,17 @@ namespace Game
 {
 	void PreInitialize();		// GameState, GameInstance 같은 전역으로 관리될 객체를 생성하는 단계.
 	void Initialize(HWND hwnd); // Scene에 종속된 모든 객체가 해당하는 게임 루프
+	void PostInitialize();		// Scene에 종속된 모든 객체가 초기화된 직후 실행되는 함수
 	void LoadData();
 	void Update();
 	void Release(HWND hwnd);
-	UScene* GetCurrentScene();
-	UScene** GetCurrentScenePtr();
-	UScene* GetNextScene();
-	UScene** GetNextScenePtr();
-	AGameStateBase* GetGameState();
+
+	void OnWidgetClick(const FVector2& clickPosition);
+	bool CheckWidgetPosition(const FVector2& clickPosition);
+	std::weak_ptr<UScene> GetNextScene();
+	std::weak_ptr<UScene>& GetNextSceneWeakPtr();
+	std::shared_ptr<UScene>& GetNextSceneSharedPtr();
+	GameStateBase* GetGameState();
 
 	void ChangeScene();
 
@@ -25,9 +28,6 @@ namespace Game
 	void SetLMouseClickPosition(const FVector2& rect);
 	void SetRMouseClickPosition(const FVector2& rect);
 
-	//void Render();
-	//void Release();
-	//ESceneState* GetCurrentSceneState();
-	//void ChangeScene(const ESceneState& scene);
-	//void GameExit();
+	bool GetMouseDragState();
+	void SetMouseDragState(const bool& state);
 }

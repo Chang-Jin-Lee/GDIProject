@@ -3,33 +3,42 @@
 #include <Input/Input.h>
 #include "MenuScene.h"
 #include "../Games.h"
-#include "../Player/dGameState.h"
+#include "../Player/TurnGameState.h"
 #include <iostream>
 #include <UI/UITextComponent.h>
 #include "../Image/BackGroundImage.h"
+#include "../UI/EndScene_ScoreGuide.h"
+#include <Experiment/SmartCast.h>
+#include <Runtime/Core/FIleHelper.h>
+#include <UI/UIButtonComponent.h>
 
 UEndScene::UEndScene()
 {
-	std::wstring m_imagename = L"m_image";
-	std::wstring m_scoreuiname = L"m_scoreui";
-	std::wstring m_scoreGuideuiname = L"m_scoreGuideui";
+	m_image = NewObject<ABackGroundImage>(TEXT("m_image"));
+	m_Widget = CreateWidget<UEndScene_Widget>(TEXT("scoreGuide"), EUILAYER::HUD);
 
-	m_image = NewObject<ABackGroundImage>(m_imagename);
-	m_scoreui = NewObject<SUITextComponent>(m_scoreuiname);
-	m_scoreGuideui = NewObject<SUITextComponent>(m_scoreGuideuiname);
+	if (const auto m_WidgetRef = Cast<UEndScene_Widget>(m_Widget))
+	{
+		if (auto btn = Cast<SUIButtonComponent>(m_WidgetRef->m_startGameButton))
+		{
+			btn->SetVoidDelegate([this]() { StartGame(); });
+		}
+	}
 }
 
 UEndScene::~UEndScene()
 {
 	m_image.reset();
-	m_scoreui.reset();
-	m_scoreGuideui.reset();
+	m_Widget.reset();
 }
 
 void UEndScene::Initialize()
 {
 	__super::Initialize();
-	Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(FVector2(0, 0));
+	if (const auto cameraRef = Game::GetGameState()->GetMainCamera().lock())
+	{
+		cameraRef->SetCameraLocation(FVector2(0, 0));
+	}
 	UIInitialize();
 }
 
@@ -41,56 +50,50 @@ void UEndScene::Update()
 void UEndScene::LoadData()
 {
 	__super::LoadData();
-	m_image->LoadData(L"Image", L"EndImage.png");
-	m_image->SetActorSize(1280, 800);
+	if (const auto imageRef = m_image.lock())
+	{
+		imageRef->LoadData(L"Image", L"EndImage.png");
+		imageRef->SetActorSize(Renderer::GetResolution().x, Renderer::GetResolution().y);
+	}
 }
 
 void UEndScene::Release()
 {
+	__super::Release();
+	m_image.reset();
+	m_Widget.reset();
+}
 
+void UEndScene::DeleteNullObjects()
+{
+	__super::DeleteNullObjects();
 }
 
 void UEndScene::UIInitialize()
 {
-	// 이 UI선언을 좀더 간단하게 만들어야함.
-	float uiwidth = 60;
-	float uiheith = 30;
-	m_scoreui->Initialize
-	(
-		nullptr,
-		18,
-		(wchar_t*)L"Verdana",
-		Gdiplus::Color(255, 255, 255),
-		FVector2(int(Renderer::GetResolution().x * 0.4), int(Renderer::GetResolution().y * 0.5)),
-		FVector2(uiwidth, uiheith)
-	);
-	m_scoreui->m_content = (wchar_t*)malloc(sizeof(wchar_t) * 10);
-	AdGameState* g = dynamic_cast<AdGameState*>(Game::GetGameState());
-	if (g)
+	if (const auto widghtRef = m_Widget.lock())
 	{
-		wchar_t gameScoreStr[10];
-		swprintf_s(gameScoreStr, 10, L"%d", g->m_gGameScore);
-		wcscpy_s(m_scoreui->m_content, 10, gameScoreStr);
-		std::cout << g->m_gGameScore << '\n';
-	}
+		widghtRef->Initialize();
 
-	float Guideuiwidth = 250;
-	float Guideuiheith = 50;
-	m_scoreGuideui->Initialize
-	(
-		(wchar_t*)L"최종 점수 : ",
-		24,
-		(wchar_t*)L"Verdana",
-		Gdiplus::Color(255, 255, 255),
-		FVector2(int(Renderer::GetResolution().x * 0.2), int(Renderer::GetResolution().y * 0.5)),
-		FVector2(Guideuiwidth, Guideuiheith)
-	);
+		if (g_TurnGameStateInstanceIsValid)
+		{
+			if (auto text = Cast<SUITextComponent>(widghtRef->m_scoreui))
+			{
+                text->SetContent(std::to_wstring(g_TurnGameStateInstance->m_iTurnCount));
+			}
+		}
+	}
 }
 
 void UEndScene::UpdateInput()
 {
 	if (Input::IsKeyPressed(VK_C))
 	{
-		UScene::ChangeScene<UMenuScene>(Game::GetNextScenePtr());
+		UScene::ChangeScene<UMenuScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 	}
+}
+
+void UEndScene::StartGame()
+{
+	UScene::ChangeScene<UMenuScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 }

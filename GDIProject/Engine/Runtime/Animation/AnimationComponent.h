@@ -1,6 +1,7 @@
 #pragma once
 #include <windows.h>
 #include <stdio.h>
+#include <vector>
 #include <gdiplus.h>
 #include "../../Math/Math.h"
 #pragma comment(lib, "gdiplus.lib")
@@ -13,15 +14,17 @@ public:
 		Gdiplus::Bitmap* m_frame;
 		FVector2 m_frameSize;
 
-		FFrame()
+		FFrame() : m_frame(nullptr), m_frameSize(0, 0) {}
+		~FFrame()
 		{
-			m_frame = nullptr;
-			m_frameSize.x = 0;
-			m_frameSize.y = 0;
+			if (m_frame)
+			{
+				m_frame = nullptr;
+			}
 		}
 	};
 
-	FFrame** m_frames;						// 애니메이션의 한 장
+	std::vector<std::vector<FFrame>> m_frames;						// 애니메이션의 한 장
 
 	/* 애니메이션 재생 관련 */
 	unsigned int m_ianimationClip = 0;		// 현재 애니메이션의 몇 초 부분에 있는지
@@ -29,10 +32,12 @@ public:
 
 	unsigned int m_irowSize = 0;			// FFrame** delete를 위해 필요한 사이즈
 	unsigned int m_icolSize = 0;
-	UAnimationComponent() : m_ianimationClip(0), m_ianimationMaxSize(0), m_irowSize(0), m_icolSize(0), m_frames(nullptr){}
+	UAnimationComponent() : m_ianimationClip(0), m_ianimationMaxSize(0), m_irowSize(0), m_icolSize(0) {}
 	UAnimationComponent(int rowSize, int colSize);
 	~UAnimationComponent();
 
 	void Initialize(int rowSize, int colSize);
-	void LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, int pixelformat);
+	//void LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, int pixelformat);
+	void LoadData(Gdiplus::Bitmap* baseImage, const std::vector<std::vector<int>>& cloneInfo, int pixelFormat);
+	void Release();
 };

@@ -2,6 +2,7 @@
 
 #include "Pawn.h"
 #include "../Runtime/Animation/AnimationComponent.h"
+#include <vector>
 
 #ifndef MAX_INFOFILE_NAME_SIZE
 #define MAX_INFOFILE_NAME_SIZE 50
@@ -31,11 +32,11 @@ public:
 
 	virtual void LoadAnimationData(const wchar_t* baseDir, const wchar_t* baseSate, const wchar_t delimeter, AnimationState animState, DirState dirState);
 
-	struct FAnimationBundle // 방향, 애니메이션
-	{
-		UAnimationComponent* animationComponent[static_cast<int>(DirState::Max)][static_cast<int>(AnimationState::Max)];
-		UStaticMeshComponent* baseImages[static_cast<int>(AnimationState::Max)];
-	};
+    struct FAnimationBundle // 방향, 애니메이션
+    {
+        UAnimationComponent* animationComponent[static_cast<int>(DirState::Max)][static_cast<int>(AnimationState::Max)];
+        std::weak_ptr<UStaticMeshComponent> baseImages[static_cast<int>(AnimationState::Max)];
+    };
 
 public:
 	const wchar_t* GetDirStateName(DirState state);
@@ -46,7 +47,7 @@ public:
 
 	bool bPlayingAnimation = false;
 
-	float m_fFPSTimeAnimationScene = 1.0f / 24.0f;
+	float m_fFPSTimeAnimationScene = 1.0f / 18.0f;
 	float m_fFPSLastTimeAnimationScene = 0;
 	float m_fcountOneSecondAnimationScene = 0;
 };

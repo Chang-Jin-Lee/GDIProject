@@ -2,29 +2,43 @@
 #include <Runtime/Renderer/Renderer.h>
 #include <Input/Input.h>
 #include "../Games.h"
+#include <Classes/Scene/Scene.h>
 #include "PlayScene.h"
+#include <Experiment/SmartCast.h>
+#include <Runtime/Core/FIleHelper.h>
 #include <UI/UIButtonComponent.h>
-#include <UI/UITextComponent.h>
 
 UMenuScene::UMenuScene()
 {
-	std::wstring m_imagename = L"m_image";
-	std::wstring m_startGuideuiname = L"m_startGuideui";
+	m_image = NewObject<ABackGroundImage>(TEXT("m_image"));
+	m_MenuSceneWidget = CreateWidget<UMenuscene_StartGuide>(TEXT("m_MenuSceneWidget"), EUILAYER::HUD);
 
-	m_image = NewObject<ABackGroundImage>(m_imagename);
-	m_startGuideui = NewObject<SUITextComponent>(m_startGuideuiname);
+	if (const auto widgetRef = Cast<UMenuscene_StartGuide>(m_MenuSceneWidget))
+	{
+		if (auto btn = Cast<SUIButtonComponent>(widgetRef->m_startGameButton))
+		{
+			btn->SetVoidDelegate([this]() { StartGame(); });
+		}
+		if (auto btn = Cast<SUIButtonComponent>(widgetRef->m_endGameButton))
+		{
+			btn->SetVoidDelegate([this]() { EndGame(); });
+		}
+	}
 }
 
 UMenuScene::~UMenuScene()
 {
 	m_image.reset();
-	m_startGuideui.reset();
+	m_MenuSceneWidget.reset();
 }
 
 void UMenuScene::Initialize()
 {
 	__super::Initialize();
-	Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(FVector2(0,0));
+	if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera()))
+	{
+		cameraRef->SetCameraLocation(FVector2(0, 0));
+	}
 	UIInitialize();
 }
 
@@ -37,40 +51,56 @@ void UMenuScene::Update()
 void UMenuScene::LoadData()
 {
 	__super::LoadData();
-	m_image->LoadData(L"Image", L"TitleImage.png");
-	m_image->SetActorSize(1280, 800);
+	if (auto imageRef = Cast<ABackGroundImage>(m_image))
+	{
+		imageRef->LoadData(L"Image", L"TitleImage.png");
+		imageRef->SetActorSize(Renderer::GetResolution().x, Renderer::GetResolution().y);
+	}
 }
 
 void UMenuScene::Release()
 {
+	__super::Release();
+	m_image.reset();
+	m_MenuSceneWidget.reset();
+}
 
+void UMenuScene::DeleteNullObjects()
+{
+	__super::DeleteNullObjects();
 }
 
 void UMenuScene::UIInitialize()
 {
-	float uiwidth = 300;
-	float uiheith = 100;
-	m_startGuideui->Initialize
-	(
-		(wchar_t*)L"C 키를 눌러 다음으로 넘어가세요",
-		22,
-		(wchar_t*)L"Verdana",
-		Gdiplus::Color(255, 255, 255),
-		FVector2(int(Renderer::GetResolution().x * 0.07), int(Renderer::GetResolution().y * 0.6)),
-		FVector2(uiwidth, uiheith)
-	);
+	if (auto widgetRef = Cast<UMenuscene_StartGuide>(m_MenuSceneWidget))
+	{
+		widgetRef->Initialize();
+	}
 }
 
 void UMenuScene::UpdateInput()
 {
 	if (Input::IsKeyPressed(VK_C))
 	{
-		UScene::ChangeScene<UPlayScene>(Game::GetNextScenePtr());
+		UScene::ChangeScene<UPlayScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
 	}
 
 	if (Input::IsKeyDown(VK_R))
 	{
-		float rotation = m_image->GetActorRotation();
-		m_image->SetActorRotation(rotation + Time::GetElapsedTime() * 20);
+		if (auto imageRef = Cast<ABackGroundImage>(m_image))
+		{
+			const float& rotation = imageRef->GetActorRotation();
+			imageRef->SetActorRotation(rotation + Time::GetElapsedTime() * 20);
+		}
 	}
+}
+
+void UMenuScene::StartGame()
+{
+	UScene::ChangeScene<UPlayScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
+}
+
+void UMenuScene::EndGame()
+{
+	PostQuitMessage(0);
 }

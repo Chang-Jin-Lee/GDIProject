@@ -2,6 +2,7 @@
 #include "../Runtime/Core/FIleHelper.h"
 #include "../Runtime/Renderer/Renderer.h"
 #include "../Time/Time.h"
+#include "Components/StaticMeshComponent.h"
 
 ACharacter::ACharacter()
 {
@@ -10,6 +11,7 @@ ACharacter::ACharacter()
 
 ACharacter::~ACharacter()
 {
+	Release();
 }
 
 void ACharacter::Initialize()
@@ -27,7 +29,7 @@ void ACharacter::Update()
 {
 	__super::Update();
 
-	Renderer::RenderCharacterAnimation(AnimationBundle, this);
+	//Renderer::RenderCharacterAnimation(AnimationBundle, this);
 
 	if (bPlayingAnimation)	// 플레이 가능할 때만 플레이
 	{
@@ -48,23 +50,63 @@ void ACharacter::Update()
 void ACharacter::Release()
 {
 	__super::Release();
+
+	for (int dir = 0; dir < static_cast<int>(DirState::Max); ++dir)
+	{
+		for (int state = 0; state < static_cast<int>(AnimationState::Max); ++state)
+		{
+			UAnimationComponent*& anim = AnimationBundle.animationComponent[dir][state];
+			if (anim)
+			{
+				delete anim;
+				anim = nullptr;
+			}
+		}
+	}
+
+    for (int state = 0; state < static_cast<int>(AnimationState::Max); ++state)
+    {
+        AnimationBundle.baseImages[state].reset();
+    }
 }
 
 void ACharacter::LoadAnimationData(const wchar_t* baseDir, const wchar_t* baseSate, const wchar_t delimeter, AnimationState animState, DirState dirState)
 {
-	int** cloneInfo = nullptr;
-	int cloneInfoRowSize = -1;
-	int cloneInfoColsize = -1;
+	//int** cloneInfo = nullptr;
+	/*int cloneInfoRowSize = -1;
+	int cloneInfoColsize = -1;*/
+
+	
 
 	wchar_t originalImagefileName[MAX_INFOFILE_NAME_SIZE] = { L'\0', };
 	int num = swprintf(originalImagefileName, 50, L"%s_%s.png", baseSate, GetAnimStateName(animState));
 	wchar_t infoFileName[MAX_INFOFILE_NAME_SIZE] = { L'\0', };
 	num = swprintf(infoFileName, MAX_INFOFILE_NAME_SIZE, L"%s_%s_%s.txt", baseSate, GetAnimStateName(animState), GetDirStateName(static_cast<DirState>(dirState)));
 
-	FFileHelper::LoadFileToArrayWithDelimeter<int>(baseDir, infoFileName, delimeter, 100, &cloneInfoRowSize, &cloneInfoColsize, &cloneInfo);
-	AnimationBundle.baseImages[static_cast<int>(animState)]->LoadData(baseDir, originalImagefileName);
-	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
-	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(AnimationBundle.baseImages[static_cast<int>(animState)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
+	//FFileHelper::LoadFileToArrayWithDelimeter<int>(baseDir, infoFileName, delimeter, 100, &cloneInfoRowSize, &cloneInfoColsize, &cloneInfo);
+	//AnimationBundle.baseImages[static_cast<int>(animState)]->LoadData(baseDir, originalImagefileName);
+	//AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
+	//AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(AnimationBundle.baseImages[static_cast<int>(animState)]->mesh, cloneInfo, cloneInfoRowSize, cloneInfoColsize, PixelFormat32bppARGB);
+	
+    std::vector<std::vector<int>> infos;
+	FFileHelper::LoadFileToVectorWithDelimiter<int>(baseDir, infoFileName, delimeter, infos);
+	int cloneInfoRowSize = infos.size();
+	int cloneInfoColsize = infos[0].size();
+    if (auto baseImage = AnimationBundle.baseImages[static_cast<int>(animState)].lock())
+    {
+        baseImage->LoadData(baseDir, originalImagefileName);
+    }
+    AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->Initialize(cloneInfoRowSize, cloneInfoColsize);
+    if (auto baseImage = AnimationBundle.baseImages[static_cast<int>(animState)].lock())
+    {
+        AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(baseImage->GetMesh(), infos, PixelFormat32bppARGB);
+    }
+
+	//for (int i = 0; i < cloneInfoRowSize; i++)
+	//{
+	//	free(cloneInfo[i]);
+	//}
+	//free(cloneInfo);
 }
 
 const wchar_t* ACharacter::GetDirStateName(DirState state)

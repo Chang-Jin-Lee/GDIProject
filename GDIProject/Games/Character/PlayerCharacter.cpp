@@ -6,35 +6,40 @@
 #include "../Games.h"
 #include <Input/Input.h>
 #include "../Scene/PlayScene.h"
+#include "../UI/CharacterNameWidget.h"
 #include <UI/UITextComponent.h>
+#include <Classes/Components/StaticMeshComponent.h>
 
 APlayerCharacter::APlayerCharacter()
 {
-	for (int j = 0; j < static_cast<int>(AnimationState::Max); j++)
+	bStatic = false;
+
+    for (int j = 0; j < static_cast<int>(AnimationState::Max); j++)
 	{
 		for (int i = 0; i < static_cast<int>(DirState::Max); i++)
 		{
 			AnimationBundle.animationComponent[i][j] = new UAnimationComponent();
 		}
-		AnimationBundle.baseImages[j] = new UStaticMeshComponent();
+        AnimationBundle.baseImages[j] = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseImage"));
 	}
 
 	dirState = DirState::Bottom;
 	animstate = AnimationState::Idle;
-	m_textui = CreateDefaultSubobject<SUITextComponent>(TEXT("m_textui"));
+	std::wstring Name = TEXT("nameWidget") + std::to_wstring(Time::GetElapsedTime());
+	m_nameWidget = CreateDefaultSubobject<UCharacterNameWidget>(Name);
+	if(auto m_nameWidgetRef = m_nameWidget.lock())
+		m_nameWidgetRef->SetName(Name);
+	attachedWidgets.push_back(m_nameWidget);
+}
+
+APlayerCharacter::APlayerCharacter(EUnitType Type)
+{
+	SetUnitType(Type);
 }
 
 APlayerCharacter::~APlayerCharacter()
 {
-	for (int j = 0; j < static_cast<int>(AnimationState::Max); j++)
-	{
-		for (int i = 0; i < static_cast<int>(DirState::Max); i++)
-		{
-			delete AnimationBundle.animationComponent[i][j];
-		}
-		delete AnimationBundle.baseImages[j];
-	}
-	delete m_textui;
+	m_nameWidget.reset();
 }
 
 void APlayerCharacter::Initialize()
@@ -52,38 +57,36 @@ void APlayerCharacter::Initialize()
 	bPlayingAnimation = true;
 
 	// SceneComponent 값 초기화
-	FVector2 Location = FVector2(50.0f, 50.0f);
-	FVector2 Size = FVector2(13.0f, 20.0f);
-	FVector2 Scale = FVector2(2.5f, 2.5f);
+	FVector2 Location = FVector2(Renderer::GetResolution().x * 0.5f, Renderer::GetResolution().y * 0.5f);
+	//FVector2 Size = FVector2(13.0f, 20.0f);
+	//FVector2 Scale = FVector2(1.5f, 1.5f);
 	SetActorLocation(Location.x, Location.y);
-	SetActorSize(Size.x, Size.y);
-	SetActorScale(Scale.x, Scale.y);
+	auto* anim = AnimationBundle.animationComponent[0][0];
+	if (anim && !anim->m_frames.empty() && !anim->m_frames[0].empty() && anim->m_frames[0][0].m_frame)
+	{
+		Gdiplus::Bitmap* frame = anim->m_frames[0][0].m_frame;
+		SetActorSize(frame->GetWidth(), frame->GetHeight());
+	}
+	//SetActorSize(Size.x, Size.y);
+	//SetActorScale(Scale.x, Scale.y);
 
 	// UI 초기화
-	m_textui->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
-	m_textui->AttachedUIToActor(this);
+	if (auto m_nameWidgetRef = m_nameWidget.lock())
+	{
+		if (auto text = m_nameWidgetRef->m_nameUI.lock())
+		{
+			text->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
+			text->AttachedUIToActor(weak_from_this());
+			text->SetWidgetRenderType(UWidgetComponent::WidgetRenderType::World); // 유닛 머리 위 이름은 월드 공간
+		}
+	}
+
+	ReadyForNextTurn();
 }
 
 void APlayerCharacter::Update()
 {
 	__super::Update();
-	FVector2 mouseclick = Game::GetLMouseClickPosition();
-
-	if (mouseclick.IsZero() == false)
-	{
-		FVector2 dir = (mouseclick - GetActorLocation()).Normalize();
-		if ((mouseclick - GetActorLocation()).Length() > 0.1f)
-		{
-			FVector2 location = GetActorLocation();
-			FVector2 updateLocation = location + dir * MoveSpeed * Time::GetElapsedTime();
-			SetActorLocation(updateLocation.x, updateLocation.y);
-		}
-		else
-		{
-			Game::SetLMouseClickPosition(FVector2(0, 0));
-		}
-	}
-
 	if (AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationClip == AnimationBundle.animationComponent[(int)dirState][(int)animstate]->m_ianimationMaxSize - 1)
 	{
 		if (animstate == ACharacter::AnimationState::Attack)
@@ -93,7 +96,7 @@ void APlayerCharacter::Update()
 	}
 
 	// 카메라 부착
-	Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(GetActorLocation() - (Renderer::GetResolution() / 2));
+	//Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(GetActorLocation() - (Renderer::GetResolution() / 2));
 
 	Input();
 }
@@ -101,6 +104,12 @@ void APlayerCharacter::Update()
 void APlayerCharacter::Release()
 {
 	__super::Release();
+	m_nameWidget.reset();
+}
+
+void APlayerCharacter::ReadyForNextTurn()
+{
+	ActionRemainCount += ActionMaxCount;
 }
 
 void APlayerCharacter::Input()
@@ -155,12 +164,112 @@ void APlayerCharacter::Input()
 	}
 }
 
-void APlayerCharacter::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, DirState dirState, AnimationState animState, int pixelformat)
+//void APlayerCharacter::LoadData(Gdiplus::Bitmap* baseImage, int** cloneInfo, int rowSize, int colSize, DirState dirState, AnimationState animState, int pixelformat)
+//{
+//	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(baseImage, cloneInfo, rowSize, colSize, pixelformat);
+//}
+
+void APlayerCharacter::LoadData(Gdiplus::Bitmap* baseImage, std::vector<std::vector<int>>& infos, DirState dirState, AnimationState animState, int pixelformat)
 {
-	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(baseImage, cloneInfo, rowSize, colSize, pixelformat);
+	AnimationBundle.animationComponent[static_cast<int>(dirState)][static_cast<int>(animState)]->LoadData(baseImage, infos, pixelformat);
 }
 
 void APlayerCharacter::SetAnimMeshScale(float width, float height)
 {
 
+}
+
+void APlayerCharacter::Attack(APlayerCharacter* Target)
+{
+	if (Target)
+	{
+		Target->Health -= AttackDamage;
+		if (Target->Health <= 0)
+		{
+			Target->bIsDead = true;
+		}
+	}
+}
+
+void APlayerCharacter::MoveTo(const FVector2& TargetPosition)
+{
+	SetActorLocation(TargetPosition);
+}
+
+void APlayerCharacter::SetUnitType(EUnitType Type)
+{
+	UnitType = Type;
+
+	switch (Type)
+	{
+	case EUnitType::Settler:
+		Health = 50;
+		AttackDamage = 0;
+		MoveRange = 2;
+		ActionMaxCount = 4;
+		break;
+	case EUnitType::Warrior:
+		Health = 100;
+		AttackDamage = 20;
+		MoveRange = 1;
+		ActionMaxCount = 3;
+		break;
+	case EUnitType::Archer:
+		Health = 70;
+		AttackDamage = 15;
+		MoveRange = 1;
+		AttackRange = 2;
+		ActionMaxCount = 6;
+		break;
+	default:
+		break;
+	}
+}
+
+void APlayerCharacter::SetUnitType(int value)
+{
+	EUnitType Type = static_cast<EUnitType>(value);
+	UnitType = Type;
+
+	switch (Type)
+	{
+	case EUnitType::Settler:
+		Health = 50;
+		AttackDamage = 0;
+		MoveRange = 2;
+		ActionMaxCount = 4;
+		break;
+	case EUnitType::Warrior:
+		Health = 100;
+		AttackDamage = 20;
+		MoveRange = 1;
+		ActionMaxCount = 3;
+		break;
+	case EUnitType::Archer:
+		Health = 70;
+		AttackDamage = 15;
+		MoveRange = 1;
+		AttackRange = 2;
+		ActionMaxCount = 6;
+		break;
+	default:
+		break;
+	}
+}
+
+std::wstring APlayerCharacter::GetUnitTypeString(int value)
+{
+	EUnitType Type = static_cast<EUnitType>(value);
+
+	switch (Type)
+	{
+	case EUnitType::Settler:
+		return L"개척자";
+	case EUnitType::Warrior:
+		return L"전사";
+	case EUnitType::Archer:
+		return L"정찰병";
+	default:
+		return L"default";
+	}
 }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Windows.h>
+#include "../Math/Math.h"
+#include "../Classes/Camera/CameraActor.h"
 
 #define VK_A 0x41  // 'A'
 #define VK_B 0x42  // 'B'
@@ -43,10 +45,17 @@
 
 namespace Input
 {
+    void Initialize(HWND hwnd);
     void Update();
     bool IsKeyDown(int vKey);
     bool IsKeyPressed(int vKey);
     bool IsKeyReleased(int vKey);
+    FVector2 GetMousePosition();
+    FVector2 GetMouseWorldPosition(std::weak_ptr<ACameraActor> camera);
+    // 프레임당 마우스 휠 변화량 반환(+120/-120 등). 읽을 때마다 0으로 리셋됩니다.
+    int GetWheelDelta();
+    // 윈도우 프로시저에서 WM_MOUSEWHEEL 수신 시 delta를 누적합니다.
+    void OnMouseWheel(int delta);
 }
 
 

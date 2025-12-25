@@ -1,9 +1,9 @@
 #pragma once
 
 #include <Classes/Scene/Scene.h>
-#include "../Image/BackGroundImage.h"
 
-class SUITextComponent;
+class ABackGroundImage;
+class UEndScene_Widget;
 
 class UEndScene : public UScene
 {
@@ -16,11 +16,14 @@ public:
 	virtual void LoadData() override;
 	virtual void Release() override;
 
+	virtual void DeleteNullObjects() override;
+
 	void UIInitialize();
 	void UpdateInput();
 
-	std::shared_ptr<SUITextComponent> m_scoreui;
-	std::shared_ptr<SUITextComponent> m_scoreGuideui;
+	// delegate function
+	void StartGame();
 
-	std::shared_ptr<ABackGroundImage> m_image;
+	std::weak_ptr<UEndScene_Widget> m_Widget;
+	std::weak_ptr<ABackGroundImage> m_image;
 };

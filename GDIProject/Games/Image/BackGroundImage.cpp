@@ -4,7 +4,7 @@
 
 ABackGroundImage::ABackGroundImage()
 {
-
+	bStatic = true;
 }
 
 ABackGroundImage::~ABackGroundImage()
@@ -20,7 +20,6 @@ void ABackGroundImage::Initialize()
 void ABackGroundImage::Update()
 {
 	__super::Update();
-	Renderer::RenderActor(this);
 }
 
 void ABackGroundImage::LoadData(std::wstring baseDir, std::wstring fileName)

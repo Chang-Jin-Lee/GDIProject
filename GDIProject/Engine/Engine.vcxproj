@@ -70,6 +70,13 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PublicIncludeDirectories>
+    </PublicIncludeDirectories>
+    <AllProjectIncludesArePublic>false</AllProjectIncludesArePublic>
+    <PublicModuleDirectories>
+    </PublicModuleDirectories>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -78,6 +85,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -112,6 +120,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -127,7 +136,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -155,6 +164,7 @@
     <ClInclude Include="Experiment\CollistionDetection.h" />
     <ClInclude Include="Experiment\Platform.h" />
     <ClInclude Include="Experiment\QuadTree.h" />
+    <ClInclude Include="Experiment\SmartCast.h" />
     <ClInclude Include="Experiment\StateOption.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Input\Input.h" />
@@ -167,6 +177,8 @@
     <ClInclude Include="UI\UIButtonComponent.h" />
     <ClInclude Include="UI\UITextComponent.h" />
     <ClInclude Include="UI\Widget.h" />
+    <ClInclude Include="UI\WidgetComponent.h" />
+    <ClInclude Include="UI\WidgetComponentBase.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Classes\Actor.cpp" />
@@ -193,8 +205,14 @@
     <ClCompile Include="Runtime\Core\FileHelper.cpp" />
     <ClCompile Include="Runtime\Renderer\Renderer.cpp" />
     <ClCompile Include="Time\Time.cpp" />
+    <ClCompile Include="UI\UIButtonComponent.cpp" />
     <ClCompile Include="UI\UITextComponent.cpp" />
     <ClCompile Include="UI\Widget.cpp" />
+    <ClCompile Include="UI\WidgetComponent.cpp" />
+    <ClCompile Include="UI\WidgetComponentBase.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

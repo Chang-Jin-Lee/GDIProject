@@ -1,72 +1,68 @@
 #pragma once
-#include "../Math/Math.h"
-#include "../Classes/Actor.h"
-#include "../Experiment/StateOption.h"
+#include "WidgetComponent.h"
 
-class SUITextComponent : public UObject
+
+namespace Gdiplus { class Color; enum FontStyle; enum Unit; enum StringAlignment; enum StringTrimming; }
+template<typename T> class TVector2; using FVector2 = TVector2<float>;
+
+class SUITextComponent : public UWidgetComponent
 {
 public:
-	virtual void Initialize() override;
-	virtual void Update() override;
-	virtual void Release() override;
+    virtual void Initialize() override;
+    virtual void Update() override;
+    virtual void Release() override;
 
-	SUITextComponent()
-	{
-		m_content = (wchar_t*)L"Default_Text";
-		m_fontSize = 10;
-		m_fontFamily = (wchar_t*)L"Verdana";
-		m_color = Gdiplus::Color(255, 255, 255);
-		m_efontStyle = FontStyleBold;
-		m_eworldUnit = UnitPoint;
-		m_fontAlignment = StringAlignmentNear;
-		m_fontLineAlignment = StringAlignmentNear;
-		m_fontTrimming = StringTrimmingNone;
-		m_Size = FVector2(150, 150);
-		m_Position = FVector2(0, 0);
-	}
-	~SUITextComponent() {}
+    SUITextComponent();
+    ~SUITextComponent();
 
-	void Initialize(
-		wchar_t* content,
-		float fontSize,
-		wchar_t* fontFamily,
-		Gdiplus::Color color,
-		FVector2 Position,
-		FVector2 Size,
-		Gdiplus::FontStyle fontStyle = Gdiplus::FontStyleBold,
-		Gdiplus::Unit worldUnit = Gdiplus::UnitPoint,
-		Gdiplus::StringAlignment fontAlignment = Gdiplus::StringAlignmentNear,
-		Gdiplus::StringAlignment fontLineAlignment = Gdiplus::StringAlignmentNear,
-		Gdiplus::StringTrimming fontTrimming = Gdiplus::StringTrimmingNone
-	)
-	{
-		m_content = content;
-		m_fontSize = fontSize;
-		m_fontFamily = fontFamily;
-		m_color = color;
-		m_efontStyle = fontStyle;
-		m_eworldUnit = worldUnit;
-		m_fontAlignment = fontAlignment;
-		m_fontLineAlignment = fontLineAlignment;
-		m_fontTrimming = fontTrimming;
-		m_Position = Position;
-		m_Size = Size;
-	}
+    // 간편 오버로드: 기존 호출부 호환
+    void Initialize(
+        const std::wstring& content,
+        float fontSize,
+        const std::wstring& fontFamily,
+        Gdiplus::Color color,
+        const FVector2& Position,
+        const FVector2& Size
+    );
 
-	void AttachedUIToActor(AActor* actor);
+    // 상세 설정 오버로드
+    void Initialize(
+        const std::wstring& content,
+        float fontSize,
+        const std::wstring& fontFamily,
+        Gdiplus::Color color,
+        const FVector2& Position,
+        const FVector2& Size,
+        Gdiplus::FontStyle fontStyle,
+        Gdiplus::Unit worldUnit,
+        Gdiplus::StringAlignment fontAlignment,
+        Gdiplus::StringAlignment fontLineAlignment,
+        Gdiplus::StringTrimming fontTrimming
+    );
 
 public:
-	wchar_t* m_content;
-	float m_fontSize;
-	wchar_t* m_fontFamily;
-	Gdiplus::Color m_color;
-	Gdiplus::FontStyle m_efontStyle;
-	Gdiplus::Unit m_eworldUnit;
-	Gdiplus::StringAlignment m_fontAlignment;// 영역의 자체의 정렬
-	Gdiplus::StringAlignment m_fontLineAlignment; // 다음 줄로 갱신될 때 정렬
-	Gdiplus::StringTrimming m_fontTrimming;
-	FVector2 m_Position;
-	FVector2 m_Size;
+    // 접근자 (pImpl 은닉)
+    const std::wstring& GetContent() const;
+    float GetFontSize() const;
+    const std::wstring& GetFontFamily() const;
+    Gdiplus::Color GetColor() const;
+    int GetFontStyle() const;
+    int GetWorldUnit() const;
+    int GetFontAlignment() const;
+    int GetFontLineAlignment() const;
+    int GetFontTrimming() const;
 
-	AActor* m_AttachedActor = nullptr;
+    void SetContent(const std::wstring& content);
+    void SetFontSize(float size);
+    void SetFontFamily(const std::wstring& family);
+    void SetColor(Gdiplus::Color color);
+    void SetFontStyle(int style);
+    void SetWorldUnit(int unit);
+    void SetFontAlignment(int align);
+    void SetFontLineAlignment(int align);
+    void SetFontTrimming(int trim);
+
+private:
+    struct Impl;
+    std::unique_ptr<Impl> pImpl;
 };

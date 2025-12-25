@@ -15,6 +15,7 @@
 #include "Scene/PlayScene.h"
 #include "Games.h"
 #include <iostream>
+#include <UI/WidgetComponent.h>
 
 LPCTSTR g_szClassName = TEXT("윈도우 클래스 이름");
 
@@ -27,8 +28,6 @@ void InitConsole()
 	FILE* fp;
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 	SetConsoleTitle(L"윈도우 메시지 콘솔 로그");
-
-	printf("콘솔 로그 시작...\n\n");
 }
 
 void UninitConsole()
@@ -74,6 +73,44 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_LBUTTONDOWN:
 		Game::SetLMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam)));
+		Game::SetMouseDragState(true);
+		Game::OnWidgetClick(FVector2(LOWORD(lParam), HIWORD(lParam)));
+		{
+			if (const auto cameraRef = Game::GetGameState()->GetMainCamera().lock())
+			{
+				FVector2 CameraPosition = cameraRef->GetActorLocation();
+				float zoom = cameraRef->GetCameraScale().x;
+				if (zoom <= 0.0f) zoom = 1.0f;
+				FVector2 worldMouse = CameraPosition + FVector2(LOWORD(lParam), HIWORD(lParam)) / zoom;
+				FVector2 index = ATile::GetIndexAtPosition(worldMouse);
+				FVector2 pos = ATile::GetTilePositionAtIndex(index.x, index.y);
+			}
+		}
+		break;
+	case WM_MOUSEMOVE:
+		if (Game::GetMouseDragState())
+		{
+			FVector2 currentPos = FVector2(LOWORD(lParam), HIWORD(lParam));
+			FVector2 dif = currentPos - Game::GetLMouseClickPosition();
+
+			// 카메라 위치 이동
+			if (const auto cameraRef = Game::GetGameState()->GetMainCamera().lock())
+			{
+				FVector2 cameraPos = cameraRef->GetCameraLocation();
+				float zoom = cameraRef->GetCameraScale().x;
+				if (zoom <= 0.0f) zoom = 1.0f;
+				cameraPos += FVector2(-dif.x / zoom, -dif.y / zoom);
+				cameraRef->SetCameraLocation(cameraPos);
+				Game::SetLMouseClickPosition(currentPos);
+			}
+		}
+		break;
+	case WM_MOUSEWHEEL:
+		Input::OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam));
+		break;
+	case WM_LBUTTONUP:
+		Game::SetMouseDragState(false);
+		ReleaseCapture(); // 마우스 캡처 해제
 		break;
 	case WM_RBUTTONDOWN:
 		Game::SetRMouseClickPosition(FVector2(LOWORD(lParam), HIWORD(lParam))); // 마우스 왼쪽 버튼 더블 클릭
@@ -95,8 +132,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #ifdef MEMORY_LEAK_CHECK
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-	Renderer::SetResolution(1280, 800);	// 해상도 조절
-	InitConsole();  // 콘솔 출력 초기화
+	//Renderer::SetResolution(800, 600);	// 해상도 조절
+	//Renderer::SetResolution(1280, 800);	// 해상도 조절
+	Renderer::SetResolution(1024, 600);	// 해상도 조절
+	//InitConsole();  // 콘솔 출력 초기화
 
 	char szPath[MAX_PATH] = { 0, };
 	::GetCurrentDirectoryA(MAX_PATH, szPath);
@@ -130,6 +169,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	////////Renderer::Initialize
 	Game::PreInitialize();
 	Game::Initialize(hwnd);
+	Game::PostInitialize();
 
 	MSG msg;
 	while (true)
@@ -158,15 +198,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 namespace Game
 {
-	UScene* g_currentScene = new UMenuScene();
-	UScene* g_nextScene = g_currentScene;
+	std::shared_ptr<UScene> g_currentScene = std::make_shared<UMenuScene>();
+	std::weak_ptr<UScene> g_nextScene = g_currentScene;
+	std::shared_ptr<UScene> g_nextSceneShared;
+
+	GameStateBase* g_gameInstance = nullptr;
+	
+	// 마우스 드래그
 	FVector2 m_LMouseCickPosition;
 	FVector2 m_RMouseCickPosition;
-	AGameStateBase* g_gameInstance = nullptr;
+	bool g_bMouseDragging = false;
+	double m_FPSPerformancetime = 0;
 
 	void PreInitialize()
 	{
-		g_gameInstance = AGameStateBase::CreateInstance();
+		g_gameInstance = GameStateBase::CreateInstance();
 		g_gameInstance->Initialize();
 		Renderer::SetMainCamera(g_gameInstance->GetMainCamera());
 	}
@@ -174,9 +220,16 @@ namespace Game
 	void Initialize(HWND hwnd)
 	{
 		Renderer::Initialize(hwnd);
+		Input::Initialize(hwnd);
 		Time::Initialize();
-		Game::GetCurrentScene()->Initialize();
-		Game::GetCurrentScene()->LoadData();
+		g_currentScene->Initialize();
+		g_currentScene->LoadData();
+		m_FPSPerformancetime = Time::GetTotalTime();
+	}
+
+	void PostInitialize()
+	{
+		g_gameInstance->PostInitialize();
 	}
 
 	void LoadData()
@@ -192,42 +245,22 @@ namespace Game
 		Renderer::BeginDraw();
 
 		g_currentScene->Update();
+		g_currentScene->DeleteNullObjects();
 
-		//printf("%f\n", 1 / Time::GetElapsedTime());
-		Renderer::RenderRectRed(int(m_LMouseCickPosition.x - 10), int(m_LMouseCickPosition.y - 10), 20, 20);
-		Renderer::RenderRectBlue(int(m_RMouseCickPosition.x - 10), int(m_RMouseCickPosition.y - 10), 20, 20);
+		Renderer::Update();
+
+		if (Time::GetTotalTime() - m_FPSPerformancetime > 2)
+		{
+			printf("%f\n", 1 / Time::GetElapsedTime());
+			m_FPSPerformancetime = Time::GetTotalTime();
+		}
+		//Renderer::RenderRectRed(int(m_LMouseCickPosition.x - 10), int(m_LMouseCickPosition.y - 10), 20, 20);
+		//Renderer::RenderRectBlue(int(m_RMouseCickPosition.x - 10), int(m_RMouseCickPosition.y - 10), 20, 20);
 
 		// Renderer::EndDraw
 		Renderer::EndDraw();
 
 		ChangeScene();
-
-		if (Input::IsKeyDown(VK_W))
-		{
-			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
-			cameraPos += FVector2(0, -5);
-			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
-		}
-
-		if (Input::IsKeyDown(VK_S))
-		{
-			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
-			cameraPos += FVector2(0, 5);
-			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
-		}
-
-		if (Input::IsKeyDown(VK_A))
-		{
-			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
-			cameraPos += FVector2(-5, 0);
-			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
-		}
-		if (Input::IsKeyDown(VK_D))
-		{
-			FVector2 cameraPos = Game::GetGameState()->GetMainCamera().get()->GetCameraLocation();
-			cameraPos += FVector2(5, 0);
-			Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(cameraPos);
-		}
 	}
 
 	void Release(HWND hwnd)
@@ -236,38 +269,98 @@ namespace Game
 		g_currentScene->Release();
 	}
 
-	UScene* GetCurrentScene()
+	void OnWidgetClick(const FVector2& clickPosition)
 	{
-		return g_currentScene;
+		std::vector<std::unordered_map<std::wstring, std::shared_ptr<UWidget>>>& Widgets = g_currentScene->GetWidgets();
+		for (auto& button : Widgets[static_cast<int>(EUILAYER::HUD)])
+		{
+			if (button.second->bVisible)
+			{
+                for (std::weak_ptr<UWidgetComponent> component : button.second.get()->WidgetComponents)
+                {
+                    if (auto comp = component.lock())
+                    {
+                        if (clickPosition.x < comp->GetPosition().x ||
+                            clickPosition.x > comp->GetPosition().x + comp->GetSize().x ||
+                            clickPosition.y < comp->GetPosition().y ||
+                            clickPosition.y > comp->GetPosition().y + comp->GetSize().y
+                            )
+                            continue;
+                        if (comp->FVoidDelegate)
+                        {
+                            comp->FVoidDelegate();
+                        }
+                    }
+                }
+			}
+		}
 	}
 
-	UScene** GetCurrentScenePtr()
+	bool CheckWidgetPosition(const FVector2& clickPosition)
 	{
-		return &g_currentScene;
+		std::vector<std::unordered_map<std::wstring, std::shared_ptr<UWidget>>>& Widgets = g_currentScene->GetWidgets();
+		bool bWidgetExist = false;
+		for (auto& button : Widgets[static_cast<int>(EUILAYER::HUD)])
+		{
+			if (button.second->bVisible)
+			{
+				for (auto& component : button.second.get()->WidgetComponents)
+				{
+					if (auto componentRef = component.lock())
+					{
+                        if ((clickPosition.x < componentRef->GetPosition().x ||
+                            clickPosition.x > componentRef->GetPosition().x + componentRef->GetSize().x ||
+                            clickPosition.y < componentRef->GetPosition().y ||
+                            clickPosition.y > componentRef->GetPosition().y + componentRef->GetSize().y) == false
+							)
+                            if (componentRef->IsVisible() == true)
+								bWidgetExist = true;
+					}
+					
+				}
+			}
+		}
+		return bWidgetExist;
 	}
 
-	UScene* GetNextScene()
+	std::weak_ptr<UScene> GetNextScene()
 	{
 		return g_nextScene;
 	}
 
-	UScene** GetNextScenePtr()
+	std::weak_ptr<UScene>& GetNextSceneWeakPtr()
 	{
-		return &g_nextScene;
+		return g_nextScene;
 	}
 
-	AGameStateBase* GetGameState()
+	std::shared_ptr<UScene>& GetNextSceneSharedPtr()
+	{
+		return g_nextSceneShared;
+	}
+
+	GameStateBase* GetGameState()
 	{
 		return g_gameInstance;
 	}
 
 	void ChangeScene()
 	{
-		if (g_currentScene != g_nextScene)
+		if (g_currentScene != g_nextScene.lock())
 		{
-			g_currentScene->Release();
-			delete g_currentScene;
-			g_currentScene = g_nextScene;
+			Game::SetMouseDragState(false);
+			ReleaseCapture();
+			if (g_currentScene)
+				g_currentScene->Release();
+			g_currentScene.reset();
+
+			g_currentScene = g_nextSceneShared;
+			g_nextScene = g_nextSceneShared;
+
+			// 씬 전환 시 카메라 줌 초기화
+			if (const auto cameraRef = g_gameInstance->GetMainCamera().lock())
+			{
+				cameraRef->SetActorScale(1.0f, 1.0f);
+			}
 		}
 	}
 
@@ -282,5 +375,19 @@ namespace Game
 	{
 		m_RMouseCickPosition.x = rect.x;
 		m_RMouseCickPosition.y = rect.y;
+	}
+
+	bool GetMouseDragState()
+	{
+		return g_bMouseDragging;
+	}
+
+	void SetMouseDragState(const bool& state)
+	{
+		std::weak_ptr<UPlayScene> scene = std::dynamic_pointer_cast<UPlayScene>(g_currentScene);
+		if (scene.lock())
+		{
+			g_bMouseDragging = state;
+		}
 	}
 }
