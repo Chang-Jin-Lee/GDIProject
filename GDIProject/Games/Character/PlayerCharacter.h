@@ -1,14 +1,10 @@
 #pragma once
 #include <Classes/Character.h>
 #include <Runtime/Animation/AnimationComponent.h>
+#include "../Core/GameTypes.h"
+#include <string>
 #include <vector>
 
-enum class EUnitType
-{
-	Settler,
-	Warrior,
-	Archer,
-};
 
 class SUITextComponent;
 class UCharacterNameWidget;
@@ -40,25 +36,30 @@ public:
 	const float MoveSpeed = 600;
 	float m_fcharacterRotationSpeed = 85;
 
-	// Turn 게임 관련 
+	// Turn-game helpers
 	void Attack(APlayerCharacter* Target);
 	void MoveTo(const FVector2& TargetPosition);
 
 	void SetUnitType(EUnitType Type);
 	void SetUnitType(int value);
+	void ApplyStats(const UnitStats& Stats);
 	static std::wstring GetUnitTypeString(int value);
 public:
 	EUnitType UnitType = EUnitType::Settler;
+	std::string StableId;
+	EPlayerSlot OwnerSlot = EPlayerSlot::None;
 	int Health = 100;
 	int AttackDamage = 10;
 	int MoveRange = 1;
 	int AttackRange = 1;
+	bool CanMelee = false;
+	bool CanRanged = false;
 	bool bIsDead = false;
-	int ActionMaxCount = 0;		// 한 턴에 최대로 이동 가능한 수
-	int ActionRemainCount = 0;	// 현재 남은 이동 횟수
-	bool bSkipTurn = false;     // 이번 턴 남은 행동 무시 플래그
+	int ActionMaxCount = 0;
+	int ActionRemainCount = 0;
+	bool bSkipTurn = false;
 
-	// Turn 게임에서의 Tile 좌표
+	// Tile coordinates in the turn game
 	int row = 0;
 	int col = 0;
 };

@@ -4,8 +4,10 @@
 #include <Runtime/Renderer/Renderer.h>
 #include "TurnGameState.h"
 #include "../Games.h"
+#include "../Core/GameConfig.h"
 #include <Input/Input.h>
 #include <iostream>
+#include <utility>
 #include "../Scene/PlayScene.h"
 #include <UI/UITextComponent.h>
 #include <UI/UIButtonComponent.h>
@@ -38,41 +40,62 @@ APlayerController::~APlayerController()
 
 void APlayerController::Initialize()
 {
-	// °³Ã´ÀÚ ¼ÒÈ¯
-	//SpawnAtIndex(3, 2);
-	//SpawnAtIndex(3, 2);
-	//SpawnAtIndex(3, 2);
-
-	std::vector<std::pair<int, int>> indexVector;
-	for (int i = 0; i < 3; i++)
-	{
-		int x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
-		int y = (int)FRandom::GetRandomInRange(0, TILE_COL_SIZE * 0.2);
-		while (std::find(indexVector.begin(), indexVector.end(), std::make_pair(x, y)) != indexVector.end())
-		{
-			x = (int)FRandom::GetRandomInRange(0, TILE_ROW_SIZE);
-			y = (int)FRandom::GetRandomInRange(0, TILE_COL_SIZE * 0.2);
-		}
-		indexVector.emplace_back(x, y);
-		SpawnAtIndex(y, x, i, std::to_wstring(y)+L"_"+std::to_wstring(x));
-	}
-	std::vector<std::pair<int, int>>().swap(indexVector);
+	InitializeForSlot(EPlayerSlot::Player1);
 }
 
+void APlayerController::InitializeForSlot(EPlayerSlot slot)
+{
+	Slot = slot;
+	SpawnStartingUnits();
+}
+
+void APlayerController::SetCommandSink(std::function<void(GameCommand)> sink)
+{
+	CommandSink = std::move(sink);
+}
+
+void APlayerController::SpawnStartingUnits()
+{
+	const GameConfig config = GameConfig::LoadFromResource();
+	std::vector<std::pair<int, int>> occupied;
+	const int minCol = (Slot == EPlayerSlot::Player2) ? TILE_COL_SIZE - 3 : 0;
+	const int maxCol = (Slot == EPlayerSlot::Player2) ? TILE_COL_SIZE : 3;
+
+	for (EUnitType unitType : config.GameRules.StartingUnits)
+	{
+		int row = static_cast<int>(FRandom::GetRandomInRange(0, TILE_ROW_SIZE));
+		int col = static_cast<int>(FRandom::GetRandomInRange(minCol, maxCol));
+		int guard = TILE_ROW_SIZE * TILE_COL_SIZE;
+		while (guard-- > 0)
+		{
+			const bool alreadyPicked = std::find(occupied.begin(), occupied.end(), std::make_pair(row, col)) != occupied.end();
+			const bool occupiedByUnit = ATile::IsValidIndex(row, col) && m_tiles[row][col].expired() == false && m_tiles[row][col].lock()->unit.expired() == false;
+			if (!alreadyPicked && !occupiedByUnit)
+			{
+				break;
+			}
+			row = static_cast<int>(FRandom::GetRandomInRange(0, TILE_ROW_SIZE));
+			col = static_cast<int>(FRandom::GetRandomInRange(minCol, maxCol));
+		}
+
+		occupied.emplace_back(row, col);
+		SpawnAtIndex(row, col, static_cast<int>(unitType), std::to_wstring(row) + L"_" + std::to_wstring(col));
+	}
+}
 void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 {
 	if (const auto& SelectedUnitRef = SelectedUnit.lock())
 	{
-		if (bIsUnitMoving) return; // ÀÌµ¿ Áß¿¡´Â »õ·Î¿î ¸í·É ¹«½Ã
-    	// ÇöÀç À¯´ÖÀÇ Å¸ÀÏ ÀÎµ¦½º´Â À¯´Ö Áß½É ±âÁØÀ¸·Î °è»êÇÏ¿© ¿ÀÂ÷ ¹æÁö
-    	FVector2 unitCenter = SelectedUnitRef->GetActorLocation() + SelectedUnitRef->GetActorSize() / 2;
-    	FVector2 unitIndex = ATile::GetIndexAtPosition(unitCenter);
+		if (bIsUnitMoving) return; // ï¿½Ìµï¿½ ï¿½ß¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+		FVector2 unitCenter = SelectedUnitRef->GetActorLocation() + SelectedUnitRef->GetActorSize() / 2;
+		FVector2 unitIndex = ATile::GetIndexAtPosition(unitCenter);
 		if (unitIndex.x == -1 || unitIndex.y == -1) return;
 		FVector2 index = ATile::GetIndexAtPosition(pos);
 		FVector2 pos = ATile::GetTilePositionAtIndex((int)index.x, (int)index.y);
 		if (pos.x == -1 || pos.y == -1) return;
-   		 // µ¿ÀÏ Å¸ÀÏÀÌ¸é ÀÌµ¿ ±ÝÁö
-    	if ((int)unitIndex.x == (int)index.x && (int)unitIndex.y == (int)index.y) return;
+		// ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½
+		if ((int)unitIndex.x == (int)index.x && (int)unitIndex.y == (int)index.y) return;
 
 		int x = (int)index.x;
 		int y = (int)index.y;
@@ -84,18 +107,18 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 		}
         else
 		{
-            // µ¿ÀÏ Å¸ÀÏÀÌ¸é ÀÌµ¿ ±ÝÁö
+            // ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½Ì¸ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½
             if (distance == 0) return;
             if (distance <= SelectedUnitRef->ActionRemainCount)
 			{
-				// °æ·Î ±¸¼º: ÇöÀç À§Ä¡¿¡¼­ ¸ñÀûÁö±îÁö ºñ¿ëÀÌ °¨¼ÒÇÏ´Â ÀÌ¿ôÀ» µû¶ó ÁøÇà
+				// ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ì¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				m_movePathWorld.clear();
 				m_movePathIndex = 0;
 				int curRow = (int)unitIndex.x;
 				int curCol = (int)unitIndex.y;
 				const int targetRow = x;
 				const int targetCol = y;
-				int guard = TILE_ROW_SIZE * TILE_COL_SIZE; // ¾ÈÀü °¡µå
+				int guard = TILE_ROW_SIZE * TILE_COL_SIZE; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				while ((curRow != targetRow || curCol != targetCol) && guard-- > 0)
 				{
 					const int* dx = (curRow % 2 == 0) ? even_dx : odd_dx;
@@ -110,7 +133,7 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 						if (auto t = m_tiles[nr][nc].lock())
 						{
 							if (!t->bVisible) continue;
-							// ÇöÀç °æ·Î °è»ê ´Ü°è¿¡¼­´Â Å¸°Ù¸¸ ¿¹¿ÜÀûÀ¸·Î Çã¿ë
+							// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ü°è¿¡ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 							if (t->unit.expired() == false && !(nr == targetRow && nc == targetCol)) continue;
 						}
 						const int cost = ATile::SearchCost(nr, nc, targetRow, targetCol, m_tiles);
@@ -120,7 +143,7 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 							bestRow = nr; bestCol = nc;
 						}
 					}
-					// ´õ ÀÌ»ó ÁøÇà ºÒ°¡
+					// ï¿½ï¿½ ï¿½Ì»ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½
 					if (bestRow == curRow && bestCol == curCol) break;
 					curRow = bestRow; curCol = bestCol;
 					FVector2 wpCenter = ATile::GetTilePositionAtIndex(curRow, curCol);
@@ -128,17 +151,23 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 					m_movePathWorld.push_back(wpCenter - halfSize);
 				}
 
-				// °æ·Î°¡ À¯È¿ÇÒ ¶§¸¸ Å¸ÀÏ Á¡À¯/ÇØÁ¦ ¹× ÀÌµ¿ ½ÃÀÛ
+				// ï¿½ï¿½Î°ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½
 				if (!m_movePathWorld.empty())
 				{
-					// ¸ñÀûÁö Å¸ÀÏ¿¡ À¯´Ö Á¡À¯ ¿¹¾à
+					// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 					if (const auto tile = m_tiles[x][y].lock()) { tile->unit = SelectedUnit; }
-					// Ãâ¹ß Å¸ÀÏ ºñ¿ì±â
+					// ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 					if (const auto tile = m_tiles[(int)unitIndex.x][(int)unitIndex.y].lock()) { tile->unit.reset(); }
 				}
 
-				// Çàµ¿·Â Â÷°¨ ¹× UI ¾÷µ¥ÀÌÆ®
+				// ï¿½àµ¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ UI ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 				SelectedUnitRef->ActionRemainCount -= distance;
+				SelectedUnitRef->row = x;
+				SelectedUnitRef->col = y;
+				if (!bSuppressCommandSink && CommandSink)
+				{
+					CommandSink(GameCommand::Move(0, Slot, SelectedUnitRef->StableId, x, y));
+				}
 				if (const auto OwnerSceneRef = OwnerScene.lock())
 				{
 					std::shared_ptr<UPlayScene> ps = std::dynamic_pointer_cast<UPlayScene>(OwnerSceneRef);
@@ -146,16 +175,16 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 					{
 						if (auto text = widget->m_selectTileName.lock())
 						{
-							text->SetContent(L"Ä³¸¯ÅÍ ÀÌ¸§ : " + SelectedUnitRef->GetName());
+							text->SetContent(L"Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ : " + SelectedUnitRef->GetName());
 						}
 						if (auto text2 = widget->m_selectTileActionCount.lock())
 						{
-							text2->SetContent(L"³²Àº Çàµ¿ ¼ö : " + std::to_wstring(SelectedUnitRef->ActionRemainCount));
+							text2->SetContent(L"ï¿½ï¿½ï¿½ï¿½ ï¿½àµ¿ ï¿½ï¿½ : " + std::to_wstring(SelectedUnitRef->ActionRemainCount));
 						}
 					}
 				}
 
-				// ÇÏÀÌ¶óÀÌÆ® ÇØÁ¦
+				// ï¿½ï¿½ï¿½Ì¶ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
 				for (auto& tiles : m_tiles)
 				{
 					for (auto& tile : tiles)
@@ -167,7 +196,7 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 					}
 				}
 
-				// ÀÌµ¿ ½ÃÀÛ
+				// ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½
 				if (!m_movePathWorld.empty())
 				{
 					bIsUnitMoving = true;
@@ -192,18 +221,18 @@ void APlayerController::UpdateMovement(float deltaSeconds)
 	const float len2 = diff.x * diff.x + diff.y * diff.y;
 	const float epsilon = 1.0f;
 
-	// ¹æÇâ »óÅÂ ¾÷µ¥ÀÌÆ®
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 	if (std::abs(diff.x) > std::abs(diff.y))
 		unit->dirState = (diff.x >= 0) ? APlayerCharacter::DirState::Right : APlayerCharacter::DirState::Left;
 	else
 		unit->dirState = (diff.y >= 0) ? APlayerCharacter::DirState::Bottom : APlayerCharacter::DirState::Top;
 
-	// ¼Óµµ
+	// ï¿½Óµï¿½
 	const float speed = unit->MoveSpeed; // px/sec
 	const float step = speed * deltaSeconds;
 	if (len2 <= step * step || len2 <= epsilon * epsilon)
 	{
-		// µµÂø
+		// ï¿½ï¿½ï¿½ï¿½
 		unit->SetActorLocation(target);
 		m_movePathIndex++;
 		if (m_movePathIndex >= (int)m_movePathWorld.size())
@@ -215,7 +244,7 @@ void APlayerController::UpdateMovement(float deltaSeconds)
 	}
 	else
 	{
-		// Á¤±ÔÈ­ ÈÄ ÀÌµ¿
+		// ï¿½ï¿½ï¿½ï¿½È­ ï¿½ï¿½ ï¿½Ìµï¿½
 		const float len = std::sqrt(len2);
 		FVector2 dir = FVector2(diff.x / len, diff.y / len);
 		unit->SetActorLocation(current + dir * step);
@@ -248,29 +277,43 @@ void APlayerController::Release()
 
 void APlayerController::SpawnAtIndex(int row, int col, int type, std::wstring name)
 {
-	if (const auto tile = m_tiles[col][row].lock())
+	if (!ATile::IsValidIndex(row, col)) return;
+	if (const auto tile = m_tiles[row][col].lock())
 	{
 		if (tile->unit.expired() == false)
 		{
 			return;
 		}
 	}
-	if (row < 0 || col < 0) return;
 
-	//int type = static_cast<int>(EUnitType::Settler);
+	const EUnitType unitType = static_cast<EUnitType>(type);
 	if (auto OwnerSceneRef = std::dynamic_pointer_cast<UScene>(OwnerScene.lock()))
 	{
 		auto Unit = OwnerSceneRef->NewObject<APlayerCharacter>(APlayerCharacter::GetUnitTypeString(type) + std::to_wstring(Time::GetElapsedTime()) + name, ESCENELAYER::CHARACTER);
 		if (auto UnitRef = Unit.lock())
 		{
+			int sameTypeIndex = 0;
+			for (const auto& existing : Units)
+			{
+				if (auto existingRef = existing.lock())
+				{
+					if (existingRef->OwnerSlot == Slot && existingRef->UnitType == unitType)
+					{
+						++sameTypeIndex;
+					}
+				}
+			}
+
 			UnitRef->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
 			UnitRef->SetUnitType(type);
+			UnitRef->OwnerSlot = Slot;
+			UnitRef->StableId = std::string(Slot == EPlayerSlot::Player2 ? "P2_" : "P1_") + ToString(unitType) + "_" + std::to_string(sameTypeIndex);
 			UnitRef->Initialize();
-			FVector2 pos = ATile::GetTilePositionAtIndex(col, row);
+			FVector2 pos = ATile::GetTilePositionAtIndex(row, col);
 			FVector2 size = UnitRef->GetActorSize();
 			UnitRef->row = row;
 			UnitRef->col = col;
-			if (const auto tile = m_tiles[col][row].lock())
+			if (const auto tile = m_tiles[row][col].lock())
 			{
 				tile->unit = UnitRef;
 			}
@@ -279,7 +322,6 @@ void APlayerController::SpawnAtIndex(int row, int col, int type, std::wstring na
 		}
 	}	
 }
-
 void APlayerController::SpawnAtPosition(FVector2 position, EUnitType unitType)
 {
 	if (position.x < 0 || position.y < 0) return;
@@ -303,11 +345,13 @@ void APlayerController::SpawnAtPosition(FVector2 position, EUnitType unitType)
 		{
 			UnitRef->SetName(APlayerCharacter::GetUnitTypeString(type).c_str());
 			UnitRef->SetUnitType(type);
+			UnitRef->OwnerSlot = Slot;
+			UnitRef->StableId = std::string(Slot == EPlayerSlot::Player2 ? "P2_" : "P1_") + ToString(unitType) + "_" + std::to_string(Units.size());
 			UnitRef->Initialize();
 			FVector2 size = UnitRef->GetActorSize();
-			UnitRef->row = (int)index.y;
-			UnitRef->col = (int)index.x;
-			if (const auto tile = m_tiles[UnitRef->col][UnitRef->row].lock())
+			UnitRef->row = (int)index.x;
+			UnitRef->col = (int)index.y;
+			if (const auto tile = m_tiles[UnitRef->row][UnitRef->col].lock())
 			{
 				tile->unit = UnitRef;
 			}
@@ -317,6 +361,144 @@ void APlayerController::SpawnAtPosition(FVector2 position, EUnitType unitType)
 	}
 }
 
+std::shared_ptr<APlayerCharacter> APlayerController::FindUnitByStableId(const std::string& stableId) const
+{
+	for (const auto& unit : Units)
+	{
+		if (auto unitRef = unit.lock())
+		{
+			if (unitRef->StableId == stableId && !unitRef->bIsDead)
+			{
+				return unitRef;
+			}
+		}
+	}
+	return nullptr;
+}
+
+std::shared_ptr<APlayerCharacter> APlayerController::FindUnitAtIndex(int row, int col) const
+{
+	if (!ATile::IsValidIndex(row, col)) return nullptr;
+	if (auto tile = m_tiles[row][col].lock())
+	{
+		return tile->unit.lock();
+	}
+	return nullptr;
+}
+
+bool APlayerController::TryMoveUnitToIndex(std::shared_ptr<APlayerCharacter> unit, int row, int col, bool animate, bool emitCommand)
+{
+	if (!unit || unit->bIsDead || !ATile::IsValidIndex(row, col)) return false;
+	if (auto targetTile = m_tiles[row][col].lock())
+	{
+		if (targetTile->unit.expired() == false) return false;
+		if (!targetTile->bVisible) return false;
+	}
+
+	FVector2 unitCenter = unit->GetActorLocation() + unit->GetActorSize() / 2;
+	FVector2 currentIndex = ATile::GetIndexAtPosition(unitCenter);
+	const int currentRow = static_cast<int>(currentIndex.x);
+	const int currentCol = static_cast<int>(currentIndex.y);
+	if (!ATile::IsValidIndex(currentRow, currentCol)) return false;
+	if (currentRow == row && currentCol == col) return false;
+
+	const int distance = ATile::SearchCost(currentRow, currentCol, row, col, m_tiles);
+	if (distance < 0 || distance > unit->ActionRemainCount) return false;
+
+	if (animate)
+	{
+		const bool oldSuppress = bSuppressCommandSink;
+		bSuppressCommandSink = !emitCommand;
+		SelectedUnit = unit;
+		MoveSelectedUnitTo(ATile::GetTilePositionAtIndex(row, col));
+		bSuppressCommandSink = oldSuppress;
+		return true;
+	}
+
+	if (auto oldTile = m_tiles[currentRow][currentCol].lock()) oldTile->unit.reset();
+	if (auto newTile = m_tiles[row][col].lock()) newTile->unit = unit;
+	unit->ActionRemainCount -= distance;
+	unit->row = row;
+	unit->col = col;
+	unit->SetActorLocation(ATile::GetTilePositionAtIndex(row, col) - unit->GetActorSize() / 2);
+	if (emitCommand && !bSuppressCommandSink && CommandSink)
+	{
+		CommandSink(GameCommand::Move(0, Slot, unit->StableId, row, col));
+	}
+	return true;
+}
+
+bool APlayerController::TryAttackUnit(std::shared_ptr<APlayerCharacter> attacker, std::shared_ptr<APlayerCharacter> target, bool emitCommand)
+{
+	if (!attacker || !target || attacker->bIsDead || target->bIsDead) return false;
+	if (attacker->OwnerSlot == target->OwnerSlot) return false;
+	if (attacker->ActionRemainCount <= 0) return false;
+
+	const int distance = std::abs(attacker->row - target->row) + std::abs(attacker->col - target->col);
+	if (distance > attacker->AttackRange) return false;
+	if (distance <= 1 && !attacker->CanMelee && !attacker->CanRanged) return false;
+	if (distance > 1 && !attacker->CanRanged) return false;
+
+	attacker->Attack(target.get());
+	attacker->ActionRemainCount = 0;
+	if (emitCommand && !bSuppressCommandSink && CommandSink)
+	{
+		CommandSink(GameCommand::Attack(0, Slot, attacker->StableId, target->StableId));
+	}
+	if (target->bIsDead && ATile::IsValidIndex(target->row, target->col))
+	{
+		if (auto tile = m_tiles[target->row][target->col].lock()) tile->unit.reset();
+	}
+	return true;
+}
+
+bool APlayerController::HasLivingUnits() const
+{
+	for (const auto& unit : Units)
+	{
+		if (auto unitRef = unit.lock())
+		{
+			if (!unitRef->bIsDead) return true;
+		}
+	}
+	return false;
+}
+
+std::vector<std::shared_ptr<APlayerCharacter>> APlayerController::GetLivingUnits() const
+{
+	std::vector<std::shared_ptr<APlayerCharacter>> living;
+	for (const auto& unit : Units)
+	{
+		if (auto unitRef = unit.lock())
+		{
+			if (!unitRef->bIsDead) living.push_back(unitRef);
+		}
+	}
+	return living;
+}
+
+void APlayerController::ReadyUnitsForNextTurn()
+{
+	for (const auto& unit : Units)
+	{
+		if (auto unitRef = unit.lock())
+		{
+			if (!unitRef->bIsDead) unitRef->ReadyForNextTurn();
+		}
+	}
+}
+
+void APlayerController::SkipRemainingUnits()
+{
+	for (const auto& unit : Units)
+	{
+		if (auto unitRef = unit.lock())
+		{
+			unitRef->ActionRemainCount = 0;
+			unitRef->bSkipTurn = true;
+		}
+	}
+}
 std::weak_ptr<APlayerCharacter> APlayerController::GetUnitRefAtPosition(FVector2 position)
 {
 	FVector2 index = ATile::GetIndexAtPosition(position);
@@ -345,7 +527,7 @@ std::weak_ptr<ATile> APlayerController::GetTileRefAtPosition(FVector2 position)
 
 void APlayerController::HandleInput()
 {
-	// ÀÌµ¿ Áß¿¡´Â ¸ðµç ÀÔ·Â ¹«½Ã
+	// ï¿½Ìµï¿½ ï¿½ß¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½
 	if (bIsUnitMoving) return;
 
 	if (Input::IsKeyPressed(VK_K))
@@ -363,14 +545,28 @@ void APlayerController::HandleInput()
 	{
 		if (SelectedUnit.expired() == false)
 		{
-			MoveSelectedUnitTo(Input::GetMouseWorldPosition(Game::GetGameState()->GetMainCamera()));
+			const FVector2 mouseWorld = Input::GetMouseWorldPosition(Game::GetGameState()->GetMainCamera());
+			if (auto selected = SelectedUnit.lock())
+			{
+				if (auto tile = GetTileRefAtPosition(mouseWorld).lock())
+				{
+					if (auto target = tile->unit.lock())
+					{
+						if (target->OwnerSlot != Slot && TryAttackUnit(selected, target, true))
+						{
+							return;
+						}
+					}
+				}
+			}
+			MoveSelectedUnitTo(mouseWorld);
 		}
 	}
 
 	if (Input::IsKeyPressed(VK_LBUTTON))
 	{
 		SelectedUnit = GetUnitRefAtPosition(Input::GetMouseWorldPosition(Game::GetGameState()->GetMainCamera()));
-		if (const auto SelectedUnitRef = SelectedUnit.lock())	// ¼±ÅÃÇÑ ºí·ÏÀÌ Ä³¸¯ÅÍ°¡ ÀÖ´Ù¸é
+		if (const auto SelectedUnitRef = SelectedUnit.lock())	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½Ö´Ù¸ï¿½
 		{
 			if (const auto OwnerSceneRef = OwnerScene.lock())
 			{
@@ -380,7 +576,7 @@ void APlayerController::HandleInput()
 				{
 					if (auto text = widget->m_selectTileName.lock())
 					{
-                        text->SetContent(L"Ä³¸¯ÅÍ ÀÌ¸§ : " + SelectedUnitRef->GetName());
+                        text->SetContent(L"Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½ : " + SelectedUnitRef->GetName());
 					}
 				}
 				
@@ -388,11 +584,11 @@ void APlayerController::HandleInput()
 				{
 					if (auto text = widget->m_selectTileActionCount.lock())
 					{
-                        text->SetContent(L"³²Àº Çàµ¿ ¼ö : " + std::to_wstring(SelectedUnitRef->ActionRemainCount));
+                        text->SetContent(L"ï¿½ï¿½ï¿½ï¿½ ï¿½àµ¿ ï¿½ï¿½ : " + std::to_wstring(SelectedUnitRef->ActionRemainCount));
 					}
 				}
 
-				// ¹Ì¸®º¸±â
+				// ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½
 				FVector2 unitIndex = ATile::GetIndexAtPosition(SelectedUnitRef->GetActorLocation());
 				std::vector<std::pair<int, int>> reachable;
 				ATile::GetReachableTiles(int(unitIndex.x), int(unitIndex.y), SelectedUnitRef->ActionRemainCount, m_tiles, reachable);
@@ -427,17 +623,17 @@ void APlayerController::HandleInput()
 					{
 						int r = tile.first;
 						int c = tile.second;
-                        // ÇöÀç À¯´ÖÀÌ ¼­ ÀÖ´Â Å¸ÀÏÀº Ç¥½ÃÇÏÁö ¾ÊÀ½
+                        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                         if (r == (int)unitIndex.x && c == (int)unitIndex.y) continue;
 						if (const auto tileRef = m_tiles[r][c].lock())
 						{
-							tileRef->SetHighlight(true); // ¹Ì¸®º¸±â Ç¥½Ã
+							tileRef->SetHighlight(true); // ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½
 						}
 					}
 				}
 			}
 		}
-		else// ¼±ÅÃÇÑ ºí·ÏÀÌ Ä³¸¯ÅÍ°¡ ¾ø´Ù¸é
+		else// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½Ù¸ï¿½
 		{
 			for (auto& tiles : m_tiles)
 			{
@@ -462,7 +658,7 @@ void APlayerController::HandleInput()
 					{
 						if (auto text = widget->m_selectTileName.lock())
 						{
-                            text->SetContent(L"Å¸ÀÏ ÀÌ¸§ : " + t.lock()->GetTileName());
+                            text->SetContent(L"Å¸ï¿½ï¿½ ï¿½Ì¸ï¿½ : " + t.lock()->GetTileName());
 						}
 					}
 					if (auto widget = ps->m_PlayScene_Widget.lock())
@@ -479,7 +675,7 @@ void APlayerController::HandleInput()
 					{
 						if (auto text = widget->m_selectTileName.lock())
 						{
-                            text->SetContent(L"Å¸ÀÏ ÀÌ¸§ : ");
+                            text->SetContent(L"Å¸ï¿½ï¿½ ï¿½Ì¸ï¿½ : ");
 						}
 					}
 					if (auto widget = ps->m_PlayScene_Widget.lock())

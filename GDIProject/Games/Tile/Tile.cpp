@@ -1,6 +1,7 @@
 #include <Runtime/Core/FIleHelper.h>
 #include "Tile.h"
 #include "../Games.h"
+#include "../Core/GameConfig.h"
 #include "../Player/TurnGameState.h"
 #include "../Scene/PlayScene.h"
 #include <Classes/Components/StaticMeshComponent.h>
@@ -149,7 +150,7 @@ int ATile::SearchCost(const int& startRow, const int& startCol, const int& targe
 		}
 	}
 
-	return -1; // µµ´Ş ºÒ°¡
+	return -1; // ë„ë‹¬ ë¶ˆê°€
 }
 
 void ATile::GetReachableTiles(const int& startRow, const int& startCol, int maxCost,
@@ -174,7 +175,7 @@ void ATile::GetReachableTiles(const int& startRow, const int& startCol, int maxC
 		int col = std::get<2>(pq.top());
 		pq.pop();
 
-		// ¹üÀ§ ³»ÀÏ ¶§¸¸ Ãß°¡
+		// ë²”ìœ„ ë‚´ì¼ ë•Œë§Œ ì¶”ê°€
 		if (currCost <= maxCost)
 		{
 			if (!(row == startRow && col == startCol))
@@ -224,47 +225,12 @@ bool ATile::IsValidIndex(int row, int col)
 
 std::wstring ATile::GetTileName()
 {
-	switch (m_etileType)
-	{
-	case ETileType::Desert:
-		return L"»ç¸·";
-	case ETileType::Grassland:
-		return L"ÃÊ¿ø";
-	case ETileType::Hills:
-		return L"¾ğ´ö";
-	case ETileType::Plain:
-		return L"ÆòÁö";
-	case ETileType::Mountain:
-		return L"»ê";
-	case ETileType::Capital:
-		return L"µµ½Ã";
-	case ETileType::MAX:
-		return L"MAX";
-	default:
-		return L"default";
-	}
-
+	return GameConfig::LoadFromResource().GetTile(m_etileType).DisplayName;
 }
 
 int ATile::GetTileMoveCost()
 {
-	switch (m_etileType)
-	{
-	case ETileType::Plain: 
-		return 1;
-	case ETileType::Hills: 
-		return 2;
-	case ETileType::Mountain: 
-		return 4;
-	case ETileType::Desert:
-		return 3;
-	case ETileType::Grassland: 
-		return 1;
-	case ETileType::Capital: 
-		return 1;
-	default: 
-		return -1; // ÀÌµ¿ ºÒ°¡
-	}
+	return GameConfig::LoadFromResource().GetTile(m_etileType).MoveCost;
 }
 
 void ATile::SetHighlight(bool bhighlight)

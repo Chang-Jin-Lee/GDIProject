@@ -1,0 +1,5 @@
+Key,Value
+Port,43117
+ConnectTimeoutMs,5000
+ReceiveBufferBytes,4096
+StateSyncEveryTurn,1

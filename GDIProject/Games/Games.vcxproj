@@ -81,6 +81,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -91,12 +92,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -111,6 +114,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -122,17 +126,28 @@
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)\Engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Character\EnemyCharacter.h" />
     <ClInclude Include="Image\BackGroundImage.h" />
+    <ClInclude Include="Core\AutoMove.h" />
+    <ClInclude Include="Core\CsvTable.h" />
+    <ClInclude Include="Core\GameCommand.h" />
+    <ClInclude Include="Core\GameConfig.h" />
+    <ClInclude Include="Core\GameTypes.h" />
+    <ClInclude Include="Core\MatchSettings.h" />
+    <ClInclude Include="Core\NetworkProtocol.h" />
+    <ClInclude Include="Core\StateSerializer.h" />
+    <ClInclude Include="Network\NetworkSession.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Games.h" />
     <ClInclude Include="Character\PlayerCharacter.h" />
@@ -156,6 +171,14 @@
   <ItemGroup>
     <ClCompile Include="Character\EnemyCharacter.cpp" />
     <ClCompile Include="Image\BackGroundImage.cpp" />
+    <ClCompile Include="Core\AutoMove.cpp" />
+    <ClCompile Include="Core\CsvTable.cpp" />
+    <ClCompile Include="Core\GameCommand.cpp" />
+    <ClCompile Include="Core\GameConfig.cpp" />
+    <ClCompile Include="Core\MatchSettings.cpp" />
+    <ClCompile Include="Core\NetworkProtocol.cpp" />
+    <ClCompile Include="Core\StateSerializer.cpp" />
+    <ClCompile Include="Network\NetworkSession.cpp" />
     <ClCompile Include="Games.cpp" />
     <ClCompile Include="Character\PlayerCharacter.cpp" />
     <ClCompile Include="Manager\TurnManager.cpp" />

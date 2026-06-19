@@ -1,0 +1,6 @@
+Key,Value
+MaxTurn,30
+PvpTurnSeconds,30
+RandomTilesRemovedPerTurn,5
+StopRandomTileRemovalAfterTurn,25
+StartingUnits,Warrior|Archer|Scout

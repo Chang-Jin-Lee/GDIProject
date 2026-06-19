@@ -19,6 +19,13 @@ public:
 	std::weak_ptr<SUIButtonComponent> m_startGameButton;
 	std::weak_ptr<SUITextComponent> m_startGameButtonText;
 
+	std::weak_ptr<SUIButtonComponent> m_connectGameButton;
+	std::weak_ptr<SUITextComponent> m_connectGameButtonText;
+	std::weak_ptr<SUIButtonComponent> m_hostGameButton;
+	std::weak_ptr<SUITextComponent> m_hostGameButtonText;
+	std::weak_ptr<SUITextComponent> m_ipInputText;
+	std::weak_ptr<SUITextComponent> m_statusText;
+
 	std::weak_ptr<SUIButtonComponent> m_endGameButton;
 	std::weak_ptr<SUITextComponent> m_endGameButtonText;
 
