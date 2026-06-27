@@ -48,7 +48,6 @@ UPlayScene_Widget::UPlayScene_Widget()
 	WidgetComponents.push_back(m_spawnSettelerUnitButtonText);
 	WidgetComponents.push_back(m_spawnWarriorUnitButtonText);
 	WidgetComponents.push_back(m_spawnArcherUnitButtonText);
-	WidgetComponents.push_back(m_spawnSettelerUnitButtonText);
 	WidgetComponents.push_back(m_nextStageButton);
 	WidgetComponents.push_back(m_nextStageButtonText);
 	WidgetComponents.push_back(m_endGameButton);
@@ -91,6 +90,12 @@ void UPlayScene_Widget::Initialize()
 {
 	__super::Initialize();
 
+
+	// PlayScene UI Layout (1024 x 600)
+	// Top bar (y=8, h=40) : Exit[8,8,120x40] | Turn label[388,8,140x40] count[534,8,66x40] | NextTurn[870,8,146x40]
+	// Spawn buttons (y=510, h=52, w=116, gap=14) : Settler x=324  Warrior x=454  Archer x=584
+	// Info panel (x=8, y=456, w=210, h=110) : Name[14,462,196x28]  Action[14,494,196x28]  Skip[14,526,110x36]
+	// Popup center (x=342, y=272, w=340, h=56)
 	if (const auto cameraRef = Game::GetGameState()->GetMainCamera().lock())
 	{
 		if (const auto ref = Cast<SUITextComponent>(m_remainTurnGuideui))
@@ -101,8 +106,8 @@ void UPlayScene_Widget::Initialize()
 				18,
 				L"Verdana",
 				Gdiplus::Color(255, 255, 255),
-				FVector2(int(Renderer::GetResolution().x * 0.35), int(Renderer::GetResolution().y * 0.15)),
-				FVector2(150, 40)
+				FVector2(388, 8),
+				FVector2(140, 40)
 			);
 			ref->AttachedUIToActor(cameraRef);
 		}
@@ -115,11 +120,11 @@ void UPlayScene_Widget::Initialize()
 				ref->Initialize
 				(
 					std::to_wstring(g_TurnGameStateInstance->m_iTurnCount),
-					10,
+					15,
 					L"Verdana",
 					Gdiplus::Color(255, 255, 255),
-					FVector2(int(Renderer::GetResolution().x * 0.5), int(Renderer::GetResolution().y * 0.15)),
-					FVector2(60, 30)
+				FVector2(534, 8),
+				FVector2(66, 40)
 				);
 			}
 			else
@@ -127,25 +132,24 @@ void UPlayScene_Widget::Initialize()
 				ref->Initialize
 				(
 					L"",
-					10,
+					15,
 					L"Verdana",
 					Gdiplus::Color(255, 255, 255),
-					FVector2(int(Renderer::GetResolution().x * 0.5), int(Renderer::GetResolution().y * 0.15)),
-					FVector2(60, 30)
+				FVector2(534, 8),
+				FVector2(66, 40)
 				);
-                ref->SetContent(std::to_wstring(10.0f));
 			}
 			ref->AttachedUIToActor(cameraRef);
 		}
 
-
-		int x = int(Renderer::GetResolution().x * 0.4);
-		int y = int(Renderer::GetResolution().y * 0.8);
-		int width = 120;
-		int height = 60;
+		const int BTN_RADIUS = 8;
+		int x = 324;   // (1024 - 116*3 - 14*2) / 2 = 324
+		int y = 510;
+		int width = 116;
+		int height = 52;
 		if (const auto ref = Cast<SUIButtonComponent>(m_spawnSettelerUnitButton))
 		{
-			ref->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
+			ref->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), BTN_RADIUS);
 			ref->AttachedUIToActor(cameraRef);
 		}
 		if (const auto ref = Cast<SUITextComponent>(m_spawnSettelerUnitButtonText))
@@ -162,11 +166,11 @@ void UPlayScene_Widget::Initialize()
 			ref->AttachedUIToActor(cameraRef);
 		}
 
-		x = int(Renderer::GetResolution().x * 0.6);
-		y = int(Renderer::GetResolution().y * 0.8);
+		x = 454;
+		y = 510;
 		if (const auto ref = Cast<SUIButtonComponent>(m_spawnWarriorUnitButton))
 		{
-			ref->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
+			ref->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), BTN_RADIUS);
 			ref->AttachedUIToActor(cameraRef);
 		}
 		if (const auto ref = Cast<SUITextComponent>(m_spawnWarriorUnitButtonText))
@@ -185,9 +189,9 @@ void UPlayScene_Widget::Initialize()
 
 		if (const auto ref = Cast<SUIButtonComponent>(m_spawnArcherUnitButton))
 		{
-			x = int(Renderer::GetResolution().x * 0.8);
-			y = int(Renderer::GetResolution().y * 0.8);
-			ref->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
+			x = 584;
+			y = 510;
+			ref->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), BTN_RADIUS);
 			ref->AttachedUIToActor(cameraRef);
 		}
 		if (const auto ref = Cast<SUITextComponent>(m_spawnArcherUnitButtonText))
@@ -204,10 +208,10 @@ void UPlayScene_Widget::Initialize()
 			ref->AttachedUIToActor(cameraRef);
 		}
 
-		x = int(Renderer::GetResolution().x * 0.85);
-		y = int(Renderer::GetResolution().y * 0.4);
-		width = int(Renderer::GetResolution().x * 0.1);
-		height = int(Renderer::GetResolution().y * 0.1);
+		x = 870;   // 1024 - 8 - 146
+		y = 8;
+		width = 146;
+		height = 40;
 		if (const auto ref = Cast<SUIButtonComponent>(m_nextStageButton))
 		{
 			ref->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 10);
@@ -227,12 +231,12 @@ void UPlayScene_Widget::Initialize()
 			ref->AttachedUIToActor(cameraRef);
 		}
 
-		x = int(Renderer::GetResolution().x * 0.1);
-		y = int(Renderer::GetResolution().y * 0.1);
-		width = 160;
+		x = 8;
+		y = 8;
+		width = 120;
 		if (const auto ref = Cast<SUIButtonComponent>(m_endGameButton))
 		{
-			ref->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
+			ref->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), BTN_RADIUS);
 			ref->AttachedUIToActor(cameraRef);
 		}
 		if (const auto ref = Cast<SUITextComponent>(m_endGameButtonText))
@@ -250,13 +254,13 @@ void UPlayScene_Widget::Initialize()
 		}
 
 
-		x = int(Renderer::GetResolution().x * 0.5);
-		y = int(Renderer::GetResolution().y * 0.5);
-		width = 320;
-		height = 60;
+		x = 512;
+		y = 300;
+		width = 340;
+		height = 56;
 		if (const auto ref = Cast<SUIButtonComponent>(m_popupRectangle))
 		{
-			ref->Initialize(Gdiplus::Color(180, 180, 13), FVector2(x - width / 2, y - height / 2), FVector2(width, height), 10);
+			ref->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x - width / 2, y - height / 2), FVector2(width, height), BTN_RADIUS);
 			ref->AttachedUIToActor(cameraRef);
 		}
 		if (const auto ref = Cast<SUITextComponent>(m_popupText))
@@ -273,13 +277,13 @@ void UPlayScene_Widget::Initialize()
 			ref->AttachedUIToActor(cameraRef);
 		}
 
-		x = int(Renderer::GetResolution().x * 0.15);
-		y = int(Renderer::GetResolution().y * 0.85);
-		width = int(Renderer::GetResolution().x * 0.25);
-		height = int(Renderer::GetResolution().y * 0.25);
+		x = 113;   // info panel center-x: left=8, w=210 -> cx=8+105=113
+		y = 511;   // info panel center-y: top=456, h=110 -> cy=456+55=511
+		width = 210;
+		height = 110;
 		if (const auto ref = Cast<SUIButtonComponent>(m_selectTileInfomationRectangle))
 		{
-			ref->Initialize(Gdiplus::Color(180, 180, 13), FVector2(x - width / 2, y - height / 2), FVector2(width, height), 10);
+			ref->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x - width / 2, y - height / 2), FVector2(width, height), BTN_RADIUS);
 			ref->AttachedUIToActor(cameraRef);
 		}
 		if (const auto ref = Cast<SUITextComponent>(m_selectTileName))
@@ -290,8 +294,8 @@ void UPlayScene_Widget::Initialize()
 				10,
 				(wchar_t*)L"Verdana",
 				Gdiplus::Color(255, 255, 255),
-				FVector2(x - width / 2, y - (height * 2) / 3),
-				FVector2(width, height)
+				FVector2(14, 462),
+				FVector2(196, 28)
 			);
 			ref->AttachedUIToActor(cameraRef);
 		}
@@ -304,17 +308,17 @@ void UPlayScene_Widget::Initialize()
 				10,
 				(wchar_t*)L"Verdana",
 				Gdiplus::Color(255, 255, 255),
-				FVector2(x - width / 2, y - height / 3),
-				FVector2(width, height)
+				FVector2(14, 494),
+				FVector2(196, 28)
 			);
 			ref->AttachedUIToActor(cameraRef);
 		}
 
         // Skip Turn button (우하단 info 영역 내부 오른쪽 아래)
-        int sx = int(Renderer::GetResolution().x * 0.25) + 10;
-        int sy = int(Renderer::GetResolution().y * 0.92);
+        int sx = 69;   // skip btn: left=14, w=110 -> cx=14+55=69
+        int sy = 544;  // skip btn: top=526, h=36 -> cy=526+18=544
         int sw = 110;
-        int sh = 40;
+        int sh = 36;
         if (const auto ref = Cast<SUIButtonComponent>(m_skipTurnButton))
         {
             ref->Initialize(Gdiplus::Color(48, 50, 113), FVector2(sx - sw / 2, sy - sh / 2), FVector2(sw, sh), 8);

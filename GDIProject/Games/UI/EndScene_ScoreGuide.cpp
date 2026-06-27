@@ -50,7 +50,7 @@ void UEndScene_Widget::Initialize()
 	{
 		text->Initialize
 		(
-			L"´Ù½Ã ½ÃÀÛÇÏ±â",
+			L"ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½",
 			10,
 			(wchar_t*)L"Verdana",
 			Gdiplus::Color(255, 255, 255),
@@ -71,7 +71,7 @@ void UEndScene_Widget::Initialize()
 	{
 		text->Initialize
 		(
-			L"ÅÏ ¼ö : ",
+			L"ï¿½ï¿½ ï¿½ï¿½ : ",
 			24,
 			(wchar_t*)L"Verdana",
 			Gdiplus::Color(255, 255, 255),
@@ -101,7 +101,6 @@ void UEndScene_Widget::Initialize()
 			FVector2(x, y),
 			FVector2(width, height)
 		);
-    text->SetContent(std::to_wstring(10.0f));
 	}
 }
 
