@@ -77,5 +77,27 @@ const int BTN_RADIUS = 8;   // 버튼 모서리 반경 통일
 
 ### 현재 상태
 
-- 코드 수정 완료, 리빌드 및 최종 시각 검증은 다음 세션에서 진행 예정
+- 코드 수정 완료, Release x64 빌드 성공 확인
+- 실행 파일: `GDIProject\x64\Release\Games.exe` (CWD=`x64\` 로 실행)
+
+---
+
+## 2026-06-28 · 빌드 수정
+
+### 수정 내용
+
+**1. `Release()` 함수 누락 해제 추가**
+- `PlayScene_Widget.cpp::Release()`에 `m_skipTurnButton.reset()`, `m_skipTurnButtonText.reset()` 추가
+- 이전 세션에서 해당 멤버를 생성자/Initialize에서 추가했으나 Release에서 누락됨
+
+**2. 소스 인코딩 오류 수정 (빌드 에러 해결)**
+- `PlayScene_Widget.cpp` 331번 라인: `m_skipTurnButtonText->Initialize` 내 문자열이 `EF BF BD D1 B1` 혼합 바이트로 깨져 있어 `C2001 상수에 줄 바꿈 문자가 있습니다` 컴파일 에러 발생
+- CP949 인코딩 바이트(`C5 CF 20 B0 C7 B3 CA B1 E2` = "턴 건너기")로 직접 패치
+- Release x64 빌드 정상 통과
+
+### 현재 상태
+
+- Release x64 빌드 성공
+- 실행 파일: `GDIProject\x64\Release\Games.exe` (CWD=`x64\` 로 실행)
+- 최종 시각 검증: 직접 게임 실행 필요 (Application Control 정책으로 자동 실행 불가)
 

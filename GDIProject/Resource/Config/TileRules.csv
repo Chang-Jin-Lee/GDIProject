@@ -1,0 +1,7 @@
+TileType,DisplayName,MoveCost,CanDisappear,CanSpawnCapital
+Desert,사막,3,1,0
+Grassland,초원,1,1,0
+Hills,언덕,2,1,0
+Plain,평야,1,1,0
+Mountain,산,4,1,0
+Capital,수도,1,0,1

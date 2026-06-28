@@ -9,6 +9,7 @@
 #include <UI/UITextComponent.h>
 #include <Math/Math.h>
 #include "../Games.h"
+#include "../Core/GameConfig.h"
 #include "../Character/EnemyCharacter.h"
 #include "../Player/TurnGameState.h"
 #include "../Player/PlayerController.h"
@@ -189,7 +190,7 @@ void UPlayScene::UIInitialize()
                     {
                         if (const auto unit = player->SelectedUnit.lock())
                         {
-                            unit->bSkipTurn = true;
+                            turnRef->SkipSelectedUnit();
                         }
                     }
                 }
@@ -256,7 +257,7 @@ void UPlayScene::TurnManagerInitilize()
 	{
 		g_TurnGameStateInstance->m_bGameOver = false;
 		g_TurnGameStateInstance->m_iTurnCount = 0;
-		g_TurnGameStateInstance->m_iTurnMax = m_iMaxTurn;
+		g_TurnGameStateInstance->m_iTurnMax = GameConfig::LoadFromResource().GameRules.MaxTurn;
 		g_TurnGameStateInstance->m_bPlayerWin = false;
 		g_TurnGameStateInstance->m_gGameScore = 0;
 	}
@@ -361,38 +362,34 @@ void UPlayScene::NextTurn()
 {
 	if (const auto ref = Cast<TurnManager>(TurnMgr))
 	{
-        if (ref->GetCurrentTurn() == ETurnState::PlayerTurn)
+		if (CheckUnitActionCount() == false)
 		{
-            // block if any unit still has remaining actions
-            if (CheckUnitActionCount() == false)
-            {
-                return;
-            }
-            CheckVictoryConditions();
+			return;
+		}
+		CheckVictoryConditions();
 
-			if (const auto PlayScene_Widget_Ref = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
+		if (const auto PlayScene_Widget_Ref = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
+		{
+			if (g_TurnGameStateInstanceIsValid)
 			{
-				if (g_TurnGameStateInstanceIsValid)
+				g_TurnGameStateInstance->m_iTurnCount++;
+				if (auto remainui = Cast<SUITextComponent>(PlayScene_Widget_Ref->m_remainTurnui))
 				{
-					g_TurnGameStateInstance->m_iTurnCount++;
-
-                    if (auto remainui = Cast<SUITextComponent>(PlayScene_Widget_Ref->m_remainTurnui))
-					{
-                        remainui->SetContent(std::to_wstring(g_TurnGameStateInstance->m_iTurnCount));
-					}
-				}
-				if (auto popupRectangle = Cast<SUIButtonComponent>(PlayScene_Widget_Ref->m_popupRectangle))
-				{
-                    if (auto brush = popupRectangle->GetBrush()) brush->SetColor(Gdiplus::Color(10, 10, 222));
+					remainui->SetContent(std::to_wstring(g_TurnGameStateInstance->m_iTurnCount));
 				}
 			}
-			PopUpUI(L"다음 턴으로 넘어갑니다.");
-			ReadyForNextStage();
+			if (auto popupRectangle = Cast<SUIButtonComponent>(PlayScene_Widget_Ref->m_popupRectangle))
+			{
+				if (auto brush = popupRectangle->GetBrush()) brush->SetColor(Gdiplus::Color(10, 10, 222));
+			}
 		}
-	}
-	
-}
 
+		ref->EndActiveTurn();
+		PopUpUI(L"다음 턴으로 넘어갑니다.");
+		ReadyForNextStage();
+		CheckVictoryConditions();
+	}
+}
 void UPlayScene::SpawnUnit(int type)
 {
 	if (const auto ref = Cast<TurnManager>(TurnMgr))
@@ -414,74 +411,54 @@ bool UPlayScene::CheckUnitActionCount()
 {
 	if (const auto turnRef = Cast<TurnManager>(TurnMgr))
 	{
-		if (auto player = Cast<APlayerController>(turnRef->GetPlayer()))
+		if (auto player = Cast<APlayerController>(turnRef->GetActivePlayer()))
 		{
 			for (const auto ch : player->Units)
 			{
 				if (auto chRef = Cast<APlayerCharacter>(ch))
 				{
-                    if (chRef->bSkipTurn) continue;
-                    if (chRef->ActionRemainCount > 0)
+					if (chRef->bIsDead || chRef->bSkipTurn) continue;
+					if (chRef->ActionRemainCount > 0)
 					{
 						if (const auto PlayScene_Widget_Ref = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
 						{
-                            if (auto popupRectangle = Cast<SUIButtonComponent>(PlayScene_Widget_Ref->m_popupRectangle))
+							if (auto popupRectangle = Cast<SUIButtonComponent>(PlayScene_Widget_Ref->m_popupRectangle))
 							{
-                                if (auto brush = popupRectangle->GetBrush()) brush->SetColor(Gdiplus::Color(222, 10, 10));
+								if (auto brush = popupRectangle->GetBrush()) brush->SetColor(Gdiplus::Color(222, 10, 10));
 							}
 						}
 						PopUpUI(L"행동 수가 남아있습니다.");
 						return false;
 					}
 				}
-				
 			}
 		}
 	}
 	return true;
 }
-
 void UPlayScene::CheckVictoryConditions()
 {
-	bool bVictory = true;
-
 	if (auto TurnMgrRef = Cast<TurnManager>(TurnMgr))
 	{
-		if (auto playerRef = Cast<APlayerController>(TurnMgrRef->GetPlayer()))
-		{
-			for (const auto ch : playerRef->Units)
-			{
-				if (auto chRef = Cast<APlayerCharacter>(ch))
-				{
-					FVector2 Index = ATile::GetIndexAtPosition(chRef->GetActorLocation());
-					int y = (int)Index.y;
-					int x = (int)Index.x;
-					if (auto tile = Cast<ATile>(m_tiles[x][y]))
-					{
-						if (tile->m_etileType != ETileType::Capital)
-						{
-							bVictory = false;
-						}
-					}
-					//chRef->ReadyForNextTurn();
-				}
-			}
-		}
-	}
-
-	if (bVictory)
-	{
-		UScene::ChangeScene<UWinScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
-	}
-	else
-	{
-		if (g_TurnGameStateInstance->m_iTurnCount >= g_TurnGameStateInstance->m_iTurnMax)
+		auto player1 = Cast<APlayerController>(TurnMgrRef->GetPlayer());
+		auto player2 = Cast<APlayerController>(TurnMgrRef->GetPlayer2());
+		if (player1 && !player1->HasLivingUnits())
 		{
 			UScene::ChangeScene<UEndScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
+			return;
+		}
+		if (player2 && !player2->HasLivingUnits())
+		{
+			UScene::ChangeScene<UWinScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
+			return;
 		}
 	}
-}
 
+	if (g_TurnGameStateInstanceIsValid && g_TurnGameStateInstance->m_iTurnCount >= g_TurnGameStateInstance->m_iTurnMax)
+	{
+		UScene::ChangeScene<UEndScene>(Game::GetNextSceneSharedPtr(), Game::GetNextSceneWeakPtr());
+	}
+}
 void UPlayScene::PopUpUI(const std::wstring& str)
 {
 	if (auto ref = Cast<UPlayScene_Widget>(m_PlayScene_Widget))
@@ -501,27 +478,12 @@ void UPlayScene::PopUpUI(const std::wstring& str)
 
 void UPlayScene::ReadyForNextStage()
 {
-	if (const auto& turnRef = Cast<TurnManager>(TurnMgr))
-	{
-		if (const auto& player = Cast<APlayerController>(turnRef->GetPlayer()))
-		{
-			for (const auto& ch : player->Units)
-			{
-				if (const auto& chRef = Cast<APlayerCharacter>(ch))
-				{
-					chRef->ReadyForNextTurn();
-					chRef->bSkipTurn = false;
-				}
-			}
-		}
-	}
-
-	// 5개의 타일이 랜덤하게 삭제.
-	for (int i = 0; i < 5; i++)
+	const GameConfig config = GameConfig::LoadFromResource();
+	for (int i = 0; i < config.GameRules.RandomTilesRemovedPerTurn; i++)
 	{
 		if (g_TurnGameStateInstanceIsValid)
 		{
-			if (g_TurnGameStateInstance->m_iTurnCount > 25)
+			if (g_TurnGameStateInstance->m_iTurnCount > config.GameRules.StopRandomTileRemovalAfterTurn)
 			{
 				return;
 			}
@@ -531,13 +493,17 @@ void UPlayScene::ReadyForNextStage()
 		
 		if (auto tile = Cast<ATile>(m_tiles[x][y]))
 		{
-			while (tile->bVisible == false || tile->unit.expired() == false || tile->m_etileType == ETileType::Capital)
+			int guard = TILE_ROW_SIZE * TILE_COL_SIZE;
+			while (guard-- > 0 && (tile->bVisible == false || tile->unit.expired() == false || !config.GetTile(tile->m_etileType).CanDisappear))
 			{
 				x = FRandom::GetRandomInRange(0, int(TILE_ROW_SIZE));
 				y = FRandom::GetRandomInRange(0, int(TILE_COL_SIZE));
 				tile = Cast<ATile>(m_tiles[x][y]);
 			}
-			tile->bVisible = false;
+			if (tile && config.GetTile(tile->m_etileType).CanDisappear && tile->unit.expired())
+			{
+				tile->bVisible = false;
+			}
 		}
 	}
 }

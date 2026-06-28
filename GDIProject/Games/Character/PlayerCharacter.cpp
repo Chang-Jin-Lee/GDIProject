@@ -4,6 +4,7 @@
 #include <Time/Time.h>
 #include <iostream>
 #include "../Games.h"
+#include "../Core/GameConfig.h"
 #include <Input/Input.h>
 #include "../Scene/PlayScene.h"
 #include "../UI/CharacterNameWidget.h"
@@ -56,7 +57,7 @@ void APlayerCharacter::Initialize()
 	m_fcharacterRotationSpeed = 360;
 	bPlayingAnimation = true;
 
-	// SceneComponent °ª ÃÊ±âÈ­
+	// SceneComponent ê°’ ì´ˆê¸°í™”
 	FVector2 Location = FVector2(Renderer::GetResolution().x * 0.5f, Renderer::GetResolution().y * 0.5f);
 	//FVector2 Size = FVector2(13.0f, 20.0f);
 	//FVector2 Scale = FVector2(1.5f, 1.5f);
@@ -70,14 +71,14 @@ void APlayerCharacter::Initialize()
 	//SetActorSize(Size.x, Size.y);
 	//SetActorScale(Scale.x, Scale.y);
 
-	// UI ÃÊ±âÈ­
+	// UI ì´ˆê¸°í™”
 	if (auto m_nameWidgetRef = m_nameWidget.lock())
 	{
 		if (auto text = m_nameWidgetRef->m_nameUI.lock())
 		{
 			text->Initialize(GetName(), 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(-60 + GetActorSize().x * GetActorScale().x / 2, -20), FVector2(120.0f, 20.0f));
 			text->AttachedUIToActor(weak_from_this());
-			text->SetWidgetRenderType(UWidgetComponent::WidgetRenderType::World); // À¯´Ö ¸Ó¸® À§ ÀÌ¸§Àº ¿ùµå °ø°£
+			text->SetWidgetRenderType(UWidgetComponent::WidgetRenderType::World); // ìœ ë‹› ë¨¸ë¦¬ ìœ„ ì´ë¦„ì€ ì›”ë“œ ê³µê°„
 		}
 	}
 
@@ -95,7 +96,7 @@ void APlayerCharacter::Update()
 		}
 	}
 
-	// Ä«¸Þ¶ó ºÎÂø
+	// ì¹´ë©”ë¼ ë¶€ì°©
 	//Game::GetGameState()->GetMainCamera().get()->SetCameraLocation(GetActorLocation() - (Renderer::GetResolution() / 2));
 
 	Input();
@@ -109,7 +110,8 @@ void APlayerCharacter::Release()
 
 void APlayerCharacter::ReadyForNextTurn()
 {
-	ActionRemainCount += ActionMaxCount;
+	ActionRemainCount = ActionMaxCount;
+	bSkipTurn = false;
 }
 
 void APlayerCharacter::Input()
@@ -198,78 +200,30 @@ void APlayerCharacter::MoveTo(const FVector2& TargetPosition)
 
 void APlayerCharacter::SetUnitType(EUnitType Type)
 {
-	UnitType = Type;
-
-	switch (Type)
-	{
-	case EUnitType::Settler:
-		Health = 50;
-		AttackDamage = 0;
-		MoveRange = 2;
-		ActionMaxCount = 4;
-		break;
-	case EUnitType::Warrior:
-		Health = 100;
-		AttackDamage = 20;
-		MoveRange = 1;
-		ActionMaxCount = 3;
-		break;
-	case EUnitType::Archer:
-		Health = 70;
-		AttackDamage = 15;
-		MoveRange = 1;
-		AttackRange = 2;
-		ActionMaxCount = 6;
-		break;
-	default:
-		break;
-	}
+	ApplyStats(GameConfig::LoadFromResource().GetUnit(Type));
 }
 
 void APlayerCharacter::SetUnitType(int value)
 {
-	EUnitType Type = static_cast<EUnitType>(value);
-	UnitType = Type;
+	SetUnitType(static_cast<EUnitType>(value));
+}
 
-	switch (Type)
-	{
-	case EUnitType::Settler:
-		Health = 50;
-		AttackDamage = 0;
-		MoveRange = 2;
-		ActionMaxCount = 4;
-		break;
-	case EUnitType::Warrior:
-		Health = 100;
-		AttackDamage = 20;
-		MoveRange = 1;
-		ActionMaxCount = 3;
-		break;
-	case EUnitType::Archer:
-		Health = 70;
-		AttackDamage = 15;
-		MoveRange = 1;
-		AttackRange = 2;
-		ActionMaxCount = 6;
-		break;
-	default:
-		break;
-	}
+void APlayerCharacter::ApplyStats(const UnitStats& Stats)
+{
+	UnitType = Stats.Type;
+	Health = Stats.Health;
+	AttackDamage = Stats.AttackDamage;
+	MoveRange = Stats.MoveRange;
+	AttackRange = Stats.AttackRange;
+	ActionMaxCount = Stats.ActionMaxCount;
+	ActionRemainCount = Stats.ActionMaxCount;
+	CanMelee = Stats.CanMelee;
+	CanRanged = Stats.CanRanged;
+	bIsDead = false;
 }
 
 std::wstring APlayerCharacter::GetUnitTypeString(int value)
 {
 	EUnitType Type = static_cast<EUnitType>(value);
-
-	switch (Type)
-	{
-	case EUnitType::Settler:
-		return L"°³Ã´ÀÚ";
-	case EUnitType::Warrior:
-		return L"Àü»ç";
-	case EUnitType::Archer:
-		return L"Á¤Âûº´";
-	default:
-		return L"default";
-	}
+	return GameConfig::LoadFromResource().GetUnit(Type).DisplayName;
 }

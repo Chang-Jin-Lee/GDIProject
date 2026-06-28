@@ -1,18 +1,9 @@
 #pragma once
 #include <Classes/Actor.h>
 #include <Runtime/Animation/AnimationComponent.h>
+#include "../Core/GameTypes.h"
 #include "../Character/PlayerCharacter.h"
 
-enum class ETileType
-{
-	Desert,
-	Grassland,
-	Hills,
-	Plain,
-	Mountain,
-	Capital,
-	MAX,
-};
 
 const int even_dy[6] = { 0, -1, -1, 0, 1, 1 };
 const int even_dx[6] = { -1, -1, 0, 1, 0, -1 };
@@ -39,7 +30,7 @@ public:
 	void SetHighlight(bool bhighlight);
 	FVector2 originalPosition, highlightPosition;
 
-	// static ÇÔ¼ö
+	// static í•¨ìˆ˜
 	static FVector2 GetTilePositionAtIndex(int row, int col);
 	static FVector2 GetIndexAtPosition(FVector2 position);
 	static int SearchCost(const int& startRow, const int& startCol, const int& targetRow, const int& targetCol, std::vector<std::vector<std::weak_ptr<ATile>>> map);
@@ -53,6 +44,6 @@ public:
 	static const int initialTileSizeX = 98;
 	static const int initialTileSizeY = 120;
 
-	// ÀÌ Å¸ÀÏ À§¿¡ ÀÖ´Â À¯´Ö.
+	// ì´ íƒ€ì¼ ìœ„ì— ìˆëŠ” ìœ ë‹›.
 	std::weak_ptr<APlayerCharacter> unit;
 };

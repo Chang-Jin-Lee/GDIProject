@@ -102,7 +102,7 @@ void UPlayScene_Widget::Initialize()
 		{
 			ref->Initialize
 			(
-				L"현재 턴 : ",
+				L"\uD604\uC7AC \uD134 : ",
 				18,
 				L"Verdana",
 				Gdiplus::Color(255, 255, 255),
@@ -156,7 +156,7 @@ void UPlayScene_Widget::Initialize()
 		{
 			ref->Initialize
 			(
-				L"개척자 스폰하기",
+				L"\uAC1C\uCC99\uC790 \uC2A4\uD3F0\uD558\uAE30",
 				10,
 				(wchar_t*)L"Verdana",
 				Gdiplus::Color(255, 255, 255),
@@ -177,7 +177,7 @@ void UPlayScene_Widget::Initialize()
 		{
 			ref->Initialize
 			(
-				L"전사 스폰하기",
+				L"\uC804\uC0AC \uC2A4\uD3F0\uD558\uAE30",
 				10,
 				(wchar_t*)L"Verdana",
 				Gdiplus::Color(255, 255, 255),
@@ -198,7 +198,7 @@ void UPlayScene_Widget::Initialize()
 		{
 			ref->Initialize
 			(
-				L"궁수 스폰하기",
+				L"\uAD81\uC218 \uC2A4\uD3F0\uD558\uAE30",
 				10,
 				(wchar_t*)L"Verdana",
 				Gdiplus::Color(255, 255, 255),
@@ -221,7 +221,7 @@ void UPlayScene_Widget::Initialize()
 		{
 			ref->Initialize
 			(
-				L"다음 턴",
+				L"\uB2E4\uC74C \uD134",
 				10,
 				(wchar_t*)L"Verdana",
 				Gdiplus::Color(255, 255, 255),
@@ -243,7 +243,7 @@ void UPlayScene_Widget::Initialize()
 		{
 			ref->Initialize
 			(
-				L"결과화면으로 가기",
+				L"\uACB0\uACFC\uD654\uBA74\uC73C\uB85C \uAC00\uAE30",
 				10,
 				(wchar_t*)L"Verdana",
 				Gdiplus::Color(255, 255, 255),
@@ -267,7 +267,7 @@ void UPlayScene_Widget::Initialize()
 		{
 			ref->Initialize
 			(
-				L"안내 텍스트. 아직 행동 수가 남아 있습니다.",
+				L"\uC548\uB0B4 \uD14D\uC2A4\uD2B8. \uC544\uC9C1 \uD589\uB3D9 \uC218\uAC00 \uB0A8\uC544 \uC788\uC2B5\uB2C8\uB2E4.",
 				10,
 				(wchar_t*)L"Verdana",
 				Gdiplus::Color(255, 255, 255),
@@ -290,7 +290,7 @@ void UPlayScene_Widget::Initialize()
 		{
 			ref->Initialize
 			(
-				L"캐릭터 이름",
+				L"\uCE90\uB9AD\uD130 \uC774\uB984",
 				10,
 				(wchar_t*)L"Verdana",
 				Gdiplus::Color(255, 255, 255),
@@ -304,7 +304,7 @@ void UPlayScene_Widget::Initialize()
 		{
 			ref->Initialize
 			(
-				L"남은 행동 수",
+				L"\uB0A8\uC740 \uD589\uB3D9 \uC218",
 				10,
 				(wchar_t*)L"Verdana",
 				Gdiplus::Color(255, 255, 255),
@@ -328,7 +328,7 @@ void UPlayScene_Widget::Initialize()
         {
             ref->Initialize
             (
-                L"턴 넘기기",
+                L"\uD134 \uB118\uAE30\uAE30",
                 10,
                 (wchar_t*)L"Verdana",
                 Gdiplus::Color(255, 255, 255),

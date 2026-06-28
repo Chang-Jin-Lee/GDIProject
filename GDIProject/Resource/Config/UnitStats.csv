@@ -1,0 +1,4 @@
+UnitType,DisplayName,Health,AttackDamage,MoveRange,AttackRange,ActionMaxCount,CanMelee,CanRanged
+Warrior,전사,100,20,1,1,3,1,0
+Archer,원거리궁수,70,15,1,2,3,0,1
+Scout,정찰병,60,8,2,1,5,1,0
