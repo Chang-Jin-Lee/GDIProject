@@ -1,4 +1,4 @@
-﻿#include "EndScene.h"
+#include "EndScene.h"
 #include "PlayScene.h"
 #include "WinScene.h"
 #include <iostream>
@@ -385,7 +385,7 @@ void UPlayScene::NextTurn()
 		}
 
 		ref->EndActiveTurn();
-		PopUpUI(L"다음 턴으로 넘어갑니다.");
+		PopUpUI(L"\uB2E4\uC74C \uD134\uC73C\uB85C \uB118\uC5B4\uAC11\uB2C8\uB2E4.");
 		ReadyForNextStage();
 		CheckVictoryConditions();
 	}
@@ -427,7 +427,7 @@ bool UPlayScene::CheckUnitActionCount()
 								if (auto brush = popupRectangle->GetBrush()) brush->SetColor(Gdiplus::Color(222, 10, 10));
 							}
 						}
-						PopUpUI(L"행동 수가 남아있습니다.");
+						PopUpUI(L"\uD589\uB3D9 \uC218\uAC00 \uB0A8\uC544\uC788\uC2B5\uB2C8\uB2E4.");
 						return false;
 					}
 				}

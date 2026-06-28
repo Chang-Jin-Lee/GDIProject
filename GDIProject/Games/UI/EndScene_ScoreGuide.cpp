@@ -50,7 +50,7 @@ void UEndScene_Widget::Initialize()
 	{
 		text->Initialize
 		(
-			L"�ٽ� �����ϱ�",
+			L"\uB2E4\uC2DC \uC2DC\uC791\uD558\uAE30",
 			10,
 			(wchar_t*)L"Verdana",
 			Gdiplus::Color(255, 255, 255),
@@ -71,7 +71,7 @@ void UEndScene_Widget::Initialize()
 	{
 		text->Initialize
 		(
-			L"�� �� : ",
+			L"\uD134 \uC218 : ",
 			24,
 			(wchar_t*)L"Verdana",
 			Gdiplus::Color(255, 255, 255),

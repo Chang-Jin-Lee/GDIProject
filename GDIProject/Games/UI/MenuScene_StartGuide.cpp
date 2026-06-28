@@ -141,7 +141,7 @@ void UMenuscene_StartGuide::Initialize()
 	{
 		text->Initialize
 		(
-			L"\uc2f1\uae00\ud50c\ub808\uc774\ud558\uae30",
+			L"\uac8c\uc784 \uc885\ub8cc",
 			10,
 			(wchar_t*)L"Verdana",
 			Gdiplus::Color(255, 255, 255),
@@ -162,7 +162,7 @@ void UMenuscene_StartGuide::Initialize()
 	{
 		text->Initialize
 		(
-			L"������ ����",
+			L"\uBA85\uC608\uC758 \uC804\uB2F9",
 			12,
 			(wchar_t*)L"Verdana",
 			Gdiplus::Color(255, 255, 255),

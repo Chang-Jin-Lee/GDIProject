@@ -175,11 +175,11 @@ void APlayerController::MoveSelectedUnitTo(const FVector2& pos)
 					{
 						if (auto text = widget->m_selectTileName.lock())
 						{
-							text->SetContent(L"ĳ���� �̸� : " + SelectedUnitRef->GetName());
+							text->SetContent(L"\uCE90\uB9AD\uD130 \uC774\uB984 : " + SelectedUnitRef->GetName());
 						}
 						if (auto text2 = widget->m_selectTileActionCount.lock())
 						{
-							text2->SetContent(L"���� �ൿ �� : " + std::to_wstring(SelectedUnitRef->ActionRemainCount));
+							text2->SetContent(L"\uB0A8\uC740 \uD589\uB3D9 \uC218 : " + std::to_wstring(SelectedUnitRef->ActionRemainCount));
 						}
 					}
 				}
@@ -576,7 +576,7 @@ void APlayerController::HandleInput()
 				{
 					if (auto text = widget->m_selectTileName.lock())
 					{
-                        text->SetContent(L"ĳ���� �̸� : " + SelectedUnitRef->GetName());
+                        text->SetContent(L"\uCE90\uB9AD\uD130 \uC774\uB984 : " + SelectedUnitRef->GetName());
 					}
 				}
 				
@@ -584,7 +584,7 @@ void APlayerController::HandleInput()
 				{
 					if (auto text = widget->m_selectTileActionCount.lock())
 					{
-                        text->SetContent(L"���� �ൿ �� : " + std::to_wstring(SelectedUnitRef->ActionRemainCount));
+                        text->SetContent(L"\uB0A8\uC740 \uD589\uB3D9 \uC218 : " + std::to_wstring(SelectedUnitRef->ActionRemainCount));
 					}
 				}
 
@@ -658,7 +658,7 @@ void APlayerController::HandleInput()
 					{
 						if (auto text = widget->m_selectTileName.lock())
 						{
-                            text->SetContent(L"Ÿ�� �̸� : " + t.lock()->GetTileName());
+                            text->SetContent(L"\uD0C0\uC77C \uC774\uB984 : " + t.lock()->GetTileName());
 						}
 					}
 					if (auto widget = ps->m_PlayScene_Widget.lock())
@@ -675,7 +675,7 @@ void APlayerController::HandleInput()
 					{
 						if (auto text = widget->m_selectTileName.lock())
 						{
-                            text->SetContent(L"Ÿ�� �̸� : ");
+                            text->SetContent(L"\uD0C0\uC77C \uC774\uB984 : ");
 						}
 					}
 					if (auto widget = ps->m_PlayScene_Widget.lock())

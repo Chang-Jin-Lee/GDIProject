@@ -123,7 +123,7 @@ void UMenuScene::ConnectGame()
 	settings.Port = GameConfig::LoadFromResource().NetworkRules.Port;
 	if (auto widgetRef = Cast<UMenuscene_StartGuide>(m_MenuSceneWidget))
 	{
-		if (auto status = Cast<SUITextComponent>(widgetRef->m_statusText)) status->SetContent(L"IP 입력 후 Enter로 접속");
+		if (auto status = Cast<SUITextComponent>(widgetRef->m_statusText)) status->SetContent(L"IP \uC785\uB825 \uD6C4 Enter\uB85C \uC811\uC18D");
 	}
 }
 
