@@ -60,7 +60,7 @@ void UMenuscene_StartGuide::Initialize()
 	// Center panel: buttons below CIVILIZATION 2D title (~y=310), in empty zone x=390-590
 	// BTN_Y=340: clears the title; 3 buttons + IP fit within 600px height
 	// Exit button stays bottom-left at x=40 (separate from center group)
-	const int BTN_X = 340;
+	const int BTN_X = 290;
 	const int BTN_W = 200;
 	const int BTN_H = 50;
 	const int BTN_GAP = 16;
