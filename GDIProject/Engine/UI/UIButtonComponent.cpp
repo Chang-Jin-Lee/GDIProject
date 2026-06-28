@@ -10,6 +10,7 @@ using namespace Gdiplus;
 struct SUIButtonComponent::Impl {
     Gdiplus::SolidBrush* brush{nullptr};
     int radius{5};
+    float pressT{0.0f};
 };
 
 SUIButtonComponent::SUIButtonComponent() : pImpl(std::make_unique<Impl>()) {
@@ -48,5 +49,14 @@ void SUIButtonComponent::Release() {
 Gdiplus::SolidBrush* SUIButtonComponent::GetBrush() const { return pImpl ? pImpl->brush : nullptr; }
 int SUIButtonComponent::GetRadius() const { return pImpl ? pImpl->radius : 5; }
 void SUIButtonComponent::SetRadius(int radius) { if (!pImpl) pImpl = std::make_unique<Impl>(); pImpl->radius = radius; }
+
+void SUIButtonComponent::TriggerPress() { if (pImpl) pImpl->pressT = 1.0f; }
+float SUIButtonComponent::GetPressT() const { return pImpl ? pImpl->pressT : 0.0f; }
+void SUIButtonComponent::UpdateAnim(float dt)
+{
+    if (!pImpl || pImpl->pressT <= 0.0f) return;
+    pImpl->pressT -= dt * 8.0f;
+    if (pImpl->pressT < 0.0f) pImpl->pressT = 0.0f;
+}
 
 

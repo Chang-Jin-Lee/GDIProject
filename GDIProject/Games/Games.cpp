@@ -16,6 +16,7 @@
 #include "Games.h"
 #include <iostream>
 #include <UI/WidgetComponent.h>
+#include <UI/UIButtonComponent.h>
 
 LPCTSTR g_szClassName = TEXT("윈도우 클래스 이름");
 
@@ -288,6 +289,8 @@ namespace Game
                             continue;
                         if (comp->FVoidDelegate)
                         {
+                            if (auto btn = std::dynamic_pointer_cast<SUIButtonComponent>(comp))
+                                btn->TriggerPress();
                             comp->FVoidDelegate();
                         }
                     }

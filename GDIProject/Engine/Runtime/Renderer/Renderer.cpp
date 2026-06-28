@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "../../Classes/Actor.h"
 #include "../../Math/Math.h"
+#include "../../Time/Time.h"
 #include "../../Classes/Character.h"
 #include "../../UI/UITextComponent.h"
 #include "../../UI/UIButtonComponent.h"
@@ -26,7 +27,7 @@ namespace Renderer
 
 	HBITMAP g_BackBufferBitmapA; // ���� ���� A
 	HBITMAP g_BackBufferBitmapB; // ���� ���� B
-	bool g_bUsingBufferA = true; // ���� A�� ����ϰ�? �ִ°�
+	bool g_bUsingBufferA = true; // ���� A�� ����ϰ�? �ִ°�
 
 	ULONG_PTR g_GdiPlusToken;
 	Gdiplus::Graphics* g_pBackBufferGraphics = nullptr;
@@ -64,7 +65,7 @@ namespace Renderer
 
 	void BeginDraw()
 	{
-		// �����Ӹ��� �����? ����
+		// �����Ӹ��� �����? ����
 		HBITMAP currentBitmap = g_bUsingBufferA ? g_BackBufferBitmapA : g_BackBufferBitmapB;
 		SelectObject(g_BackBufferDC, currentBitmap);
 
@@ -76,13 +77,13 @@ namespace Renderer
 		g_pBackBufferGraphics->SetInterpolationMode(Gdiplus::InterpolationModeNearestNeighbor);
 		g_pBackBufferGraphics->SetSmoothingMode(Gdiplus::SmoothingModeNone);
 
-        // ȭ�� �����?
+        // ȭ�� �����?
         ::PatBlt(g_BackBufferDC, 0, 0, (int)g_resolution.x, (int)g_resolution.y, BLACKNESS);
 	}
 
 	void EndDraw()
 	{
-		// �׷��� ����۸�? ȭ������ ����
+		// �׷��� ����۸�? ȭ������ ����
         ::BitBlt(
 			g_FrontBufferDC,
 			0, 0, (int)g_resolution.x, (int)g_resolution.y,
@@ -335,13 +336,32 @@ namespace Renderer
 
     void RenderButtonUI(const std::shared_ptr<SUIButtonComponent>& buttonui, int parentX, int parentY)
 	{
+               buttonui->UpdateAnim(Time::GetElapsedTime());
+
+               float pressT = buttonui->GetPressT();
                FVector2 position = buttonui->GetPosition() + FVector2(parentX, parentY);
-               RenderRectWithRoundedUI(buttonui->GetBrush(), position, buttonui->GetSize(), buttonui->GetRadius());
+               FVector2 size = buttonui->GetSize();
+               int radius = buttonui->GetRadius();
+
+               if (pressT > 0.0f)
+               {
+                   // shrink from center: max 4px inset per side at pressT=1
+                   float shrink = pressT * 4.0f;
+                   position.x += shrink;
+                   position.y += shrink;
+                   size.x -= shrink * 2.0f;
+                   size.y -= shrink * 2.0f;
+                   int r = radius - (int)(pressT * 1.5f);
+                   if (r < 2) r = 2;
+                   radius = r;
+               }
+
+               RenderRectWithRoundedUI(buttonui->GetBrush(), position, size, radius);
 	}
 
            void RenderRectWithRoundedUI(Gdiplus::SolidBrush* brush, FVector2& position, const FVector2& size, int radius)
            {
-               // ī�޶� �� ������: ȭ�� ���� ��ǥ�� �״��? ������
+               // ī�޶� �� ������: ȭ�� ���� ��ǥ�� �״��? ������
                const int x = (int)position.x;
                const int y = (int)position.y;
                const int width = (int)size.x;
@@ -378,7 +398,7 @@ namespace Renderer
 		g_renderedObjs.push_back(obj);
 	}
 
-	// �ִϸ��̼��� �Ҷ��� ��Ʈ���� ���徿 �ѱ��?
+	// �ִϸ��̼��� �Ҷ��� ��Ʈ���� ���徿 �ѱ��?
     void RenderCharacterAnimation(ACharacter* character)
 	{
 		if (!character)

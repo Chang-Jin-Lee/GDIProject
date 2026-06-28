@@ -15,10 +15,13 @@ public:
     virtual void Release() override;
 
 public:
-    // 접근자 (pImpl로 은닉된 상태 관리)
     Gdiplus::SolidBrush* GetBrush() const;
     int GetRadius() const;
     void SetRadius(int radius);
+
+    void TriggerPress();
+    float GetPressT() const;
+    void UpdateAnim(float dt);
 
 private:
     struct Impl;
