@@ -57,25 +57,32 @@ void UMenuscene_StartGuide::Initialize()
 {
 	__super::Initialize();
 
-	int x = int(Renderer::GetResolution().x * 0.2);
-	int y = int(Renderer::GetResolution().y * 0.6);
-	int width = 120;
-	int height = 60;
+	// Left panel: buttons stacked at x=40, w=220, h=50, gap=16 between each
+	// Order: \uc2f1\uae00\ud50c\ub808\uc774\ud558\uae30 > \uba40\ud2f0\ud50c\ub808\uc774\ubc29\ub9cc\ub4e4\uae30 > \uba40\ud2f0\ud50c\ub808\uc774\uc811\uc18d\ud558\uae30 > IP\uc785\ub825 > \uc0c1\ud0dc > \uac8c\uc784\uc885\ub8cc(bottom)
+	// Right panel: Hall of Fame at x=570
+	const int BTN_X = 40;
+	const int BTN_W = 220;
+	const int BTN_H = 50;
+	const int BTN_GAP = 16;
+
+	int x = BTN_X;
+	int y = 160;
+	int width = BTN_W;
+	int height = BTN_H;
 	if (auto btn = Cast<SUIButtonComponent>(m_startGameButton))
 	{
-		btn->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
+		btn->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 8);
 		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera()))
 		{
 			btn->AttachedUIToActor(cameraRef);
 		}
 	}
-
 	if (auto text = Cast<SUITextComponent>(m_startGameButtonText))
 	{
 		text->Initialize
 		(
 			L"\uc2f1\uae00\ud50c\ub808\uc774\ud558\uae30",
-			10,
+			11,
 			(wchar_t*)L"Verdana",
 			Gdiplus::Color(255, 255, 255),
 			FVector2(x, y),
@@ -87,51 +94,48 @@ void UMenuscene_StartGuide::Initialize()
 		}
 	}
 
-	x = int(Renderer::GetResolution().x * 0.2);
-	y = int(Renderer::GetResolution().y * 0.52);
-	width = 180;
-	height = 52;
-	if (auto btn = Cast<SUIButtonComponent>(m_connectGameButton))
-	{
-		btn->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
-		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera())) btn->AttachedUIToActor(cameraRef);
-	}
-	if (auto text = Cast<SUITextComponent>(m_connectGameButtonText))
-	{
-		text->Initialize(L"\uba40\ud2f0\ud50c\ub808\uc774\uc811\uc18d\ud558\uae30", 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(x, y), FVector2(width, height));
-		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera())) text->AttachedUIToActor(cameraRef);
-	}
-
-	x = int(Renderer::GetResolution().x * 0.2);
-	y = int(Renderer::GetResolution().y * 0.64);
+	y = 160 + (BTN_H + BTN_GAP);
 	if (auto btn = Cast<SUIButtonComponent>(m_hostGameButton))
 	{
-		btn->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
+		btn->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 8);
 		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera())) btn->AttachedUIToActor(cameraRef);
 	}
 	if (auto text = Cast<SUITextComponent>(m_hostGameButtonText))
 	{
-		text->Initialize(L"\uba40\ud2f0\ud50c\ub808\uc774\ubc29\ub9cc\ub4e4\uae30", 10, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(x, y), FVector2(width, height));
+		text->Initialize(L"\uba40\ud2f0\ud50c\ub808\uc774\ubc29\ub9cc\ub4e4\uae30", 11, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(x, y), FVector2(width, height));
+		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera())) text->AttachedUIToActor(cameraRef);
+	}
+
+	y = 160 + (BTN_H + BTN_GAP) * 2;
+	if (auto btn = Cast<SUIButtonComponent>(m_connectGameButton))
+	{
+		btn->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 8);
+		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera())) btn->AttachedUIToActor(cameraRef);
+	}
+	if (auto text = Cast<SUITextComponent>(m_connectGameButtonText))
+	{
+		text->Initialize(L"\uba40\ud2f0\ud50c\ub808\uc774\uc811\uc18d\ud558\uae30", 11, (wchar_t*)L"Verdana", Gdiplus::Color(255, 255, 255), FVector2(x, y), FVector2(width, height));
 		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera())) text->AttachedUIToActor(cameraRef);
 	}
 
 	if (auto text = Cast<SUITextComponent>(m_ipInputText))
 	{
-		text->Initialize(L"IP: 127.0.0.1", 10, (wchar_t*)L"Verdana", Gdiplus::Color(240, 240, 240), FVector2(int(Renderer::GetResolution().x * 0.2), int(Renderer::GetResolution().y * 0.74)), FVector2(220, 34));
+		text->Initialize(L"IP: 127.0.0.1", 10, (wchar_t*)L"Verdana", Gdiplus::Color(240, 240, 240), FVector2(BTN_X, 160 + (BTN_H + BTN_GAP) * 3), FVector2(BTN_W, 34));
 		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera())) text->AttachedUIToActor(cameraRef);
 	}
 	if (auto text = Cast<SUITextComponent>(m_statusText))
 	{
-		text->Initialize(L"", 10, (wchar_t*)L"Verdana", Gdiplus::Color(240, 240, 120), FVector2(int(Renderer::GetResolution().x * 0.2), int(Renderer::GetResolution().y * 0.79)), FVector2(260, 34));
+		text->Initialize(L"", 10, (wchar_t*)L"Verdana", Gdiplus::Color(240, 240, 120), FVector2(BTN_X, 160 + (BTN_H + BTN_GAP) * 3 + 44), FVector2(BTN_W + 40, 30));
 		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera())) text->AttachedUIToActor(cameraRef);
 	}
-	x = int(Renderer::GetResolution().x * 0.2);
-	y = int(Renderer::GetResolution().y * 0.86);
-	width = 120;
-	height = 60;
+
+	x = BTN_X;
+	y = 510;
+	width = 160;
+	height = BTN_H;
 	if (auto btn = Cast<SUIButtonComponent>(m_endGameButton))
 	{
-		btn->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 5);
+		btn->Initialize(Gdiplus::Color(80, 40, 40), FVector2(x, y), FVector2(width, height), 8);
 		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera()))
 		{
 			btn->AttachedUIToActor(cameraRef);
@@ -142,7 +146,7 @@ void UMenuscene_StartGuide::Initialize()
 		text->Initialize
 		(
 			L"\uac8c\uc784 \uc885\ub8cc",
-			10,
+			11,
 			(wchar_t*)L"Verdana",
 			Gdiplus::Color(255, 255, 255),
 			FVector2(x, y),
@@ -154,18 +158,18 @@ void UMenuscene_StartGuide::Initialize()
 		}
 	}
 
-	x = int(Renderer::GetResolution().x * 0.65);
-	y = int(Renderer::GetResolution().y * 0.15);
-	width = 240;
-	height = 60;
+	x = 570;
+	y = 70;
+	width = 220;
+	height = 50;
 	if (auto text = Cast<SUITextComponent>(HallOfFameText))
 	{
 		text->Initialize
 		(
 			L"\uBA85\uC608\uC758 \uC804\uB2F9",
-			12,
+			14,
 			(wchar_t*)L"Verdana",
-			Gdiplus::Color(255, 255, 255),
+			Gdiplus::Color(255, 215, 0),
 			FVector2(x, y),
 			FVector2(width, height)
 		);
@@ -177,12 +181,12 @@ void UMenuscene_StartGuide::Initialize()
 
 	std::vector<FFileHelper::ScoreEntry> scoreList;
 	FFileHelper::LoadFileString(L"/highscore.txt", scoreList);
-	width = 240;
-	height = 60;
+	width = 180;
+	height = 34;
 	for (int i = 0; i < scoreList.size(); i++)
 	{
-		x = int(Renderer::GetResolution().x * 0.5);
-		y = int(Renderer::GetResolution().y * 0.25) + int((Renderer::GetResolution().y * 0.07) * i);
+		x = 570;
+		y = 140 + i * 40;
 
 		if (auto text = Cast<SUITextComponent>(textScore[i]))
 		{
@@ -208,9 +212,9 @@ void UMenuscene_StartGuide::Initialize()
 				scoreList[i].time,
 				10,
 				(wchar_t*)L"Verdana",
-				Gdiplus::Color(255, 255, 255),
-				FVector2(x + int(Renderer::GetResolution().x * 0.2), y),
-				FVector2(width, height)
+				Gdiplus::Color(200, 200, 200),
+				FVector2(x + 200, y),
+				FVector2(200, height)
 			);
 			if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera()))
 			{

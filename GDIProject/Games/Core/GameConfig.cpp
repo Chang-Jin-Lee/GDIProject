@@ -7,9 +7,33 @@
 
 namespace
 {
-std::wstring WidenUtf8(const std::string& value)
+std::wstring WidenUtf8(const std::string& utf8)
 {
-	return std::wstring(value.begin(), value.end());
+	std::wstring result;
+	result.reserve(utf8.size());
+	for (size_t i = 0; i < utf8.size(); )
+	{
+		unsigned char c = static_cast<unsigned char>(utf8[i]);
+		uint32_t cp = 0;
+		size_t extra = 0;
+		if      (c < 0x80)             { cp = c;        extra = 0; }
+		else if ((c & 0xE0) == 0xC0)  { cp = c & 0x1F; extra = 1; }
+		else if ((c & 0xF0) == 0xE0)  { cp = c & 0x0F; extra = 2; }
+		else if ((c & 0xF8) == 0xF0)  { cp = c & 0x07; extra = 3; }
+		else { ++i; continue; }
+		for (size_t j = 1; j <= extra && i + j < utf8.size(); ++j)
+			cp = (cp << 6) | (static_cast<unsigned char>(utf8[i + j]) & 0x3F);
+		if (cp <= 0xFFFF)
+			result += static_cast<wchar_t>(cp);
+		else
+		{
+			cp -= 0x10000;
+			result += static_cast<wchar_t>(0xD800 | (cp >> 10));
+			result += static_cast<wchar_t>(0xDC00 | (cp & 0x3FF));
+		}
+		i += extra + 1;
+	}
+	return result;
 }
 
 int ToInt(const std::string& text, int fallback)
