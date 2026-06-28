@@ -57,16 +57,17 @@ void UMenuscene_StartGuide::Initialize()
 {
 	__super::Initialize();
 
-	// Center panel: buttons in the empty zone between title(x~375) and HoF(x~570)
-	// x=390 centers ~200px buttons at x=490; y=290 sits below the CIVILIZATION 2D title
-	// Right panel: Hall of Fame at x=570
+	// Center panel: buttons below CIVILIZATION 2D title (~y=310), in empty zone x=390-590
+	// BTN_Y=340: clears the title; 3 buttons + IP fit within 600px height
+	// Exit button stays bottom-left at x=40 (separate from center group)
 	const int BTN_X = 390;
 	const int BTN_W = 200;
 	const int BTN_H = 50;
 	const int BTN_GAP = 16;
+	const int BTN_Y = 340;
 
 	int x = BTN_X;
-	int y = 290;
+	int y = BTN_Y;
 	int width = BTN_W;
 	int height = BTN_H;
 	if (auto btn = Cast<SUIButtonComponent>(m_startGameButton))
@@ -94,7 +95,7 @@ void UMenuscene_StartGuide::Initialize()
 		}
 	}
 
-	y = 160 + (BTN_H + BTN_GAP);
+	y = BTN_Y + (BTN_H + BTN_GAP);
 	if (auto btn = Cast<SUIButtonComponent>(m_hostGameButton))
 	{
 		btn->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 8);
@@ -106,7 +107,7 @@ void UMenuscene_StartGuide::Initialize()
 		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera())) text->AttachedUIToActor(cameraRef);
 	}
 
-	y = 160 + (BTN_H + BTN_GAP) * 2;
+	y = BTN_Y + (BTN_H + BTN_GAP) * 2;
 	if (auto btn = Cast<SUIButtonComponent>(m_connectGameButton))
 	{
 		btn->Initialize(Gdiplus::Color(48, 50, 113), FVector2(x, y), FVector2(width, height), 8);
@@ -120,17 +121,17 @@ void UMenuscene_StartGuide::Initialize()
 
 	if (auto text = Cast<SUITextComponent>(m_ipInputText))
 	{
-		text->Initialize(L"IP: 127.0.0.1", 10, (wchar_t*)L"Verdana", Gdiplus::Color(240, 240, 240), FVector2(BTN_X, 290 + (BTN_H + BTN_GAP) * 3), FVector2(BTN_W, 34));
+		text->Initialize(L"IP: 127.0.0.1", 10, (wchar_t*)L"Verdana", Gdiplus::Color(240, 240, 240), FVector2(BTN_X, BTN_Y + (BTN_H + BTN_GAP) * 3), FVector2(BTN_W, 34));
 		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera())) text->AttachedUIToActor(cameraRef);
 	}
 	if (auto text = Cast<SUITextComponent>(m_statusText))
 	{
-		text->Initialize(L"", 10, (wchar_t*)L"Verdana", Gdiplus::Color(240, 240, 120), FVector2(BTN_X, 290 + (BTN_H + BTN_GAP) * 3 + 44), FVector2(BTN_W + 40, 30));
+		text->Initialize(L"", 10, (wchar_t*)L"Verdana", Gdiplus::Color(240, 240, 120), FVector2(BTN_X, BTN_Y + (BTN_H + BTN_GAP) * 3 + 44), FVector2(BTN_W + 40, 30));
 		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera())) text->AttachedUIToActor(cameraRef);
 	}
 
-	x = BTN_X;
-	y = 510;
+	x = 40;
+	y = 520;
 	width = 160;
 	height = BTN_H;
 	if (auto btn = Cast<SUIButtonComponent>(m_endGameButton))
