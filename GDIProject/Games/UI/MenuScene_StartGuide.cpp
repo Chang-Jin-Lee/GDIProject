@@ -57,16 +57,16 @@ void UMenuscene_StartGuide::Initialize()
 {
 	__super::Initialize();
 
-	// Left panel: buttons stacked at x=40, w=220, h=50, gap=16 between each
-	// Order: \uc2f1\uae00\ud50c\ub808\uc774\ud558\uae30 > \uba40\ud2f0\ud50c\ub808\uc774\ubc29\ub9cc\ub4e4\uae30 > \uba40\ud2f0\ud50c\ub808\uc774\uc811\uc18d\ud558\uae30 > IP\uc785\ub825 > \uc0c1\ud0dc > \uac8c\uc784\uc885\ub8cc(bottom)
+	// Center panel: buttons in the empty zone between title(x~375) and HoF(x~570)
+	// x=390 centers ~200px buttons at x=490; y=290 sits below the CIVILIZATION 2D title
 	// Right panel: Hall of Fame at x=570
-	const int BTN_X = 40;
-	const int BTN_W = 220;
+	const int BTN_X = 390;
+	const int BTN_W = 200;
 	const int BTN_H = 50;
 	const int BTN_GAP = 16;
 
 	int x = BTN_X;
-	int y = 160;
+	int y = 290;
 	int width = BTN_W;
 	int height = BTN_H;
 	if (auto btn = Cast<SUIButtonComponent>(m_startGameButton))
@@ -120,12 +120,12 @@ void UMenuscene_StartGuide::Initialize()
 
 	if (auto text = Cast<SUITextComponent>(m_ipInputText))
 	{
-		text->Initialize(L"IP: 127.0.0.1", 10, (wchar_t*)L"Verdana", Gdiplus::Color(240, 240, 240), FVector2(BTN_X, 160 + (BTN_H + BTN_GAP) * 3), FVector2(BTN_W, 34));
+		text->Initialize(L"IP: 127.0.0.1", 10, (wchar_t*)L"Verdana", Gdiplus::Color(240, 240, 240), FVector2(BTN_X, 290 + (BTN_H + BTN_GAP) * 3), FVector2(BTN_W, 34));
 		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera())) text->AttachedUIToActor(cameraRef);
 	}
 	if (auto text = Cast<SUITextComponent>(m_statusText))
 	{
-		text->Initialize(L"", 10, (wchar_t*)L"Verdana", Gdiplus::Color(240, 240, 120), FVector2(BTN_X, 160 + (BTN_H + BTN_GAP) * 3 + 44), FVector2(BTN_W + 40, 30));
+		text->Initialize(L"", 10, (wchar_t*)L"Verdana", Gdiplus::Color(240, 240, 120), FVector2(BTN_X, 290 + (BTN_H + BTN_GAP) * 3 + 44), FVector2(BTN_W + 40, 30));
 		if (auto cameraRef = Cast<ACameraActor>(Game::GetGameState()->GetMainCamera())) text->AttachedUIToActor(cameraRef);
 	}
 
